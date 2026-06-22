@@ -1,0 +1,11 @@
+# Netlify build + SPA config for the Vite app.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Client-side routing: serve index.html for any path so React Router can handle
+# deep links like /login, /wallet, /business/create.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
