@@ -1,0 +1,79 @@
+import type { ReactNode } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useStore } from './lib/store'
+import { AppShell } from './components/AppShell'
+
+import { Landing } from './features/marketing/Landing'
+import { Login } from './features/auth/Login'
+import { Onboarding } from './features/auth/Onboarding'
+import { EarnFeed } from './features/earner/EarnFeed'
+import { TaskFlow } from './features/earner/TaskFlow'
+import { ProofUpload } from './features/earner/ProofUpload'
+import { TaskComplete } from './features/earner/TaskComplete'
+import { Wallet } from './features/earner/Wallet'
+import { CashOut } from './features/earner/CashOut'
+import { Refer } from './features/earner/Refer'
+import { Rewards } from './features/earner/Rewards'
+import { Profile } from './features/earner/Profile'
+import { SwitchAccount } from './features/business/SwitchAccount'
+import { Dashboard } from './features/business/Dashboard'
+import { CreateTask } from './features/business/CreateTask'
+import { FundLaunch } from './features/business/FundLaunch'
+import { CampaignAnalytics } from './features/business/CampaignAnalytics'
+import { AddFunds } from './features/business/AddFunds'
+
+/** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
+function Shell({ children }: { children: ReactNode }) {
+  const { userId, ready } = useStore()
+  const loc = useLocation()
+  if (!ready) return null
+  if (!userId) return <Navigate to="/login" replace state={{ from: loc.pathname }} />
+  return <AppShell>{children}</AppShell>
+}
+
+/** Root: marketing site when logged out, app home when logged in. */
+function Home() {
+  const { userId, profile, ready } = useStore()
+  if (!ready) return null
+  if (!userId) return <Landing />
+  if (profile?.mode === 'business') return <Navigate to="/business" replace />
+  return (
+    <AppShell>
+      <EarnFeed />
+    </AppShell>
+  )
+}
+
+export default function App() {
+  const { ready } = useStore()
+  if (!ready) return null
+
+  return (
+    <Routes>
+      {/* Public */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/onboarding" element={<Onboarding />} />
+
+      {/* Earner app */}
+      <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />
+      <Route path="/task/:id/proof" element={<Shell><ProofUpload /></Shell>} />
+      <Route path="/task/:id/done" element={<Shell><TaskComplete /></Shell>} />
+      <Route path="/wallet" element={<Shell><Wallet /></Shell>} />
+      <Route path="/wallet/withdraw" element={<Shell><CashOut /></Shell>} />
+      <Route path="/refer" element={<Shell><Refer /></Shell>} />
+      <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
+      <Route path="/profile" element={<Shell><Profile /></Shell>} />
+      <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
+
+      {/* Business app */}
+      <Route path="/business" element={<Shell><Dashboard /></Shell>} />
+      <Route path="/business/create" element={<Shell><CreateTask /></Shell>} />
+      <Route path="/business/fund" element={<Shell><FundLaunch /></Shell>} />
+      <Route path="/business/campaign/:id" element={<Shell><CampaignAnalytics /></Shell>} />
+      <Route path="/business/add-funds" element={<Shell><AddFunds /></Shell>} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}
