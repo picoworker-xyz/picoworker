@@ -212,7 +212,9 @@ create policy "referrals self"   on referrals      for select using (referrer_id
 -- New-user trigger: create profile + wallet (+ $0.05 welcome bonus for earners)
 -- ============================================================================
 create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer
+set search_path = public  -- critical: the auth role triggers this; without it, table names don't resolve
+as $$
 declare m text := coalesce(new.raw_user_meta_data->>'mode', 'earner');
 begin
   insert into profiles(id, display_name, mode, referral_code, member_since, device_hash, signup_ip)
