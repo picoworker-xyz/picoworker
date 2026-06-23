@@ -7,8 +7,9 @@ import { ArrowRight, Bell, Chat, Check, Shield, Trophy, Wallet as WalletIcon } f
 
 export function Profile() {
   const nav = useNavigate()
-  const { profile, wallet, signOut, switchMode } = useStore()
+  const { profile, wallet, signOut, switchMode, referralsFor } = useStore()
   if (!profile || !wallet) return null
+  const referralCount = referralsFor(profile.id).length
 
   return (
     <Page title="Profile & settings">
@@ -26,7 +27,7 @@ export function Profile() {
           <div className="grid grid-cols-3 gap-3">
             <Stat value={usd(wallet.lifetime_earned)} label="Earned" />
             <Stat value={String(profile.tasks_done)} label="Tasks" />
-            <Stat value="8" label="Referrals" />
+            <Stat value={String(referralCount)} label="Referrals" />
           </div>
           <button onClick={() => { switchMode(); nav(profile.mode === 'earner' ? '/business' : '/', { replace: true }) }} className="w-full font-head font-extrabold text-[15px] bg-white/6 text-white py-[14px] rounded-[14px] border border-white/10 hover:bg-white/10">
             Switch to {profile.mode === 'earner' ? 'Business' : 'Earner'}

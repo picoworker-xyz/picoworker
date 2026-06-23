@@ -11,7 +11,7 @@ export function Refer() {
 
   const crew = referralsFor(profile.id)
   const earnings = crew.reduce((s, r) => s + r.earnings, 0)
-  const link = `pico.xyz/r/${profile.referral_code}`
+  const link = `picoworker.xyz/r/${profile.referral_code}`
 
   function copy() {
     navigator.clipboard?.writeText(`https://${link}`).catch(() => {})
@@ -28,16 +28,16 @@ export function Refer() {
             className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.16)]"
             style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
           >
-            <div className="text-white text-[20px] font-extrabold font-head">Get $0.50 + 10% forever</div>
+            <div className="text-white text-[20px] font-extrabold font-head">Earn 10% forever</div>
             <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
-              Earn <span className="text-[var(--accent)] font-bold">$0.50</span> when a friend joins, plus{' '}
-              <span className="text-[var(--accent)] font-bold">10%</span> of everything they earn — forever.
+              Get <span className="text-[var(--accent)] font-bold">10%</span> of everything your friends earn —
+              forever. The more they earn, the more you do.
             </div>
 
             <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mt-6 mb-2">Your invite link</div>
             <div className="flex items-center gap-2 rounded-[14px] bg-black/30 border border-white/8 p-2 pl-4">
               <div className="flex-1 text-[#C2C4CE] text-[14px] font-bold truncate font-head">
-                pico.xyz/r/<span className="text-[var(--accent)]">{profile.referral_code}</span>
+                picoworker.xyz/r/<span className="text-[var(--accent)]">{profile.referral_code}</span>
               </div>
               <button onClick={copy} className="px-4 py-[10px] rounded-[11px] bg-[var(--accent)] text-[var(--accent-ink)] text-[13px] font-extrabold font-head">
                 {copied ? 'Copied!' : 'Copy'}
@@ -55,16 +55,22 @@ export function Refer() {
               <span className="text-white text-[15px] font-extrabold font-head">Your crew</span>
               <span className="text-[#767884] text-[13px] font-semibold">{crew.length} friends</span>
             </div>
-            {crew.map((r, i) => (
-              <div key={r.id} className={`flex items-center gap-3 px-5 py-[14px] ${i === 0 ? '' : 'border-t border-white/5'}`}>
-                <Avatar name={r.display_name} size={38} gradient="linear-gradient(135deg,#5B8DEF,#8B6CFF)" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-white text-[14px] font-bold truncate">{r.display_name}</div>
-                  <div className="text-[#767884] text-[12px] font-semibold mt-[1px]">{r.status === 'active' ? `Active · ${r.tasks} tasks` : 'Joined · no tasks yet'}</div>
-                </div>
-                <div className="font-head text-[14px] font-extrabold text-[var(--green)]">{usd(r.earnings, { sign: true })}</div>
+            {crew.length === 0 ? (
+              <div className="px-5 py-10 text-center text-[#767884] text-[13.5px] font-semibold">
+                No friends yet. Share your link — you'll earn 10% of whatever they make.
               </div>
-            ))}
+            ) : (
+              crew.map((r, i) => (
+                <div key={r.id} className={`flex items-center gap-3 px-5 py-[14px] ${i === 0 ? '' : 'border-t border-white/5'}`}>
+                  <Avatar name={r.display_name} size={38} gradient="linear-gradient(135deg,#5B8DEF,#8B6CFF)" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-white text-[14px] font-bold truncate">{r.display_name}</div>
+                    <div className="text-[#767884] text-[12px] font-semibold mt-[1px]">{r.status === 'active' ? `Active · ${r.tasks} tasks` : 'Joined · no tasks yet'}</div>
+                  </div>
+                  <div className="font-head text-[14px] font-extrabold text-[var(--green)]">{usd(r.earnings, { sign: true })}</div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { usd, pct, etaLabel, timeAgo } from '../../lib/format'
 import { Page } from '../../components/Page'
-import { Avatar, Pill } from '../../components/ui'
+import { Pill } from '../../components/ui'
 
 export function CampaignAnalytics() {
   const { id } = useParams()
@@ -15,8 +15,6 @@ export function CampaignAnalytics() {
   const completions = completionsForTask(t.id)
   const spent = +(t.done_count * t.reward).toFixed(2)
   const remaining = +((t.goal_count - t.done_count) * t.reward).toFixed(2)
-  const chart = buildChart(t.done_count)
-  const maxBar = Math.max(...chart, 1)
 
   return (
     <Page
@@ -47,47 +45,26 @@ export function CampaignAnalytics() {
           </div>
 
           <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6">
-            <div className="text-white text-[15px] font-extrabold font-head mb-5">Completions / day · last 7 days</div>
-            <div className="flex items-end justify-between gap-3 h-[160px]">
-              {chart.map((v, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                  <span className="text-[#9A9CA8] text-[11px] font-bold">{v}</span>
-                  <div className="w-full rounded-t-[6px] bg-gradient-to-t from-[#7ec900] to-[var(--accent)]" style={{ height: `${(v / maxBar) * 100}%`, minHeight: 4 }} />
-                  <span className="text-[#767884] text-[11px] font-bold">{'MTWTFSS'[i]}</span>
-                </div>
-              ))}
+            <div className="text-white text-[15px] font-extrabold font-head mb-1">Results</div>
+            <div className="text-[#9A9CA8] text-[13px] font-semibold">
+              {t.done_count === 0
+                ? 'No verified completions yet. They appear here in real time as earners complete your task.'
+                : `${t.done_count} verified ${t.type === 'follow_x' ? 'followers' : 'completions'} so far${completions.length > 0 ? ` · ${completions.length} pending review` : ''}.`}
             </div>
           </div>
         </div>
 
-        {/* right: stats + recent */}
+        {/* right: stats */}
         <aside className="flex flex-col gap-4">
           <Tile value={usd(spent)} label="Spent" accent />
           <Tile value={usd(remaining)} label="Remaining" />
           <Tile value={etaLabel(t.est_seconds)} label="Avg completion time" />
-          <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6">
-            <div className="text-white text-[14px] font-extrabold font-head mb-3">Recent results</div>
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                {['B', 'P', 'R', 'S'].map((n, i) => <Avatar key={i} name={n} size={32} gradient="linear-gradient(135deg,#8B6CFF,#5B8DEF)" />)}
-              </div>
-              <span className="text-[#A9ABB6] text-[13px] font-semibold">
-                +{t.done_count} verified {t.type === 'follow_x' ? 'followers' : 'completions'}
-              </span>
-            </div>
-            {completions.length > 0 && <div className="text-[#767884] text-[12px] font-semibold mt-2">{completions.length} via the live marketplace</div>}
-          </div>
         </aside>
       </div>
     </Page>
   )
 }
 
-function buildChart(total: number): number[] {
-  const weights = [3, 5, 4, 6, 5, 7, 4]
-  const sum = weights.reduce((a, b) => a + b, 0)
-  return weights.map((w) => Math.round((w / sum) * total))
-}
 function Tile({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
     <div className="rounded-[16px] p-5 bg-[#15161C] border border-white/6">

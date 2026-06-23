@@ -127,6 +127,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       signOut() {
         void sb.auth.signOut()
       },
+      refresh,
       switchMode() {
         if (!cache.profile) return
         const nextMode = cache.profile.mode === 'earner' ? 'business' : 'earner'
