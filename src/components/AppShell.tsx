@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 import { usd } from '../lib/format'
 import { BrandMark } from './layout'
 import { Avatar } from './ui'
-import { Bolt, Flame, Home, ListIcon, Plus, User, Wallet as WalletIcon } from './icons'
+import { Bell, Bolt, Check, Flame, Home, Plus, Trophy, User, Wallet as WalletIcon } from './icons'
 
 interface NavItem {
   label: string
@@ -14,15 +14,16 @@ interface NavItem {
 
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
-  { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Wallet', path: '/wallet', icon: WalletIcon },
+  { label: 'Rewards', path: '/rewards', icon: Flame },
+  { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
   { label: 'Refer', path: '/refer', icon: User },
 ]
 const BUSINESS_NAV: NavItem[] = [
   { label: 'Dashboard', path: '/business', icon: Home },
   { label: 'New task', path: '/business/create', icon: Plus },
+  { label: 'Review', path: '/business/review', icon: Check },
   { label: 'Wallet', path: '/business/add-funds', icon: WalletIcon },
-  { label: 'Campaigns', path: '/business', icon: ListIcon },
 ]
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -42,9 +43,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-svh flex">
       {/* ===== Desktop sidebar ===== */}
       <aside className="hidden lg:flex flex-col w-[260px] flex-none border-r border-white/7 bg-[rgba(12,13,17,.7)] backdrop-blur sticky top-0 h-svh px-5 py-7">
-        <button onClick={() => nav(isBiz ? '/business' : '/')} className="mb-8 text-left">
-          <BrandMark size={40} />
-        </button>
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => nav(isBiz ? '/business' : '/')} className="text-left">
+            <BrandMark size={40} />
+          </button>
+          <button onClick={() => nav('/notifications')} className="w-9 h-9 rounded-[11px] bg-white/6 flex items-center justify-center text-[#C2C4CE] hover:text-white" title="Notifications">
+            <Bell width={18} height={18} />
+          </button>
+        </div>
 
         <nav className="flex flex-col gap-1">
           {items.map((it) => {
@@ -111,13 +117,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={() => nav(isBiz ? '/business' : '/')}>
             <BrandMark size={30} />
           </button>
-          <button
-            onClick={() => nav(isBiz ? '/business/add-funds' : '/wallet')}
-            className="flex items-center gap-2 px-3 py-[6px] rounded-full bg-white/6 border border-white/10"
-          >
-            <span className="w-4 h-4 rounded-full bg-[var(--usdc)] flex items-center justify-center text-[9px] text-white font-extrabold">$</span>
-            <span className="font-head text-[13px] font-extrabold text-white">{usd(balance)}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => nav(isBiz ? '/business/add-funds' : '/wallet')}
+              className="flex items-center gap-2 px-3 py-[6px] rounded-full bg-white/6 border border-white/10"
+            >
+              <span className="w-4 h-4 rounded-full bg-[var(--usdc)] flex items-center justify-center text-[9px] text-white font-extrabold">$</span>
+              <span className="font-head text-[13px] font-extrabold text-white">{usd(balance)}</span>
+            </button>
+            <button onClick={() => nav('/notifications')} className="w-9 h-9 rounded-full bg-white/6 border border-white/10 flex items-center justify-center text-[#C2C4CE]" title="Notifications">
+              <Bell width={17} height={17} />
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 pb-24 lg:pb-12">{children}</main>

@@ -10,7 +10,7 @@ const TYPES: { type: TaskType; label: string; category: string; needsTarget: 'ha
   { type: 'follow_x', label: 'Follow X', category: 'Social', needsTarget: 'handle', auto: true, reward: 0.04 },
   { type: 'yt_views', label: 'YT views', category: 'Watch', needsTarget: 'url', auto: true, reward: 0.02 },
   { type: 'app_install', label: 'App install', category: 'Apps', needsTarget: 'url', auto: false, reward: 0.35 },
-  { type: 'survey', label: 'Survey', category: 'Surveys', needsTarget: null, auto: false, reward: 0.18 },
+  { type: 'survey', label: 'Survey', category: 'Surveys', needsTarget: null, auto: true, reward: 0.18 },
   { type: 'visit_site', label: 'Visit site', category: 'Ads', needsTarget: 'url', auto: true, reward: 0.03 },
   { type: 'custom', label: 'Custom', category: 'Apps', needsTarget: null, auto: false, reward: 0.2 },
 ]
@@ -98,6 +98,14 @@ export function CreateTask() {
               {t.auto ? 'Auto-verified — you only pay for real results' : 'Manual review — you only pay for approved proofs'}
             </span>
           </div>
+
+          <button onClick={() => nav('/business/targeting')} className="w-full mt-4 flex items-center justify-between p-4 rounded-[14px] bg-white/4 border border-white/8 text-left hover:bg-white/[.07]">
+            <div>
+              <div className="text-white text-[14px] font-bold">Targeting</div>
+              <div className="text-[#767884] text-[12px] font-semibold">Countries, languages, device, level · optional</div>
+            </div>
+            <span className="text-[var(--accent)] text-[13px] font-extrabold">Set up →</span>
+          </button>
         </div>
 
         {/* summary */}

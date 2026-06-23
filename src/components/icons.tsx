@@ -2,6 +2,66 @@ import type { SVGProps } from 'react'
 
 type P = SVGProps<SVGSVGElement>
 
+export const Bell = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    <path d="M10 19a2 2 0 004 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+)
+
+export const Trophy = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M7 4h10v4a5 5 0 01-10 0V4z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    <path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3M9 20h6M12 13v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const Globe = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+    <path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18" stroke="currentColor" strokeWidth="2" />
+  </svg>
+)
+
+export const Chat = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M4 5h16v11H8l-4 4V5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  </svg>
+)
+
+export const Star = (p: P) => (
+  <svg viewBox="0 0 24 24" {...p}>
+    <path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 16.9 5.8 20.6l1.6-6.7L2.2 9.4l6.9-.6L12 2z" fill="currentColor" />
+  </svg>
+)
+
+export const Zoom = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+    <path d="M16 16l4 4M11 8v6M8 11h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+)
+
+export const Send = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M4 12l16-7-7 16-2.5-6.5L4 12z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+  </svg>
+)
+
+export const IdCard = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="2" />
+    <circle cx="8.5" cy="11" r="2" stroke="currentColor" strokeWidth="2" />
+    <path d="M13 10h5M13 14h5M5.5 15c.6-1.3 1.7-2 3-2s2.4.7 3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+)
+
+export const X = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+  </svg>
+)
+
 export const PicoLogo = (p: P) => (
   <svg viewBox="0 0 24 24" {...p}>
     <path

@@ -3,7 +3,7 @@ import { useStore } from '../../lib/store'
 import { usd, shortAddr } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Avatar, Pill } from '../../components/ui'
-import { ArrowRight, Check, Shield, Wallet as WalletIcon } from '../../components/icons'
+import { ArrowRight, Bell, Chat, Check, Shield, Trophy, Wallet as WalletIcon } from '../../components/icons'
 
 export function Profile() {
   const nav = useNavigate()
@@ -37,11 +37,21 @@ export function Profile() {
         {/* settings list */}
         <div className="lg:col-span-2 flex flex-col gap-2">
           <Item icon={<WalletIcon width={18} height={18} className="text-[var(--accent)]" />} label="Payout wallet" value={`${shortAddr(profile.payout_wallet)} · Solana`} onClick={() => nav('/wallet/withdraw')} />
-          <Item label="Notifications" value="On" />
-          <Item label="Language" value="English" />
-          <Item icon={<Shield width={18} height={18} className="text-[var(--green)]" />} label="Verify identity" value={profile.identity_verified ? 'Verified' : 'Not yet'} tag={profile.identity_verified} />
+          <Item icon={<Bell width={18} height={18} className="text-[#C2C4CE]" />} label="Notifications" value="Payments, tasks & rewards" onClick={() => nav('/notifications')} />
+          {profile.mode === 'business' ? (
+            <Item icon={<Check width={18} height={18} className="text-[var(--accent)]" />} label="Review queue" value="Approve manual proofs" onClick={() => nav('/business/review')} />
+          ) : (
+            <Item icon={<Trophy width={18} height={18} className="text-[var(--accent)]" />} label="Leaderboard" value="See top earners" onClick={() => nav('/leaderboard')} />
+          )}
+          <Item
+            icon={<Shield width={18} height={18} className="text-[var(--green)]" />}
+            label="Verify identity"
+            value={profile.identity_verified ? 'Verified' : 'Unlock instant withdrawals'}
+            tag={profile.identity_verified}
+            onClick={profile.identity_verified ? undefined : () => nav('/verify')}
+          />
           <Item label="Refer & earn" value="Invite friends" onClick={() => nav('/refer')} />
-          <Item label="Help & support" value="FAQs and contact" />
+          <Item icon={<Chat width={18} height={18} className="text-[#C2C4CE]" />} label="Help & support" value="Chat with us" onClick={() => nav('/support')} />
         </div>
       </div>
     </Page>

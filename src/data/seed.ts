@@ -1,4 +1,4 @@
-import type { Profile, Task, Wallet, LedgerEntry, Referral } from '../lib/types'
+import type { Profile, Task, Wallet, LedgerEntry, Referral, TaskCompletion } from '../lib/types'
 
 // Demo seed used by the local mock store so the app is alive on first run.
 // The marketplace loop works against this data; a real Supabase backend would
@@ -119,7 +119,7 @@ export function seedTasks(): Task[] {
       reward: 0.18,
       goal_count: 500,
       done_count: 88,
-      auto_verify: false,
+      auto_verify: true,
       status: 'live',
       fee: 0.1,
       est_seconds: 240,
@@ -200,6 +200,26 @@ export function seedLedger(): LedgerEntry[] {
       balance_after: 12.45,
       created_at: t(60),
     },
+  ]
+}
+
+// Demo earner identities used by the provider review queue.
+export const DEMO_EARNER_NAMES: Record<string, string> = {
+  'u-bilal': 'Bilal_92',
+  'u-priya': 'Priya.k',
+  'u-rahul': 'Rahul_dev',
+  'u-sana': 'Sana_k',
+}
+
+// Pending manual-proof submissions waiting on the provider (review queue).
+export function seedCompletions(): TaskCompletion[] {
+  const now = Date.now()
+  const t = (mins: number) => new Date(now - mins * 60_000).toISOString()
+  return [
+    { id: 'pc1', task_id: 'task-review', earner_id: 'u-bilal', status: 'pending_proof', proof_url: null, reward: 0.2, created_at: t(4) },
+    { id: 'pc2', task_id: 'task-review', earner_id: 'u-priya', status: 'pending_proof', proof_url: null, reward: 0.2, created_at: t(9) },
+    { id: 'pc3', task_id: 'task-review', earner_id: 'u-rahul', status: 'pending_proof', proof_url: null, reward: 0.2, created_at: t(22) },
+    { id: 'pc4', task_id: 'task-fittrack', earner_id: 'u-sana', status: 'pending_proof', proof_url: null, reward: 0.35, created_at: t(35) },
   ]
 }
 

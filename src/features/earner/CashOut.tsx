@@ -4,7 +4,7 @@ import { useStore } from '../../lib/store'
 import { usd, shortAddr } from '../../lib/format'
 import { estimateWithdrawal } from '../../lib/payments'
 import { Page, CenteredPage } from '../../components/Page'
-import { Check } from '../../components/icons'
+import { ArrowUp } from '../../components/icons'
 
 const NETWORKS = ['Solana', 'Base', 'Polygon']
 
@@ -42,19 +42,34 @@ export function CashOut() {
   if (done) {
     return (
       <CenteredPage>
-        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
-          <div className="flex flex-col items-center" style={{ animation: 'pico-pop .4s ease both' }}>
+        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8">
+          <div className="flex flex-col items-center text-center" style={{ animation: 'pico-pop .4s ease both' }}>
             <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
-              <Check width={38} height={38} className="text-[var(--accent-ink)]" />
+              <ArrowUp width={36} height={36} className="text-[var(--accent-ink)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal sent</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
-              {usd(done.net)} {asset} is on its way. Arrives in ~30 sec on {network}.
-            </div>
+            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal on its way</div>
+            <div className="font-head font-bold text-[34px] text-[var(--accent)] mt-2">{done.net.toFixed(2)} {asset}</div>
           </div>
-          <button onClick={() => nav('/wallet', { replace: true })} className="w-full mt-8 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
-            Done
-          </button>
+
+          <div className="mt-6 rounded-[16px] bg-white/4 border border-white/7 divide-y divide-white/6">
+            <TxRow label="Status">
+              <span className="flex items-center gap-2 text-[#FFB05A] font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#FFB05A]" style={{ animation: 'pico-pulse 1.4s infinite' }} /> Confirming · 3/12
+              </span>
+            </TxRow>
+            <TxRow label="To">{shortAddr(address)}</TxRow>
+            <TxRow label="Network">{network}</TxRow>
+            <TxRow label="Transaction">0x9c…2a1f</TxRow>
+          </div>
+
+          <div className="text-center text-[#767884] text-[13px] font-semibold mt-4">Usually arrives in ~30 seconds</div>
+
+          <div className="flex flex-col gap-3 mt-6">
+            <button onClick={() => nav('/wallet', { replace: true })} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
+              Done
+            </button>
+            <button className="text-[#9A9CA8] text-[14px] font-bold">View on explorer</button>
+          </div>
         </div>
       </CenteredPage>
     )
@@ -110,6 +125,14 @@ export function CashOut() {
 const Label = ({ children }: { children: React.ReactNode }) => (
   <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-2">{children}</div>
 )
+function TxRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between px-4 py-3">
+      <span className="text-[#9A9CA8] text-[13px] font-semibold">{label}</span>
+      <span className="font-head text-[14px] font-bold text-white">{children}</span>
+    </div>
+  )
+}
 function Selectable({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button onClick={onClick} className={`px-[18px] py-[11px] rounded-[12px] text-[14px] font-head font-extrabold border ${active ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[#15161C] text-[#C2C4CE] border-white/8'}`}>

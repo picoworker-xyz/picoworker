@@ -18,6 +18,7 @@ import type {
   Withdrawal,
 } from './types'
 import {
+  seedCompletions,
   seedLedger,
   seedProfiles,
   seedReferrals,
@@ -58,7 +59,7 @@ function freshDB(): DB {
     profiles: seedProfiles(),
     wallets: seedWallets(),
     tasks: seedTasks(),
-    completions: [],
+    completions: seedCompletions(),
     ledger: seedLedger(),
     withdrawals: [],
     referrals: seedReferrals(),
@@ -111,11 +112,17 @@ interface StoreApi {
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
   claimDailyBonus(): { amount: number; balance: number } | null
 
+  verifyIdentity(): void
+
   // business mutations
   createTask(draft: TaskDraft): Task
   fundAndLaunch(taskId: string): { ok: boolean; reason?: string }
   pauseCampaign(taskId: string): void
   addFunds(amount: number): number
+
+  // provider review
+  pendingProofs(): { completion: TaskCompletion; task: Task }[]
+  reviewProof(completionId: string, approve: boolean): void
 }
 
 export interface TaskDraft {
@@ -380,6 +387,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return { amount: bonus, balance: w.earner_balance }
       },
 
+      verifyIdentity() {
+        if (!userId) return
+        const next = get()
+        const p = next.profiles.find((x) => x.id === userId)
+        if (p) p.identity_verified = true
+        commit(next)
+      },
+
       // ---- business ----
       createTask(draft) {
         const next = get()
@@ -458,6 +473,45 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         })
         commit(next)
         return w.business_escrow
+      },
+
+      // ---- provider review queue ----
+      pendingProofs() {
+        const mine = new Set(get().tasks.filter((t) => t.owner_id === userId).map((t) => t.id))
+        return get()
+          .completions.filter((c) => c.status === 'pending_proof' && mine.has(c.task_id))
+          .map((completion) => ({ completion, task: get().tasks.find((t) => t.id === completion.task_id)! }))
+          .filter((x) => x.task)
+      },
+
+      reviewProof(completionId, approve) {
+        const next = get()
+        const c = next.completions.find((x) => x.id === completionId)
+        if (!c || c.status !== 'pending_proof') return
+        const t = next.tasks.find((x) => x.id === c.task_id)
+        if (!t) return
+        if (!approve) {
+          c.status = 'rejected'
+          commit(next)
+          return
+        }
+        c.status = 'approved'
+        // Pay the earner if they have a wallet here (demo earners may not), and
+        // release the held escrow from the owner. (Supabase: a transactional RPC.)
+        const ew = next.wallets.find((w) => w.profile_id === c.earner_id)
+        if (ew) {
+          ew.earner_balance = +(ew.earner_balance + c.reward).toFixed(2)
+          ew.lifetime_earned = +(ew.lifetime_earned + c.reward).toFixed(2)
+          addLedger(next, c.earner_id, c.reward, 'task_reward', t.title, t.id, ew.earner_balance)
+        }
+        const ow = next.wallets.find((w) => w.profile_id === t.owner_id)
+        if (ow) {
+          ow.business_escrow = +Math.max(0, ow.business_escrow - c.reward).toFixed(2)
+          addLedger(next, t.owner_id, -c.reward, 'escrow_release', t.title, t.id, ow.business_escrow)
+        }
+        t.done_count += 1
+        if (t.done_count >= t.goal_count) t.status = 'complete'
+        commit(next)
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

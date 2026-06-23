@@ -15,12 +15,22 @@ import { CashOut } from './features/earner/CashOut'
 import { Refer } from './features/earner/Refer'
 import { Rewards } from './features/earner/Rewards'
 import { Profile } from './features/earner/Profile'
+import { Notifications } from './features/earner/Notifications'
+import { Leaderboard } from './features/earner/Leaderboard'
+import { VerifyIdentity } from './features/earner/VerifyIdentity'
+import { Support } from './features/earner/Support'
+import { SurveyTask } from './features/earner/SurveyTask'
+import { TaskRejected } from './features/earner/TaskRejected'
 import { SwitchAccount } from './features/business/SwitchAccount'
 import { Dashboard } from './features/business/Dashboard'
 import { CreateTask } from './features/business/CreateTask'
 import { FundLaunch } from './features/business/FundLaunch'
 import { CampaignAnalytics } from './features/business/CampaignAnalytics'
 import { AddFunds } from './features/business/AddFunds'
+import { Targeting } from './features/business/Targeting'
+import { ReviewQueue } from './features/business/ReviewQueue'
+import { ProofDetail } from './features/business/ProofDetail'
+import { BusinessSignup } from './features/business/BusinessSignup'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
 function Shell({ children }: { children: ReactNode }) {
@@ -54,22 +64,32 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/business/signup" element={<BusinessSignup />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />
       <Route path="/task/:id/proof" element={<Shell><ProofUpload /></Shell>} />
+      <Route path="/task/:id/survey" element={<Shell><SurveyTask /></Shell>} />
       <Route path="/task/:id/done" element={<Shell><TaskComplete /></Shell>} />
+      <Route path="/task/:id/rejected" element={<Shell><TaskRejected /></Shell>} />
       <Route path="/wallet" element={<Shell><Wallet /></Shell>} />
       <Route path="/wallet/withdraw" element={<Shell><CashOut /></Shell>} />
       <Route path="/refer" element={<Shell><Refer /></Shell>} />
       <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
+      <Route path="/notifications" element={<Shell><Notifications /></Shell>} />
+      <Route path="/leaderboard" element={<Shell><Leaderboard /></Shell>} />
+      <Route path="/verify" element={<Shell><VerifyIdentity /></Shell>} />
+      <Route path="/support" element={<Shell><Support /></Shell>} />
       <Route path="/profile" element={<Shell><Profile /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
 
       {/* Business app */}
       <Route path="/business" element={<Shell><Dashboard /></Shell>} />
       <Route path="/business/create" element={<Shell><CreateTask /></Shell>} />
+      <Route path="/business/targeting" element={<Shell><Targeting /></Shell>} />
       <Route path="/business/fund" element={<Shell><FundLaunch /></Shell>} />
+      <Route path="/business/review" element={<Shell><ReviewQueue /></Shell>} />
+      <Route path="/business/review/:id" element={<Shell><ProofDetail /></Shell>} />
       <Route path="/business/campaign/:id" element={<Shell><CampaignAnalytics /></Shell>} />
       <Route path="/business/add-funds" element={<Shell><AddFunds /></Shell>} />
 

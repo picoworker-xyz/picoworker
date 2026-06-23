@@ -59,6 +59,7 @@ export function TaskFlow() {
 
   function open() {
     if (t!.type === 'custom') return nav(`/task/${t!.id}/proof`)
+    if (t!.type === 'survey') return nav(`/task/${t!.id}/survey`)
     if (t!.target?.startsWith('http')) window.open(t!.target, '_blank')
     setStarted(true)
   }
