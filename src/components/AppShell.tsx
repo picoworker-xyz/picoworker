@@ -27,9 +27,33 @@ const BUSINESS_NAV: NavItem[] = [
 ]
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { profile, wallet, switchMode } = useStore()
+  const { profile, wallet, switchMode, signOut, userId } = useStore()
   const nav = useNavigate()
   const loc = useLocation()
+  // Logged in but the profile/wallet rows didn't load (e.g. database schema not
+  // set up, or account created before the schema). Show an actionable screen
+  // instead of a blank page.
+  if (userId && (!profile || !wallet)) {
+    return (
+      <div className="min-h-svh flex items-center justify-center p-6">
+        <div className="w-full max-w-[420px] text-center rounded-[22px] bg-[#15161C] border border-white/8 p-8">
+          <div className="w-14 h-14 rounded-full border-4 border-white/10 border-t-[var(--accent)] mx-auto animate-spin mb-5" />
+          <div className="font-head font-bold text-[20px] text-white">Loading your account…</div>
+          <div className="text-[#9A9CA8] text-[13.5px] font-semibold mt-2 leading-[1.5]">
+            If this doesn't clear in a few seconds, your account profile couldn't be loaded.
+          </div>
+          <div className="flex gap-2 mt-6">
+            <button onClick={() => window.location.reload()} className="flex-1 font-head font-extrabold text-[14px] bg-[var(--accent)] text-[var(--accent-ink)] py-3 rounded-[12px]">
+              Reload
+            </button>
+            <button onClick={() => { signOut(); nav('/login', { replace: true }) }} className="flex-1 font-head font-extrabold text-[14px] bg-white/6 text-white border border-white/10 py-3 rounded-[12px]">
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
   if (!profile || !wallet) return null
 
   const isBiz = profile.mode === 'business'

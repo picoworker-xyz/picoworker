@@ -395,3 +395,25 @@ returns void language plpgsql security definer as $$
 begin
   update profiles set identity_verified = true where id = auth.uid();
 end; $$;
+
+-- ============================================================================
+-- Backfill: give a profile + wallet to any auth users created before this
+-- schema existed (e.g. accounts made while only Auth was set up). Idempotent.
+-- ============================================================================
+insert into profiles (id, display_name, mode, referral_code, member_since, device_hash, signup_ip)
+select u.id,
+       coalesce(u.raw_user_meta_data->>'display_name', split_part(u.email, '@', 1)),
+       coalesce(u.raw_user_meta_data->>'mode', 'earner'),
+       upper(substr(md5(u.id::text), 1, 8)),
+       to_char(now(), 'Mon YYYY'),
+       u.raw_user_meta_data->>'device_hash',
+       u.raw_user_meta_data->>'signup_ip'
+from auth.users u
+where not exists (select 1 from profiles p where p.id = u.id);
+
+insert into wallets (profile_id, earner_balance, lifetime_earned)
+select p.id,
+       case when p.mode = 'earner' then 0.05 else 0 end,
+       case when p.mode = 'earner' then 0.05 else 0 end
+from profiles p
+where not exists (select 1 from wallets w where w.profile_id = p.id);
