@@ -6,6 +6,7 @@ import { AppShell } from './components/AppShell'
 import { Landing } from './features/marketing/Landing'
 import { Login } from './features/auth/Login'
 import { ResetPassword } from './features/auth/ResetPassword'
+import { RefCapture } from './features/auth/RefCapture'
 import { Onboarding } from './features/auth/Onboarding'
 import { EarnFeed } from './features/earner/EarnFeed'
 import { TaskFlow } from './features/earner/TaskFlow'
@@ -66,6 +67,7 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/r/:code" element={<RefCapture />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/business/signup" element={<BusinessSignup />} />
 

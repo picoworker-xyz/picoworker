@@ -40,14 +40,17 @@ export function Rewards() {
           </div>
           <div className="flex justify-between mb-5">
             {DAYS.map((d, i) => {
-              const active = i < streak % 7 || (streak >= 7 && true)
-              const today = i === Math.min(streak % 7, 6)
+              // DAYS is Mon..Sun; JS getDay() is Sun=0..Sat=6
+              const todayIdx = (new Date().getDay() + 6) % 7
+              const isToday = i === todayIdx
+              const daysAgo = todayIdx - i
+              const done = daysAgo > 0 && daysAgo <= streak
               return (
                 <div key={i} className="flex flex-col items-center gap-2">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-extrabold font-head ${today ? 'bg-[rgba(255,107,90,.16)] text-[var(--coral)] border border-[var(--coral)]' : active ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-white/6 text-[#6E6F7A]'}`}>
-                    {active && !today ? <Check width={15} height={15} /> : today ? '!' : ''}
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-extrabold font-head ${isToday ? 'bg-[rgba(255,107,90,.16)] text-[var(--coral)] border border-[var(--coral)]' : done ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-white/6 text-[#6E6F7A]'}`}>
+                    {done ? <Check width={15} height={15} /> : isToday ? '!' : ''}
                   </div>
-                  <span className="text-[#767884] text-[11px] font-bold">{d}</span>
+                  <span className={`text-[11px] font-bold ${isToday ? 'text-[var(--coral)]' : 'text-[#767884]'}`}>{d}</span>
                 </div>
               )
             })}

@@ -98,7 +98,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       profile: cache.profile,
       wallet: cache.wallet,
 
-      async signUp(email, password, displayName, mode, fraud) {
+      async signUp(email, password, displayName, mode, fraud, refCode) {
         // One account per person: reject a second signup from the same device.
         if (fraud?.deviceHash) {
           const { count } = await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('device_hash', fraud.deviceHash)
@@ -107,7 +107,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const { data, error } = await sb.auth.signUp({
           email,
           password,
-          options: { data: { display_name: displayName, mode, device_hash: fraud?.deviceHash ?? null, signup_ip: fraud?.ip ?? null } },
+          options: { data: { display_name: displayName, mode, device_hash: fraud?.deviceHash ?? null, signup_ip: fraud?.ip ?? null, ref_code: refCode ?? null } },
         })
         if (error) throw new Error(error.message)
         const id = data.user?.id

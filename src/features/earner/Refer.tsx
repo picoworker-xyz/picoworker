@@ -13,10 +13,21 @@ export function Refer() {
   const earnings = crew.reduce((s, r) => s + r.earnings, 0)
   const link = `picoworker.xyz/r/${profile.referral_code}`
 
+  const fullLink = `https://${link}`
+  const msg = `Join PicoWorker and get paid in USDC for tiny tasks. Use my link: ${fullLink}`
+
   function copy() {
-    navigator.clipboard?.writeText(`https://${link}`).catch(() => {})
+    navigator.clipboard?.writeText(fullLink).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
+  }
+  function whatsapp() {
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+  async function share() {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'PicoWorker', text: msg, url: fullLink }) } catch { /* cancelled */ }
+    } else copy()
   }
 
   return (
@@ -44,8 +55,8 @@ export function Refer() {
               </button>
             </div>
             <div className="flex gap-2 mt-3">
-              <button className="flex-1 py-[12px] rounded-[13px] bg-[#25D366]/15 text-[#25D366] text-[14px] font-extrabold">WhatsApp</button>
-              <button className="flex-1 py-[12px] rounded-[13px] bg-white/6 text-white text-[14px] font-extrabold">Share link</button>
+              <button onClick={whatsapp} className="flex-1 py-[12px] rounded-[13px] bg-[#25D366]/15 text-[#25D366] text-[14px] font-extrabold">WhatsApp</button>
+              <button onClick={share} className="flex-1 py-[12px] rounded-[13px] bg-white/6 text-white text-[14px] font-extrabold">Share link</button>
             </div>
           </div>
 

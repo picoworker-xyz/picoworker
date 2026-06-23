@@ -12,7 +12,7 @@ export interface StoreApi {
   profile: Profile | null
   wallet: Wallet | null
 
-  signUp(email: string, password: string, displayName: string, mode: Mode, fraud?: FraudSignals): Promise<{ userId: string; needsConfirmation: boolean }>
+  signUp(email: string, password: string, displayName: string, mode: Mode, fraud?: FraudSignals, refCode?: string): Promise<{ userId: string; needsConfirmation: boolean }>
   signIn(email: string, password: string): Promise<void>
   signOut(): void
   refresh(): Promise<void>

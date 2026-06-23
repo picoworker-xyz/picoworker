@@ -24,12 +24,25 @@ export function Login() {
   const [existingHint, setExistingHint] = useState('')
   const [infoMsg, setInfoMsg] = useState('')
   const [cooldown, setCooldown] = useState(0)
+  const [invitedBy, setInvitedBy] = useState('')
 
   useEffect(() => {
     if (cooldown <= 0) return
     const t = setTimeout(() => setCooldown((c) => c - 1), 1000)
     return () => clearTimeout(t)
   }, [cooldown])
+
+  // Was this visitor invited? (referral code stored by /r/<code>)
+  useEffect(() => {
+    const code = localStorage.getItem('picoworker:ref')
+    if (!code || !supabase) return
+    supabase.from('profiles').select('display_name').eq('referral_code', code).maybeSingle().then(({ data }) => {
+      if (data?.display_name) {
+        setInvitedBy(data.display_name)
+        setIsSignup(true)
+      }
+    })
+  }, [])
 
   async function resend() {
     if (cooldown > 0) return
@@ -69,7 +82,9 @@ export function Login() {
           const { data: hint } = await supabase.rpc('device_account_hint', { p_device_hash: signals.deviceHash })
           if (hint) { setExistingHint(hint as string); setBusy(false); return }
         }
-        const res = await signUp(email, password, name.trim(), mode, signals)
+        const refCode = localStorage.getItem('picoworker:ref') || undefined
+        const res = await signUp(email, password, name.trim(), mode, signals, refCode)
+        localStorage.removeItem('picoworker:ref')
         if (res.needsConfirmation) { setPendingEmail(email.trim()); setBusy(false); return }
         nav(mode === 'business' ? '/business' : '/onboarding', { replace: true })
       } else {
@@ -131,7 +146,7 @@ export function Login() {
               We sent a confirmation link to<br /><span className="text-white font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
             </div>
             <div className="mt-4 rounded-[14px] bg-[rgba(255,176,90,.1)] border border-[rgba(255,176,90,.3)] p-3 text-left">
-              <div className="text-[#FFB05A] text-[12.5px] font-extrabold">📬 Check your Spam / Junk folder</div>
+              <div className="text-[#FFB05A] text-[12.5px] font-extrabold">Check your Spam or Junk folder</div>
               <div className="text-[#C7C9D4] text-[12px] font-semibold mt-1 leading-[1.45]">
                 Our emails often land there. Mark it “Not spam” so future emails reach your inbox.
               </div>
@@ -190,6 +205,14 @@ export function Login() {
               {isSignup ? 'Start earning USDC in seconds.' : 'Log in to keep earning.'}
             </p>
           </div>
+
+          {invitedBy && isSignup && (
+            <div className="rounded-[14px] bg-[rgba(194,249,77,.1)] border border-[rgba(194,249,77,.3)] p-3 mb-4">
+              <span className="text-[#C7C9D4] text-[13px] font-semibold">
+                You were invited by <span className="text-[var(--accent)] font-extrabold">{invitedBy}</span>. Sign up to start earning.
+              </span>
+            </div>
+          )}
 
           {/* role segmented */}
           <div className="flex gap-[6px] bg-black/35 border border-white/7 rounded-[14px] p-[5px] mb-4">
