@@ -4,6 +4,7 @@ import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
 import { emailError, passwordError, passwordStrength } from '../../lib/validate'
 import { collectSignals } from '../../lib/fraud'
+import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
 import { Apple, ArrowRight, Check, Google, Phone } from '../../components/icons'
 import { Avatar } from '../../components/ui'
@@ -18,6 +19,19 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+
+  async function sendReset() {
+    setErr('')
+    const ee = emailError(email)
+    if (ee) return setErr('Enter your email above first, then tap reset.')
+    if (!supabase) return
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (error) setErr(error.message)
+    else setResetSent(true)
+  }
 
   async function submit() {
     setErr('')
@@ -139,6 +153,18 @@ export function Login() {
           </div>
 
           {isSignup && <FraudNotice />}
+
+          {!isSignup && supabaseEnabled && (
+            <div className="text-center mt-3">
+              {resetSent ? (
+                <span className="text-[var(--green)] text-[13px] font-semibold">Reset link sent — check your email.</span>
+              ) : (
+                <button onClick={sendReset} className="text-[#9A9CA8] text-[13px] font-semibold hover:text-white">
+                  Forgot password?
+                </button>
+              )}
+            </div>
+          )}
 
           <button onClick={() => { setIsSignup((v) => !v); setErr('') }} className="block w-full text-center text-[#767884] text-[13px] font-semibold mt-3">
             {isSignup ? 'Already have an account? ' : 'New here? '}
