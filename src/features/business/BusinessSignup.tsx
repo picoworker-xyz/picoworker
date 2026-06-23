@@ -35,7 +35,11 @@ export function BusinessSignup() {
         setBusy(false)
         return setErr('Please turn off your VPN or proxy to create an account.')
       }
-      await signUp(email, password, name.trim(), 'business', signals)
+      const res = await signUp(email, password, name.trim(), 'business', signals)
+      if (res.needsConfirmation) {
+        setBusy(false)
+        return setErr('Account created — check your email to confirm, then sign in.')
+      }
       nav('/business', { replace: true })
     } catch (e) {
       setErr(cleanAuthError((e as Error).message))

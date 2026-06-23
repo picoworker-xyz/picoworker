@@ -20,6 +20,16 @@ export function Login() {
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const [resetSent, setResetSent] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+  const [existingHint, setExistingHint] = useState('')
+  const [infoMsg, setInfoMsg] = useState('')
+
+  async function resend() {
+    setInfoMsg('')
+    if (!supabase || !pendingEmail) return
+    const { error } = await supabase.auth.resend({ type: 'signup', email: pendingEmail })
+    setInfoMsg(error ? cleanAuthError(error.message, error.status) : 'Confirmation email sent again — check your inbox and spam.')
+  }
 
   async function sendReset() {
     setErr('')
@@ -45,7 +55,13 @@ export function Login() {
         if (pe) throw new Error(pe)
         const signals = await collectSignals()
         if (signals.vpn) throw new Error('Please turn off your VPN or proxy to create an account.')
-        await signUp(email, password, name.trim(), mode, signals)
+        // Already have an account on this device? Offer to sign into it instead of blocking.
+        if (supabase && signals.deviceHash) {
+          const { data: hint } = await supabase.rpc('device_account_hint', { p_device_hash: signals.deviceHash })
+          if (hint) { setExistingHint(hint as string); setBusy(false); return }
+        }
+        const res = await signUp(email, password, name.trim(), mode, signals)
+        if (res.needsConfirmation) { setPendingEmail(email.trim()); setBusy(false); return }
         nav(mode === 'business' ? '/business' : '/onboarding', { replace: true })
       } else {
         await signIn(email, password)
@@ -58,17 +74,57 @@ export function Login() {
     }
   }
 
-  async function demo(kind: 'earner' | 'business') {
-    setBusy(true)
-    setErr('')
-    try {
-      await signIn(kind === 'earner' ? 'arman@demo.xyz' : 'acme@demo.xyz', 'password')
-      nav(kind === 'business' ? '/business' : '/', { replace: true })
-    } catch (e) {
-      setErr((e as Error).message)
-    } finally {
-      setBusy(false)
-    }
+  // Already have an account on this device → recognise it and sign in.
+  if (existingHint) {
+    return (
+      <div className="min-h-svh flex items-center justify-center p-6">
+        <div className="w-full max-w-[400px] reveal">
+          <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
+          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7 text-center">
+            <div className="font-head font-bold text-[22px] text-white">You already have an account</div>
+            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">This device is already linked to:</div>
+            <div className="font-head text-[18px] font-extrabold text-[var(--accent)] mt-2 break-all">{existingHint}</div>
+            <div className="text-[#767884] text-[12.5px] font-semibold mt-3 leading-[1.5]">
+              One account per person. Sign in to that account instead — once you're in you can change the email or name in settings.
+            </div>
+            <button
+              onClick={() => { setExistingHint(''); setIsSignup(false); setPassword(''); setErr('') }}
+              className="w-full mt-5 font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] py-[14px] rounded-[14px]"
+              style={{ boxShadow: 'var(--glow)' }}
+            >
+              Sign in to this account
+            </button>
+            <button onClick={() => setExistingHint('')} className="w-full mt-2 text-[#9A9CA8] text-[13px] font-bold py-2">Back</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Signed up but needs to confirm email → with resend.
+  if (pendingEmail) {
+    return (
+      <div className="min-h-svh flex items-center justify-center p-6">
+        <div className="w-full max-w-[400px] reveal">
+          <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
+          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7 text-center">
+            <div className="w-14 h-14 rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center mx-auto">
+              <Check width={28} height={28} className="text-[var(--accent)]" />
+            </div>
+            <div className="font-head font-bold text-[22px] text-white mt-5">Confirm your email</div>
+            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
+              We sent a confirmation link to<br /><span className="text-white font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
+            </div>
+            {infoMsg && <div className="text-[var(--green)] text-[12.5px] font-semibold mt-3">{infoMsg}</div>}
+            <button onClick={resend} className="w-full mt-5 font-head font-extrabold text-[15px] bg-white/6 text-white border border-white/12 py-[13px] rounded-[14px]">
+              Resend confirmation email
+            </button>
+            <button onClick={() => { setPendingEmail(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent)] text-[13px] font-extrabold py-2">Back to sign in</button>
+            <div className="text-[#767884] text-[11.5px] font-semibold mt-3">Didn't get it? Check spam, or resend above.</div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -183,17 +239,6 @@ export function Login() {
             <Social icon={<Phone width={18} height={18} className="text-white" />} />
           </div>
 
-          <div className="mt-6 rounded-[14px] bg-white/4 border border-white/8 p-3">
-            <div className="text-[#9A9CA8] text-[11px] font-bold uppercase tracking-[.08em] mb-2">Try a demo account</div>
-            <div className="flex gap-2">
-              <button onClick={() => demo('earner')} className="flex-1 py-[10px] rounded-[11px] bg-white/6 text-white text-[13px] font-bold hover:bg-white/10">
-                Earner
-              </button>
-              <button onClick={() => demo('business')} className="flex-1 py-[10px] rounded-[11px] bg-white/6 text-white text-[13px] font-bold hover:bg-white/10">
-                Business
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

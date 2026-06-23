@@ -114,11 +114,10 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         if (!id) throw new Error('Sign up failed.')
         if (data.session) {
           await onSession(data.session)
-        } else {
-          // Email confirmation is enabled in Supabase but no email was delivered.
-          throw new Error('Account created — please confirm your email, then sign in.')
+          return { userId: id, needsConfirmation: false }
         }
-        return id
+        // No session → Supabase requires email confirmation before sign-in.
+        return { userId: id, needsConfirmation: true }
       },
       async signIn(email, password) {
         const { error } = await sb.auth.signInWithPassword({ email, password })
