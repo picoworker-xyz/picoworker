@@ -148,7 +148,7 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-svh grid lg:grid-cols-2">
+    <div className="min-h-svh grid grid-cols-1 lg:grid-cols-2">
       {/* ===== Brand panel (desktop) ===== */}
       <div className="hidden lg:flex flex-col justify-between p-12 border-r border-white/7 hero-grid relative overflow-hidden">
         <div

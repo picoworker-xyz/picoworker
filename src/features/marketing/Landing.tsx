@@ -55,7 +55,7 @@ export function Landing() {
 
       {/* ===== Hero ===== */}
       <section className="hero-grid border-b border-white/6">
-        <div className="app-container py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="app-container py-16 lg:py-28 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="reveal">
             <div className="inline-flex items-center gap-2 px-3 py-[7px] rounded-full bg-white/5 border border-white/10 mb-6">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)]" style={{ animation: 'pico-pulse 1.8s infinite' }} />
@@ -141,7 +141,7 @@ export function Landing() {
             Hundreds of live micro-tasks across four categories — new ones added every minute.
           </p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { icon: <XLogo width={22} height={22} className="text-white" />, color: '#000000', ring: 'rgba(255,255,255,.14)', t: 'Social', d: 'Follow, like & repost on X, IG, TikTok', p: 'from $0.04', live: '2.1k live' },
             { icon: <Play width={24} height={24} className="text-white" />, color: '#FF0033', ring: 'transparent', t: 'Watch', d: 'Watch short videos & ads', p: 'from $0.02', live: '980 live' },
@@ -177,7 +177,7 @@ export function Landing() {
         <div className="app-container py-16 lg:py-24">
           <Eyebrow>How it works</Eyebrow>
           <SectionTitle>Earn in 3 taps.</SectionTitle>
-          <div className="grid md:grid-cols-3 gap-6 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             {[
               { n: '01', t: 'Pick a task', d: 'Follow, watch, test or survey — browse a live feed of micro-tasks.' },
               { n: '02', t: 'Do it in seconds', d: 'Most tasks auto-verify in ~10 seconds. No skills needed.' },
@@ -195,7 +195,7 @@ export function Landing() {
 
       {/* ===== For business ===== */}
       <section id="business" className="app-container py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <Eyebrow>For business</Eyebrow>
             <SectionTitle>Real results from real people.</SectionTitle>
@@ -251,7 +251,7 @@ export function Landing() {
         <div className="app-container py-16 lg:py-24">
           <Eyebrow>FAQ</Eyebrow>
           <SectionTitle>Micro-tasks, paid in USDC — answered.</SectionTitle>
-          <div className="grid md:grid-cols-2 gap-4 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
             {FAQS.map((f) => (
               <div key={f.q} className="rounded-[18px] p-6 bg-[#15161C] border border-white/6">
                 <h3 className="text-white text-[17px] font-extrabold font-head">{f.q}</h3>

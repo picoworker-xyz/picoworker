@@ -56,7 +56,7 @@ export function BusinessSignup() {
         </div>
       </header>
 
-      <div className="flex-1 app-container py-10 lg:py-16 grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
+      <div className="flex-1 app-container py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
         {/* pitch */}
         <div className="hidden lg:block">
           <div className="inline-flex items-center gap-2 px-3 py-[7px] rounded-full bg-[rgba(139,108,255,.12)] border border-[rgba(139,108,255,.3)] mb-6">

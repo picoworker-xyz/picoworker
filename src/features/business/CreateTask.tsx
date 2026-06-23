@@ -7,11 +7,11 @@ import { Page } from '../../components/Page'
 import { TaskTypeIcon } from '../../components/layout'
 
 const TYPES: { type: TaskType; label: string; category: string; needsTarget: 'handle' | 'url' | null; auto: boolean; reward: number }[] = [
-  { type: 'follow_x', label: 'Follow X', category: 'Social', needsTarget: 'handle', auto: true, reward: 0.04 },
-  { type: 'yt_views', label: 'YT views', category: 'Watch', needsTarget: 'url', auto: true, reward: 0.02 },
+  { type: 'follow_x', label: 'Follow X', category: 'Social', needsTarget: 'handle', auto: false, reward: 0.04 },
+  { type: 'yt_views', label: 'YT views', category: 'Watch', needsTarget: 'url', auto: false, reward: 0.02 },
   { type: 'app_install', label: 'App install', category: 'Apps', needsTarget: 'url', auto: false, reward: 0.35 },
   { type: 'survey', label: 'Survey', category: 'Surveys', needsTarget: null, auto: true, reward: 0.18 },
-  { type: 'visit_site', label: 'Visit site', category: 'Ads', needsTarget: 'url', auto: true, reward: 0.03 },
+  { type: 'visit_site', label: 'Visit site', category: 'Ads', needsTarget: 'url', auto: false, reward: 0.03 },
   { type: 'custom', label: 'Custom', category: 'Apps', needsTarget: null, auto: false, reward: 0.2 },
 ]
 
@@ -60,7 +60,7 @@ export function CreateTask() {
 
   return (
     <Page title="New task" subtitle="Step 1 of 2 · Set up your campaign" back>
-      <div className="grid lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* form */}
         <div className="lg:col-span-2 rounded-[var(--r)] bg-[#15161C] border border-white/6 p-6">
           <Label>Task type</Label>
@@ -82,7 +82,7 @@ export function CreateTask() {
             </>
           )}
 
-          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <Label>Reward each</Label>
               <Stepper value={reward} prefix="$" onStep={(d) => setReward(Math.max(0.01, r + d * 0.01).toFixed(2))} onChange={setReward} />

@@ -58,15 +58,28 @@ export function TaskFlow() {
   }
 
   function open() {
-    if (t!.type === 'custom') return nav(`/task/${t!.id}/proof`)
     if (t!.type === 'survey') return nav(`/task/${t!.id}/survey`)
-    if (t!.target?.startsWith('http')) window.open(t!.target, '_blank')
+    // Build the real link to open (follow handle → x.com/<handle>).
+    const url =
+      t!.type === 'follow_x'
+        ? `https://x.com/${(t!.target ?? '').replace(/^@/, '')}`
+        : t!.target?.startsWith('http')
+          ? t!.target
+          : null
+    if (url) window.open(url, '_blank')
     setStarted(true)
+  }
+
+  // After the user does the action: auto-verify tasks complete instantly;
+  // manual tasks go to the proof screen (username + screenshot → provider approves).
+  function proceed() {
+    if (t!.auto_verify) verify()
+    else nav(`/task/${t!.id}/proof`)
   }
 
   return (
     <Page back>
-      <div className="grid lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* detail */}
         <div className="lg:col-span-2 rounded-[var(--r)] bg-[#15161C] border border-white/6 p-6 lg:p-8">
           <div className="flex items-center gap-4">
@@ -117,15 +130,15 @@ export function TaskFlow() {
               {CTA[t.type]} <ExternalLink width={18} height={18} />
             </button>
           ) : (
-            <button onClick={verify} disabled={busy} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
-              {busy ? 'Verifying…' : 'Verify now'}
+            <button onClick={proceed} disabled={busy} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
+              {busy ? 'Verifying…' : t.auto_verify ? 'Verify now' : 'Submit proof'}
             </button>
           )}
           <div className="text-center text-[#767884] text-[13px] font-semibold">
-            {t.type === 'custom' ? (
-              'Manual review · paid after approval'
+            {t.auto_verify ? (
+              <>Already done it? <button onClick={proceed} className="text-[var(--accent)] font-extrabold">Verify now</button></>
             ) : (
-              <>Already done it? <button onClick={verify} className="text-[var(--accent)] font-extrabold">Verify now</button></>
+              'Manual review · paid after the provider approves'
             )}
           </div>
         </aside>

@@ -29,7 +29,7 @@ export function EarnFeed() {
 
   return (
     <Page title={`Welcome back, ${profile.display_name}`} subtitle="Pick a task and get paid in USDC.">
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* main */}
         <div className="lg:col-span-2 order-2 lg:order-1">
           <div className="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
@@ -46,7 +46,7 @@ export function EarnFeed() {
           {filtered.length === 0 ? (
             <AllCaughtUp />
           ) : (
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filtered.map((t) => <TaskRow key={t.id} task={t} />)}
             </div>
           )}

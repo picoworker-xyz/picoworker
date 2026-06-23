@@ -75,7 +75,7 @@ export function Dashboard() {
 
 function Row({ c, onClick }: { c: Task; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="w-full text-left px-5 py-4 border-t border-white/5 hover:bg-white/[.04] md:grid md:grid-cols-[2fr_1fr_2fr_1fr_auto] md:gap-4 md:items-center flex flex-col gap-2">
+    <button onClick={onClick} className="w-full text-left px-5 py-4 border-t border-white/5 hover:bg-white/[.04] md:grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_1fr_auto] md:gap-4 md:items-center flex flex-col gap-2">
       <div className="text-white text-[14px] font-bold truncate">{c.title}</div>
       <div className="text-[var(--accent)] text-[14px] font-extrabold font-head">{usd(c.reward, { sign: true })}</div>
       <div className="flex items-center gap-3">

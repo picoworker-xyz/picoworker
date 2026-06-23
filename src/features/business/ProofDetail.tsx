@@ -3,7 +3,7 @@ import { useStore } from '../../lib/store'
 import { usd } from '../../lib/format'
 import { DEMO_EARNER_NAMES } from '../../data/seed'
 import { Page } from '../../components/Page'
-import { Avatar, Pill } from '../../components/ui'
+import { Avatar } from '../../components/ui'
 import { Check, X, Zoom } from '../../components/icons'
 
 export function ProofDetail() {
@@ -45,11 +45,8 @@ export function ProofDetail() {
       <div className="flex items-center gap-3 rounded-[16px] p-4 bg-[#15161C] border border-white/6 mb-4">
         <Avatar name={name} size={44} gradient="linear-gradient(135deg,#5B8DEF,#8B6CFF)" />
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-white text-[15px] font-bold">{name}</span>
-            <Pill>Silver</Pill>
-          </div>
-          <div className="text-[#767884] text-[12px] font-semibold mt-[1px]">47 tasks · 98% approved</div>
+          <span className="text-white text-[15px] font-bold">{name}</span>
+          <div className="text-[#767884] text-[12px] font-semibold mt-[1px]">{tk?.title ?? 'Manual proof'}</div>
         </div>
         <div className="text-right">
           <div className="text-[#767884] text-[11px] font-semibold uppercase">Reward</div>
@@ -57,25 +54,27 @@ export function ProofDetail() {
         </div>
       </div>
 
-      {/* proof image placeholder */}
-      <div className="relative rounded-[18px] overflow-hidden border border-white/8 bg-gradient-to-br from-[#1b1d24] to-[#121319] h-[300px] flex items-center justify-center mb-4">
-        <div className="text-center">
-          <div className="w-14 h-14 rounded-[14px] bg-white/6 flex items-center justify-center mx-auto">
-            <Zoom width={26} height={26} className="text-[#9A9CA8]" />
-          </div>
-          <div className="text-[#9A9CA8] text-[13px] font-semibold mt-3">Screenshot · tap to zoom</div>
-          <div className="text-[#5E606C] text-[12px] font-semibold mt-1">{tk?.title ?? 'Manual proof'}</div>
+      {/* submitted username / handle */}
+      {completion.proof_note && (
+        <div className="rounded-[14px] p-4 bg-[#15161C] border border-white/6 mb-4">
+          <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em]">Submitted username / handle</div>
+          <div className="text-white text-[16px] font-bold font-head mt-1 break-all">{completion.proof_note}</div>
         </div>
-      </div>
+      )}
 
-      {/* checklist */}
-      <div className="flex flex-col gap-2 mb-6">
-        {['Shows a published 5-star rating', `Correct app (${tk?.title?.includes('FitTrack') ? 'FitTrack' : 'target'})`].map((c) => (
-          <div key={c} className="flex items-center gap-3 p-3 rounded-[12px] bg-[rgba(68,209,122,.08)] border border-[rgba(68,209,122,.2)]">
-            <Check width={16} height={16} className="text-[var(--green)]" />
-            <span className="text-[#D9DAE2] text-[13.5px] font-semibold">{c}</span>
-          </div>
-        ))}
+      {/* proof screenshot (tap to open full size) */}
+      {completion.proof_url?.startsWith('http') ? (
+        <a href={completion.proof_url} target="_blank" rel="noreferrer" className="block rounded-[18px] overflow-hidden border border-white/8 mb-6">
+          <img src={completion.proof_url} alt="proof screenshot" className="w-full max-h-[420px] object-contain bg-black/40" />
+        </a>
+      ) : (
+        <div className="rounded-[18px] border border-white/8 bg-[#15161C] h-[180px] flex items-center justify-center gap-2 mb-6 text-[#767884] text-[13px] font-semibold">
+          <Zoom width={22} height={22} /> No screenshot provided
+        </div>
+      )}
+
+      <div className="text-[#9A9CA8] text-[12.5px] font-semibold mb-6 leading-[1.5]">
+        Check the screenshot shows {tk?.title ?? 'the action'} completed by this username, then approve or reject.
       </div>
 
       <div className="flex gap-3">

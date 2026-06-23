@@ -30,7 +30,7 @@ export function CampaignAnalytics() {
     >
       <div className="mb-5"><Pill tone={t.status === 'live' ? 'green' : 'default'}>{t.status.toUpperCase()}</Pill></div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* left: progress + chart */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6">

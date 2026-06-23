@@ -76,6 +76,7 @@ export interface TaskCompletion {
   earner_id: string
   status: CompletionStatus
   proof_url: string | null
+  proof_note: string | null
   reward: number
   created_at: string
 }

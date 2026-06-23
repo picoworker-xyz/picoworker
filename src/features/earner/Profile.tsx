@@ -13,7 +13,7 @@ export function Profile() {
 
   return (
     <Page title="Profile & settings">
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* identity card */}
         <aside className="flex flex-col gap-4">
           <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6 text-center">

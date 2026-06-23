@@ -29,7 +29,7 @@ export interface StoreApi {
   hasCompleted(taskId: string): boolean
 
   // earner mutations
-  completeTask(taskId: string, proofUrl?: string): Promise<{ reward: number; balance: number; manual: boolean }>
+  completeTask(taskId: string, proofUrl?: string, note?: string): Promise<{ reward: number; balance: number; manual: boolean }>
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
   claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number }>
 

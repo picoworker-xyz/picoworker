@@ -149,8 +149,8 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       hasCompleted: (taskId) => cache.completions.some((c) => c.task_id === taskId && c.earner_id === uid),
 
       // ---- earner mutations (RPC) ----
-      async completeTask(taskId, proofUrl) {
-        const { data, error } = await sb.rpc('complete_task', { p_task: taskId, p_proof: proofUrl ?? null })
+      async completeTask(taskId, proofUrl, note) {
+        const { data, error } = await sb.rpc('complete_task', { p_task: taskId, p_proof: proofUrl ?? null, p_note: note ?? null })
         if (error) throw new Error(error.message)
         await refresh()
         const r = data as { manual: boolean; reward: number; balance?: number }

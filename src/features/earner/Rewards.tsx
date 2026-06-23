@@ -31,7 +31,7 @@ export function Rewards() {
 
   return (
     <Page title="Rewards" subtitle="Keep your streak alive and level up.">
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* streak */}
         <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6">
           <div className="flex items-center gap-2 mb-5">

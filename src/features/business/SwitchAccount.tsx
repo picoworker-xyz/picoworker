@@ -11,7 +11,7 @@ export function SwitchAccount() {
 
   return (
     <Page title="Switch account" subtitle="One login, two ways to use it." back narrow>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* earner */}
         <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-[rgba(194,249,77,.25)] relative">
           <span className="absolute top-4 right-4 text-[10px] font-extrabold text-[var(--accent-ink)] bg-[var(--accent)] px-2 py-1 rounded-full">CURRENT</span>
