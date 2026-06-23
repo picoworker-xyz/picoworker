@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
+import { emailError, passwordError } from '../../lib/validate'
 import { BrandMark } from '../../components/layout'
 import { ArrowRight, Check } from '../../components/icons'
 
@@ -21,7 +22,10 @@ export function BusinessSignup() {
   async function submit() {
     setErr('')
     if (!name.trim()) return setErr('Enter your business name.')
-    if (!email.trim() || !password) return setErr('Enter a work email and password.')
+    const ee = emailError(email)
+    if (ee) return setErr(ee)
+    const pe = passwordError(password)
+    if (pe) return setErr(pe)
     if (!agree) return setErr('Please accept the advertiser terms.')
     setBusy(true)
     try {
@@ -83,7 +87,7 @@ export function BusinessSignup() {
           </div>
 
           <Field label="Work email" placeholder="growth@acme.com" value={email} onChange={setEmail} type="email" />
-          <Field label="Password" placeholder="Create a password" value={password} onChange={setPassword} type="password" />
+          <Field label="Password" placeholder="Create a password" value={password} onChange={setPassword} type="password" hint="8+ chars with upper & lower case and a number" />
 
           <button onClick={() => setAgree((v) => !v)} className="flex items-center gap-3 mt-1 mb-4 text-left">
             <span className={`w-5 h-5 rounded-[6px] border-2 flex items-center justify-center flex-none ${agree ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-white/25'}`}>
@@ -106,7 +110,7 @@ export function BusinessSignup() {
 const Label = ({ children }: { children: React.ReactNode }) => (
   <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-2">{children}</div>
 )
-function Field({ label, placeholder, value, onChange, type = 'text' }: { label: string; placeholder: string; value: string; onChange: (v: string) => void; type?: string }) {
+function Field({ label, placeholder, value, onChange, type = 'text', hint }: { label: string; placeholder: string; value: string; onChange: (v: string) => void; type?: string; hint?: string }) {
   return (
     <div className="mb-4">
       <Label>{label}</Label>
@@ -118,6 +122,7 @@ function Field({ label, placeholder, value, onChange, type = 'text' }: { label: 
         autoCapitalize="none"
         className="w-full bg-white/4 border border-white/10 rounded-[14px] px-4 py-[13px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
       />
+      {hint && <div className="text-[#767884] text-[11px] font-semibold mt-1.5">{hint}</div>}
     </div>
   )
 }

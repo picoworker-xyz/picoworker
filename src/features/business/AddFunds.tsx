@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { usd } from '../../lib/format'
 import { Page, CenteredPage } from '../../components/Page'
-import { Check } from '../../components/icons'
+import { Check, Shield } from '../../components/icons'
 
 const QUICK = [25, 50, 100, 250]
+type Phase = 'form' | 'confirm' | 'processing' | 'done'
 
 export function AddFunds() {
   const nav = useNavigate()
@@ -13,19 +14,41 @@ export function AddFunds() {
   const [amount, setAmount] = useState('50.00')
   const [method, setMethod] = useState<'crypto' | 'card'>('crypto')
   const [copied, setCopied] = useState(false)
-  const [done, setDone] = useState(false)
+  const [phase, setPhase] = useState<Phase>('form')
   if (!wallet || !profile) return null
 
   const amt = parseFloat(amount) || 0
+  const fee = method === 'card' ? +(amt * 0.02).toFixed(2) : 0
+  const total = +(amt + fee).toFixed(2)
   const depositAddr = profile.payout_wallet ?? '7Ywd2Kx9qZRmN4hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM'
 
-  function add() {
-    if (amt <= 0) return
-    addFunds(amt)
-    setDone(true)
+  // Funds are only credited after an explicit confirm + a simulated on-chain /
+  // payment confirmation — not on a single click.
+  function confirmDeposit() {
+    setPhase('processing')
+    setTimeout(() => {
+      addFunds(amt)
+      setPhase('done')
+    }, 1800)
   }
 
-  if (done) {
+  if (phase === 'processing') {
+    return (
+      <CenteredPage>
+        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
+          <div className="w-[72px] h-[72px] rounded-full border-4 border-white/10 border-t-[var(--accent)] mx-auto animate-spin" />
+          <div className="font-head font-bold text-[22px] text-white mt-6">
+            {method === 'crypto' ? 'Confirming on-chain…' : 'Processing payment…'}
+          </div>
+          <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">
+            {method === 'crypto' ? 'Waiting for your USDC transfer to confirm on Solana.' : 'Verifying your card payment.'}
+          </div>
+        </div>
+      </CenteredPage>
+    )
+  }
+
+  if (phase === 'done') {
     return (
       <CenteredPage>
         <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
@@ -33,7 +56,7 @@ export function AddFunds() {
             <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
               <Check width={38} height={38} className="text-[var(--accent-ink)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Funds added</div>
+            <div className="font-head font-bold text-[24px] text-white mt-6">Deposit confirmed</div>
             <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">{usd(amt)} added to your campaign escrow.</div>
             <div className="mt-4 font-head text-[20px] font-extrabold text-white">New balance {usd(wallet.business_escrow)}</div>
           </div>
@@ -43,6 +66,53 @@ export function AddFunds() {
     )
   }
 
+  if (phase === 'confirm') {
+    return (
+      <Page title="Confirm deposit" subtitle="Funds are credited once your payment is confirmed." back narrow>
+        <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[#9A9CA8] text-[13px] font-semibold">Depositing</span>
+            <span className="font-head text-[26px] font-extrabold text-white">{usd(amt)}</span>
+          </div>
+          {method === 'card' && (
+            <div className="flex items-center justify-between mb-2 text-[14px]">
+              <span className="text-[#9A9CA8] font-semibold">Card fee (2%)</span>
+              <span className="text-white font-bold font-head">{usd(fee)}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between pt-3 border-t border-white/8">
+            <span className="text-[#9A9CA8] text-[13px] font-semibold">You pay</span>
+            <span className="font-head text-[16px] font-extrabold text-[var(--accent)]">{usd(total)} {method === 'crypto' ? 'USDC' : ''}</span>
+          </div>
+        </div>
+
+        {method === 'crypto' ? (
+          <div className="mt-4 rounded-[16px] p-4 bg-white/4 border border-white/8">
+            <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-2">Send exactly {usd(amt)} USDC · Solana</div>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 text-[#C2C4CE] text-[13px] font-bold truncate font-head">{depositAddr}</div>
+              <button onClick={() => { navigator.clipboard?.writeText(depositAddr).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500) }} className="px-4 py-[10px] rounded-[11px] bg-white/6 text-white text-[13px] font-bold">{copied ? 'Copied!' : 'Copy'}</button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-[16px] p-4 bg-white/4 border border-white/8 text-[#C7C9D4] text-[13px] font-semibold">
+            You'll be charged {usd(total)} to your card. USDC is credited to your escrow instantly after the charge clears.
+          </div>
+        )}
+
+        <div className="flex items-center gap-2 text-[#767884] text-[12.5px] font-semibold mt-4">
+          <Shield width={15} height={15} className="text-[var(--green)]" /> Your escrow is only credited after the payment confirms.
+        </div>
+
+        <button onClick={confirmDeposit} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px]" style={{ boxShadow: 'var(--glow)' }}>
+          {method === 'crypto' ? "I've sent it · confirm" : `Pay ${usd(total)}`}
+        </button>
+        <button onClick={() => setPhase('form')} className="w-full mt-2 text-[#9A9CA8] text-[14px] font-bold py-2">Back</button>
+      </Page>
+    )
+  }
+
+  // form
   return (
     <Page title="Add funds" subtitle="Top up your campaign escrow in USDC." back narrow>
       <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6 mb-4 text-center">
@@ -62,22 +132,12 @@ export function AddFunds() {
       </div>
 
       <Label>How to pay</Label>
-      <div className="flex flex-col gap-2 mb-5">
+      <div className="flex flex-col gap-2 mb-6">
         <Method active={method === 'crypto'} onClick={() => setMethod('crypto')} title="Send USDC / USDT" sub="From any wallet · no fees" />
         <Method active={method === 'card'} onClick={() => setMethod('card')} title="Card / Apple Pay" sub="Buy USDC instantly · 2% fee" />
       </div>
 
-      {method === 'crypto' && (
-        <>
-          <Label>Your deposit address · Solana</Label>
-          <div className="flex items-center gap-2 rounded-[14px] bg-[#15161C] border border-white/8 p-2 pl-4">
-            <div className="flex-1 text-[#C2C4CE] text-[13px] font-bold truncate font-head">{depositAddr}</div>
-            <button onClick={() => { navigator.clipboard?.writeText(depositAddr).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500) }} className="px-4 py-[10px] rounded-[11px] bg-white/6 text-white text-[13px] font-bold">{copied ? 'Copied!' : 'Copy'}</button>
-          </div>
-        </>
-      )}
-
-      <button onClick={add} disabled={amt <= 0} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>Add {usd(amt)}</button>
+      <button onClick={() => amt > 0 && setPhase('confirm')} disabled={amt <= 0} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>Continue · {usd(amt)}</button>
     </Page>
   )
 }
