@@ -6,9 +6,9 @@ import {
   Bolt,
   Check,
   ListIcon,
+  PicoLogo,
   Play,
   Shield,
-  User,
   Wallet as WalletIcon,
   XLogo,
 } from '../../components/icons'
@@ -21,21 +21,31 @@ export function Landing() {
     <div className="min-h-svh">
       {/* ===== Nav ===== */}
       <header className="sticky top-0 z-40 border-b border-white/7 bg-[rgba(12,13,17,.72)] backdrop-blur">
-        <div className="app-container flex items-center justify-between h-16">
-          <BrandMark size={36} />
+        <div className="app-container flex items-center justify-between gap-3 h-16">
+          {/* Brand — drops the .xyz on small screens to free up room */}
+          <button onClick={() => nav('/')} className="flex items-center gap-[10px] flex-none min-w-0">
+            <span className="w-9 h-9 rounded-[11px] bg-[var(--accent)] flex items-center justify-center text-[var(--accent-ink)] flex-none" style={{ boxShadow: 'var(--glow)' }}>
+              <PicoLogo width={20} height={20} />
+            </span>
+            <span className="font-head font-bold text-[19px] tracking-[-.02em] text-white truncate">
+              picoworker<span className="hidden sm:inline text-[#5E606C]">.xyz</span>
+            </span>
+          </button>
+
           <nav className="hidden md:flex items-center gap-8 text-[14px] font-bold text-[#9A9CA8]">
             <a href="#how" className="hover:text-white">How it works</a>
             <a href="#earn" className="hover:text-white">Earn</a>
             <a href="#business" className="hover:text-white">For business</a>
             <a href="#faq" className="hover:text-white">FAQ</a>
           </nav>
-          <div className="flex items-center gap-2">
-            <button onClick={go} className="px-4 py-[9px] rounded-[12px] text-[14px] font-bold text-white hover:bg-white/6">
+
+          <div className="flex items-center gap-2 flex-none">
+            <button onClick={go} className="hidden sm:block px-4 py-[9px] rounded-[12px] text-[14px] font-bold text-white hover:bg-white/6">
               Log in
             </button>
             <button
               onClick={go}
-              className="px-4 py-[9px] rounded-[12px] text-[14px] font-extrabold font-head bg-[var(--accent)] text-[var(--accent-ink)]"
+              className="px-4 py-[9px] rounded-[12px] text-[14px] font-extrabold font-head bg-[var(--accent)] text-[var(--accent-ink)] whitespace-nowrap"
             >
               Get started
             </button>
@@ -95,7 +105,7 @@ export function Landing() {
                 </span>
               </div>
               <div className="font-head font-bold text-[52px] text-white tracking-[-.02em] leading-none">$12.84</div>
-              <div className="text-[#A9ABB6] text-[13px] font-semibold mt-2">≈ 12.84 USDC · Polygon</div>
+              <div className="text-[#A9ABB6] text-[13px] font-semibold mt-2">≈ 12.84 USDC · Solana</div>
 
               <div className="mt-6 flex flex-col gap-[10px]">
                 {[
@@ -122,20 +132,41 @@ export function Landing() {
 
       {/* ===== Task categories ===== */}
       <section id="earn" className="app-container py-16 lg:py-24">
-        <Eyebrow>Ways to earn</Eyebrow>
-        <SectionTitle>Tiny tasks. Real money.</SectionTitle>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+          <div>
+            <Eyebrow>Ways to earn</Eyebrow>
+            <SectionTitle>Tiny tasks. Real money.</SectionTitle>
+          </div>
+          <p className="text-[#9A9CA8] text-[15px] font-medium max-w-[340px] sm:text-right">
+            Hundreds of live micro-tasks across four categories — new ones added every minute.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { icon: <User width={22} height={22} className="text-[var(--accent-ink)]" />, t: 'Social', d: 'Follow, like, repost', p: 'from $0.04' },
-            { icon: <Play width={22} height={22} className="text-[var(--accent-ink)]" />, t: 'Watch', d: 'Videos & ads', p: 'from $0.02' },
-            { icon: <Bolt width={22} height={22} className="text-[var(--accent-ink)]" />, t: 'App tests', d: 'Install & try apps', p: 'up to $0.35' },
-            { icon: <ListIcon width={22} height={22} className="text-[var(--accent-ink)]" />, t: 'Surveys', d: 'Share your opinion', p: 'up to $0.20' },
+            { icon: <XLogo width={22} height={22} className="text-white" />, color: '#000000', ring: 'rgba(255,255,255,.14)', t: 'Social', d: 'Follow, like & repost on X, IG, TikTok', p: 'from $0.04', live: '2.1k live' },
+            { icon: <Play width={24} height={24} className="text-white" />, color: '#FF0033', ring: 'transparent', t: 'Watch', d: 'Watch short videos & ads', p: 'from $0.02', live: '980 live' },
+            { icon: <Bolt width={22} height={22} className="text-white" />, color: '#5B8DEF', ring: 'transparent', t: 'App tests', d: 'Install & try new apps', p: 'up to $0.35', live: '340 live' },
+            { icon: <ListIcon width={22} height={22} className="text-white" />, color: '#26A17B', ring: 'transparent', t: 'Surveys', d: 'Share your opinion', p: 'up to $0.20', live: '510 live' },
           ].map((c) => (
-            <div key={c.t} className="card-hover rounded-[20px] p-6 bg-[#15161C] border border-white/6">
-              <div className="w-12 h-12 rounded-[14px] bg-[var(--accent)] flex items-center justify-center mb-4">{c.icon}</div>
-              <div className="text-white text-[17px] font-extrabold font-head">{c.t}</div>
-              <div className="text-[#8A8C98] text-[13px] font-semibold mt-1">{c.d}</div>
-              <div className="text-[var(--accent)] text-[13px] font-extrabold font-head mt-4">{c.p}</div>
+            <div key={c.t} className="card-hover group relative overflow-hidden rounded-[22px] p-6 bg-[#15161C] border border-white/6">
+              <div
+                className="absolute -right-10 -top-10 w-32 h-32 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40"
+                style={{ background: c.color === '#000000' ? '#C2F94D' : c.color }}
+              />
+              <div className="relative flex items-center justify-between mb-5">
+                <div className="w-12 h-12 rounded-[14px] flex items-center justify-center" style={{ background: c.color, border: `1px solid ${c.ring}` }}>
+                  {c.icon}
+                </div>
+                <span className="text-[10px] font-extrabold text-[var(--green)] bg-[rgba(68,209,122,.12)] px-2 py-1 rounded-full flex items-center gap-1">
+                  <span className="w-[6px] h-[6px] rounded-full bg-[var(--green)]" /> {c.live}
+                </span>
+              </div>
+              <div className="relative text-white text-[18px] font-extrabold font-head">{c.t}</div>
+              <div className="relative text-[#8A8C98] text-[13px] font-semibold mt-1 leading-[1.5]">{c.d}</div>
+              <div className="relative mt-5 pt-4 border-t border-white/6 flex items-center justify-between">
+                <span className="text-[var(--accent)] text-[14px] font-extrabold font-head">{c.p}</span>
+                <ArrowRight width={16} height={16} className="text-[#5E606C] group-hover:text-[var(--accent)] transition-colors" />
+              </div>
             </div>
           ))}
         </div>
@@ -286,7 +317,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'When and how do I get paid?',
-    a: "You're paid in USDC the moment a task is verified. Cash out to any wallet on Polygon, Base or other networks — withdrawals arrive in about 30 seconds. PicoWorker is non-custodial: your keys, your USDC.",
+    a: "You're paid in USDC the moment a task is verified. Cash out to any Solana wallet (or Base and other networks) — withdrawals arrive in seconds for a fraction of a cent. PicoWorker is non-custodial: your keys, your USDC.",
   },
   {
     q: 'Is PicoWorker free to join?',

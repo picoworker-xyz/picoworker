@@ -6,14 +6,14 @@ import { estimateWithdrawal } from '../../lib/payments'
 import { Page, CenteredPage } from '../../components/Page'
 import { Check } from '../../components/icons'
 
-const NETWORKS = ['Polygon', 'Base', 'TRC-20']
+const NETWORKS = ['Solana', 'Base', 'Polygon']
 
 export function CashOut() {
   const nav = useNavigate()
   const { wallet, profile, withdraw } = useStore()
   const [amount, setAmount] = useState('10.00')
   const [asset, setAsset] = useState<'USDC' | 'USDT'>('USDC')
-  const [network, setNetwork] = useState('Polygon')
+  const [network, setNetwork] = useState('Solana')
   const [address, setAddress] = useState(profile?.payout_wallet ?? '')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState<{ net: number } | null>(null)

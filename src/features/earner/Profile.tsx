@@ -36,7 +36,7 @@ export function Profile() {
 
         {/* settings list */}
         <div className="lg:col-span-2 flex flex-col gap-2">
-          <Item icon={<WalletIcon width={18} height={18} className="text-[var(--accent)]" />} label="Payout wallet" value={`${shortAddr(profile.payout_wallet)} · Polygon`} onClick={() => nav('/wallet/withdraw')} />
+          <Item icon={<WalletIcon width={18} height={18} className="text-[var(--accent)]" />} label="Payout wallet" value={`${shortAddr(profile.payout_wallet)} · Solana`} onClick={() => nav('/wallet/withdraw')} />
           <Item label="Notifications" value="On" />
           <Item label="Language" value="English" />
           <Item icon={<Shield width={18} height={18} className="text-[var(--green)]" />} label="Verify identity" value={profile.identity_verified ? 'Verified' : 'Not yet'} tag={profile.identity_verified} />

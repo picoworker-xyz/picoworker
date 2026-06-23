@@ -2,7 +2,7 @@
 // PAYOUT SEAM
 // ----------------------------------------------------------------------------
 // v1 ships *simulated* USDC payouts — a withdrawal just moves numbers in the
-// store and resolves after a short delay ("arrives in ~30s on Polygon").
+// store and resolves after a short delay ("arrives in seconds on Solana").
 //
 // To go live with real money later, replace the body of `submitWithdrawal`
 // with a real Solana / Polygon USDC transfer (e.g. @solana/web3.js +

@@ -17,7 +17,7 @@ export function AddFunds() {
   if (!wallet || !profile) return null
 
   const amt = parseFloat(amount) || 0
-  const depositAddr = profile.payout_wallet ?? '0x3F9c1bA2e7a4Fb2C0011d77a4F'
+  const depositAddr = profile.payout_wallet ?? '7Ywd2Kx9qZRmN4hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM'
 
   function add() {
     if (amt <= 0) return
@@ -69,7 +69,7 @@ export function AddFunds() {
 
       {method === 'crypto' && (
         <>
-          <Label>Your deposit address · Polygon</Label>
+          <Label>Your deposit address · Solana</Label>
           <div className="flex items-center gap-2 rounded-[14px] bg-[#15161C] border border-white/8 p-2 pl-4">
             <div className="flex-1 text-[#C2C4CE] text-[13px] font-bold truncate font-head">{depositAddr}</div>
             <button onClick={() => { navigator.clipboard?.writeText(depositAddr).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500) }} className="px-4 py-[10px] rounded-[11px] bg-white/6 text-white text-[13px] font-bold">{copied ? 'Copied!' : 'Copy'}</button>

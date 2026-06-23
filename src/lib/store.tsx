@@ -34,8 +34,8 @@ import { submitWithdrawal, type WithdrawalInput } from './payments'
 // without touching any screen. See lib/supabase.ts.
 // ----------------------------------------------------------------------------
 
-const KEY = 'picoworker:db:v1'
-const SESSION_KEY = 'picoworker:session:v1'
+const KEY = 'picoworker:db:v2'
+const SESSION_KEY = 'picoworker:session:v2'
 
 interface DB {
   // auth: email -> {password, profileId}
