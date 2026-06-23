@@ -107,7 +107,7 @@ export function BusinessSignup() {
           <button onClick={submit} disabled={busy} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] disabled:opacity-50 flex items-center justify-center gap-2" style={{ boxShadow: 'var(--glow)' }}>
             {busy ? 'Creating…' : 'Create business account'} {!busy && <ArrowRight width={16} height={16} />}
           </button>
-          <FraudNotice />
+          <FraudNotice mode="business" />
         </div>
       </div>
     </div>

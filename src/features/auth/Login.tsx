@@ -152,7 +152,7 @@ export function Login() {
             </button>
           </div>
 
-          {isSignup && <FraudNotice />}
+          {isSignup && <FraudNotice mode={mode} />}
 
           {!isSignup && supabaseEnabled && (
             <div className="text-center mt-3">

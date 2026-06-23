@@ -14,14 +14,17 @@ import {
   XLogo,
 } from './icons'
 
-// Anti-fraud notice shown on signup forms.
-export function FraudNotice() {
+// Anti-fraud notice shown on signup forms — wording adapts to the role.
+export function FraudNotice({ mode = 'earner' }: { mode?: Mode }) {
   return (
     <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-[rgba(255,107,90,.06)] border border-[rgba(255,107,90,.18)] p-3">
       <Shield width={16} height={16} className="text-[var(--coral)] flex-none mt-[1px]" />
       <p className="text-[#B6B8C2] text-[11.5px] font-semibold leading-[1.5]">
-        One account per person. We detect duplicate accounts (same device/IP) and VPN/proxy use —
-        violators forfeit earnings and are banned.
+        {mode === 'business' ? (
+          <>One account per business. Multiple accounts, fake engagement, or hiding behind a VPN/proxy violate our advertiser policy and can suspend your campaigns.</>
+        ) : (
+          <>One account per person. Creating duplicate accounts or using a VPN/proxy to do so is detected — it means forfeited earnings and a permanent ban.</>
+        )}
       </p>
     </div>
   )
