@@ -54,25 +54,6 @@ export function EarnFeed() {
 
         {/* sidebar */}
         <aside className="lg:col-span-1 order-1 lg:order-2 flex flex-col gap-4">
-          {/* balance */}
-          <div
-            className="relative overflow-hidden rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.14)]"
-            style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
-          >
-            <div className="absolute -right-8 -top-8 w-[140px] h-[140px] rounded-full bg-[var(--accent)] opacity-10 blur-lg" />
-            <div className="relative">
-              <div className="text-[#8B8D99] text-[12px] font-bold tracking-[.08em] uppercase mb-2">Available balance</div>
-              <div className="font-head font-bold text-[42px] text-white tracking-[-.02em] leading-none">{usd(wallet.earner_balance)}</div>
-              <div className="text-[#A9ABB6] text-[13px] font-semibold mt-2">≈ {wallet.earner_balance.toFixed(2)} USDC</div>
-              <button
-                onClick={() => nav('/wallet/withdraw')}
-                className="mt-4 w-full font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] py-[13px] rounded-[14px] flex items-center justify-center gap-2"
-              >
-                Withdraw <ArrowRight width={16} height={16} />
-              </button>
-            </div>
-          </div>
-
           {/* quick stats */}
           <div className="grid grid-cols-3 gap-3">
             <MiniStat value={usd(todayEarned, { sign: true })} label="Today" accent />
