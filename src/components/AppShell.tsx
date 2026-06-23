@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 import { usd } from '../lib/format'
 import { BrandMark } from './layout'
 import { Avatar } from './ui'
-import { Bell, Bolt, Check, Flame, Home, Plus, Trophy, User, Wallet as WalletIcon } from './icons'
+import { Bell, Bolt, Check, Flame, Home, Plus, Shield, Trophy, User, Wallet as WalletIcon } from './icons'
 
 interface NavItem {
   label: string
@@ -93,6 +93,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
             )
           })}
+          {profile.is_admin && (
+            <button
+              onClick={() => nav('/admin')}
+              className={`flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-bold transition-colors ${
+                active('/admin') ? 'bg-[var(--accent)]/12 text-[var(--accent)]' : 'text-[#9A9CA8] hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Shield width={19} height={19} /> Team admin
+            </button>
+          )}
         </nav>
 
         <div className="mt-auto flex flex-col gap-3">

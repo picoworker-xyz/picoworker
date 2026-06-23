@@ -40,6 +40,7 @@ export interface Profile {
   streak_days: number
   last_active: string | null
   tasks_done: number
+  is_admin?: boolean
   created_at: string
 }
 

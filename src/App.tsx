@@ -28,6 +28,7 @@ import { CreateTask } from './features/business/CreateTask'
 import { FundLaunch } from './features/business/FundLaunch'
 import { CampaignAnalytics } from './features/business/CampaignAnalytics'
 import { AddFunds } from './features/business/AddFunds'
+import { AdminDashboard } from './features/admin/AdminDashboard'
 import { Targeting } from './features/business/Targeting'
 import { ReviewQueue } from './features/business/ReviewQueue'
 import { ProofDetail } from './features/business/ProofDetail'
@@ -94,6 +95,9 @@ export default function App() {
       <Route path="/business/review/:id" element={<Shell><ProofDetail /></Shell>} />
       <Route path="/business/campaign/:id" element={<Shell><CampaignAnalytics /></Shell>} />
       <Route path="/business/add-funds" element={<Shell><AddFunds /></Shell>} />
+
+      {/* Team admin */}
+      <Route path="/admin" element={<Shell><AdminDashboard /></Shell>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
