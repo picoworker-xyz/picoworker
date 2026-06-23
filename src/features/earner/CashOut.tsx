@@ -2,81 +2,55 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { usd, shortAddr } from '../../lib/format'
-import { estimateWithdrawal } from '../../lib/payments'
 import { Page, CenteredPage } from '../../components/Page'
-import { ArrowUp } from '../../components/icons'
+import { ArrowUp, Shield } from '../../components/icons'
 
-const NETWORKS = ['Solana', 'Base', 'Polygon']
+const FEE = 0.2 // fixed fee, covers creating the USDC token account (PDA) on Solana
 
 export function CashOut() {
   const nav = useNavigate()
-  const { wallet, profile, withdraw } = useStore()
+  const { wallet, profile } = useStore()
   const [amount, setAmount] = useState('10.00')
-  const [asset, setAsset] = useState<'USDC' | 'USDT'>('USDC')
-  const [network, setNetwork] = useState('Solana')
   const [address, setAddress] = useState(profile?.payout_wallet ?? '')
-  const [busy, setBusy] = useState(false)
-  const [done, setDone] = useState<{ net: number } | null>(null)
+  const [comingSoon, setComingSoon] = useState(false)
   const [err, setErr] = useState('')
 
   if (!wallet) return null
   const amt = parseFloat(amount) || 0
-  const { fee, netReceived } = estimateWithdrawal(amt)
+  const netReceived = Math.max(0, +(amt - FEE).toFixed(2))
 
-  async function confirm() {
+  function confirm() {
     setErr('')
     if (amt <= 0) return setErr('Enter an amount.')
     if (amt > wallet!.earner_balance) return setErr('Amount exceeds your balance.')
-    if (!address.trim()) return setErr('Enter a wallet address.')
-    setBusy(true)
-    try {
-      const res = await withdraw({ amount: amt, asset, network, address: address.trim() })
-      setDone({ net: res.netReceived })
-    } catch (e) {
-      setErr((e as Error).message)
-    } finally {
-      setBusy(false)
-    }
+    if (amt <= FEE) return setErr('Amount must be more than the $0.20 fee.')
+    if (!address.trim()) return setErr('Enter your Solana USDC wallet address.')
+    setComingSoon(true)
   }
 
-  if (done) {
+  if (comingSoon) {
     return (
       <CenteredPage>
-        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8">
-          <div className="flex flex-col items-center text-center" style={{ animation: 'pico-pop .4s ease both' }}>
-            <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
-              <ArrowUp width={36} height={36} className="text-[var(--accent-ink)]" />
+        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
+          <div className="flex flex-col items-center" style={{ animation: 'pico-pop .4s ease both' }}>
+            <div className="w-[80px] h-[80px] rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center">
+              <ArrowUp width={34} height={34} className="text-[var(--accent)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal on its way</div>
-            <div className="font-head font-bold text-[34px] text-[var(--accent)] mt-2">{done.net.toFixed(2)} {asset}</div>
+            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawals coming soon</div>
+            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
+              USDC withdrawals to Solana are almost ready. We will let you know the moment they go live. Your balance stays safe in the meantime.
+            </div>
           </div>
-
-          <div className="mt-6 rounded-[16px] bg-white/4 border border-white/7 divide-y divide-white/6">
-            <TxRow label="Status">
-              <span className="flex items-center gap-2 text-[#FFB05A] font-bold">
-                <span className="w-2 h-2 rounded-full bg-[#FFB05A]" style={{ animation: 'pico-pulse 1.4s infinite' }} /> Confirming · 3/12
-              </span>
-            </TxRow>
-            <TxRow label="To">{shortAddr(address)}</TxRow>
-            <TxRow label="Network">{network}</TxRow>
-            <TxRow label="Transaction">0x9c…2a1f</TxRow>
-          </div>
-
-          <div className="text-center text-[#767884] text-[13px] font-semibold mt-4">Usually arrives in ~30 seconds</div>
-
-          <div className="flex flex-col gap-3 mt-6">
-            <button onClick={() => nav('/wallet', { replace: true })} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
-              Done
-            </button>
-            <button className="text-[#9A9CA8] text-[14px] font-bold">View on explorer</button>
-          </div>
+          <button onClick={() => nav('/wallet', { replace: true })} className="w-full mt-7 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
+            Back to wallet
+          </button>
         </div>
       </CenteredPage>
     )
   }
 
   return (
-    <Page title="Withdraw" back narrow>
+    <Page title="Withdraw USDC" back narrow>
       <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6 mb-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Amount to withdraw</div>
@@ -89,35 +63,39 @@ export function CashOut() {
         <div className="text-[#767884] text-[12px] font-semibold mt-1">Available {usd(wallet.earner_balance)}</div>
       </div>
 
-      <Label>Asset</Label>
-      <div className="flex gap-2 mb-4">
-        {(['USDC', 'USDT'] as const).map((a) => <Selectable key={a} active={asset === a} onClick={() => setAsset(a)}>{a}</Selectable>)}
+      {/* USDC on Solana, fixed */}
+      <div className="flex items-center gap-3 rounded-[14px] p-4 bg-white/4 border border-white/8 mb-4">
+        <span className="w-9 h-9 rounded-full bg-[var(--usdc)] flex items-center justify-center text-white text-[14px] font-extrabold flex-none">$</span>
+        <div className="flex-1">
+          <div className="text-white text-[14px] font-bold">USDC on Solana</div>
+          <div className="text-[#767884] text-[12px] font-semibold">Only USDC on the Solana network is supported.</div>
+        </div>
       </div>
 
-      <Label>Network</Label>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {NETWORKS.map((n) => <Selectable key={n} active={network === n} onClick={() => setNetwork(n)}>{n}</Selectable>)}
-      </div>
-
-      <Label>Wallet address</Label>
+      <Label>Your Solana USDC address</Label>
       <div className="flex gap-2 mb-5">
-        <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="0x… or paste address" className="flex-1 bg-[#15161C] border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[14px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60" />
-        <button onClick={() => profile?.payout_wallet && setAddress(profile.payout_wallet)} className="px-4 rounded-[14px] bg-white/6 text-white text-[13px] font-bold">Paste</button>
+        <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Paste your Solana address" className="flex-1 bg-[#15161C] border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[14px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60" />
+        {profile?.payout_wallet && (
+          <button onClick={() => setAddress(profile.payout_wallet!)} className="px-4 rounded-[14px] bg-white/6 text-white text-[13px] font-bold">Use saved</button>
+        )}
       </div>
 
-      <div className="rounded-[16px] p-4 bg-white/4 border border-white/7 flex flex-col gap-2 mb-3">
-        <Line label="You send" value={`${usd(amt)} ${asset}`} />
-        <Line label="Network fee" value={`~${usd(fee)}`} />
+      <div className="rounded-[16px] p-4 bg-white/4 border border-white/7 flex flex-col gap-2 mb-2">
+        <Line label="You send" value={`${usd(amt)} USDC`} />
+        <Line label="Fee" value={usd(FEE)} />
         <div className="h-px bg-white/8 my-1" />
-        <Line label="You receive" value={`${netReceived.toFixed(2)} ${asset}`} strong />
+        <Line label="You receive" value={`${netReceived.toFixed(2)} USDC`} strong />
       </div>
-      {address && <div className="text-[#767884] text-[12px] font-semibold px-1">To {shortAddr(address)} · {network}</div>}
+      <div className="flex items-start gap-2 text-[#767884] text-[12px] font-semibold px-1 mb-1">
+        <Shield width={14} height={14} className="text-[var(--accent)] flex-none mt-[1px]" />
+        A fixed $0.20 fee covers creating your USDC token account (PDA) on Solana. USDC only.
+      </div>
+      {address && <div className="text-[#767884] text-[12px] font-semibold px-1">To {shortAddr(address)} on Solana</div>}
       {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-3 px-1">{err}</div>}
 
-      <button onClick={confirm} disabled={busy} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
-        {busy ? 'Sending…' : 'Confirm withdrawal'}
+      <button onClick={confirm} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px]" style={{ boxShadow: 'var(--glow)' }}>
+        Confirm withdrawal
       </button>
-      <div className="text-center text-[#767884] text-[13px] font-semibold mt-3">Arrives in ~30 sec on {network}</div>
     </Page>
   )
 }
@@ -125,21 +103,6 @@ export function CashOut() {
 const Label = ({ children }: { children: React.ReactNode }) => (
   <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-2">{children}</div>
 )
-function TxRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <span className="text-[#9A9CA8] text-[13px] font-semibold">{label}</span>
-      <span className="font-head text-[14px] font-bold text-white">{children}</span>
-    </div>
-  )
-}
-function Selectable({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button onClick={onClick} className={`px-[18px] py-[11px] rounded-[12px] text-[14px] font-head font-extrabold border ${active ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[#15161C] text-[#C2C4CE] border-white/8'}`}>
-      {children}
-    </button>
-  )
-}
 function Line({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex items-center justify-between">

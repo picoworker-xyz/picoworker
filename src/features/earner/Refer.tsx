@@ -31,21 +31,34 @@ export function Refer() {
   }
 
   return (
-    <Page title="Refer & earn" subtitle="Invite friends and earn together — forever.">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* left: invite */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <div
-            className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.16)]"
-            style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
-          >
-            <div className="text-white text-[20px] font-extrabold font-head">Earn 10% forever</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
-              Get <span className="text-[var(--accent)] font-bold">10%</span> of everything your friends earn —
-              forever. The more they earn, the more you do.
+    <Page title="Refer & earn" subtitle="Invite friends and earn together, forever.">
+      <div className="flex flex-col gap-4">
+        {/* invite */}
+        <div
+          className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.16)]"
+          style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <div className="text-white text-[20px] font-extrabold font-head">Earn 10% forever</div>
+              <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
+                Get <span className="text-[var(--accent)] font-bold">10%</span> of everything your friends earn,
+                forever. The more they earn, the more you do.
+              </div>
             </div>
+            <div className="flex gap-6">
+              <div>
+                <div className="font-head text-[24px] font-extrabold text-[var(--accent)]">{usd(earnings)}</div>
+                <div className="text-[#767884] text-[11px] font-semibold mt-[2px]">Referral earnings</div>
+              </div>
+              <div>
+                <div className="font-head text-[24px] font-extrabold text-white">{crew.length}</div>
+                <div className="text-[#767884] text-[11px] font-semibold mt-[2px]">Friends joined</div>
+              </div>
+            </div>
+          </div>
 
-            <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mt-6 mb-2">Your invite link</div>
+          <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mt-6 mb-2">Your invite link</div>
             <div className="flex items-center gap-2 rounded-[14px] bg-black/30 border border-white/8 p-2 pl-4">
               <div className="flex-1 text-[#C2C4CE] text-[14px] font-bold truncate font-head">
                 picoworker.xyz/r/<span className="text-[var(--accent)]">{profile.referral_code}</span>
@@ -68,7 +81,7 @@ export function Refer() {
             </div>
             {crew.length === 0 ? (
               <div className="px-5 py-10 text-center text-[#767884] text-[13.5px] font-semibold">
-                No friends yet. Share your link — you'll earn 10% of whatever they make.
+                No friends yet. Share your link and you'll earn 10% of whatever they make.
               </div>
             ) : (
               crew.map((r, i) => (
@@ -83,19 +96,6 @@ export function Refer() {
               ))
             )}
           </div>
-        </div>
-
-        {/* right: stats */}
-        <aside className="flex flex-col gap-4">
-          <div className="rounded-[16px] p-5 bg-[#15161C] border border-white/6">
-            <div className="font-head text-[28px] font-extrabold text-[var(--accent)]">{usd(earnings)}</div>
-            <div className="text-[#767884] text-[12px] font-semibold mt-1">Referral earnings</div>
-          </div>
-          <div className="rounded-[16px] p-5 bg-[#15161C] border border-white/6">
-            <div className="font-head text-[28px] font-extrabold text-white">{crew.length}</div>
-            <div className="text-[#767884] text-[12px] font-semibold mt-1">Friends joined</div>
-          </div>
-        </aside>
       </div>
     </Page>
   )
