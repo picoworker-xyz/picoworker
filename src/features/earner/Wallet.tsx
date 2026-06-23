@@ -21,7 +21,7 @@ export function Wallet() {
     <Page title="Wallet" subtitle="Your USDC balance, earnings and activity.">
       {/* balance on top */}
       <div
-        className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(194,249,77,.14)] max-w-[560px] mx-auto"
+        className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(194,249,77,.14)]"
         style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
       >
         <div className="absolute left-1/2 -top-12 -translate-x-1/2 w-[260px] h-[140px] rounded-full bg-[var(--accent)] opacity-10 blur-2xl" />
@@ -40,7 +40,7 @@ export function Wallet() {
       </div>
 
       {/* stats under the balance */}
-      <div className="grid grid-cols-3 gap-3 max-w-[560px] mx-auto mt-4">
+      <div className="grid grid-cols-3 gap-3 mt-4">
         <Stat value={usd(weekEarned)} label="This week" accent />
         <Stat value={usd(wallet.lifetime_earned)} label="Lifetime" />
         <Stat value={String(profile.tasks_done)} label="Tasks" />

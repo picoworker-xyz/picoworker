@@ -1,95 +1,42 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { TaskRow } from '../../components/blocks'
 import { Chip } from '../../components/ui'
-import { ArrowRight, Bell, Check, Flame } from '../../components/icons'
+import { Bell, Check } from '../../components/icons'
 
 const CATS = ['All', 'Social', 'Surveys', 'Apps', 'Ads', 'Watch']
 
 export function EarnFeed() {
-  const nav = useNavigate()
-  const { profile, wallet, liveTasks, ledgerFor } = useStore()
+  const { profile, liveTasks } = useStore()
   const [cat, setCat] = useState('All')
 
   const tasks = liveTasks()
   const filtered = useMemo(() => (cat === 'All' ? tasks : tasks.filter((t) => t.category === cat)), [tasks, cat])
 
-  const todayEarned = useMemo(() => {
-    if (!profile) return 0
-    const today = new Date().toDateString()
-    return ledgerFor(profile.id)
-      .filter((l) => l.amount > 0 && new Date(l.created_at).toDateString() === today)
-      .reduce((s, l) => s + l.amount, 0)
-  }, [profile, ledgerFor])
-
-  if (!profile || !wallet) return null
+  if (!profile) return null
 
   return (
     <Page title={`Welcome back, ${profile.display_name}`} subtitle="Pick a task and get paid in USDC.">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* main */}
-        <div className="lg:col-span-2 order-2 lg:order-1">
-          <div className="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
-            {CATS.map((c) => (
-              <Chip key={c} active={cat === c} onClick={() => setCat(c)}>{c}</Chip>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-white text-[18px] font-extrabold font-head">{cat === 'All' ? 'Hot right now' : cat}</div>
-            <div className="text-[#767884] text-[13px] font-semibold">{filtered.length} tasks</div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <AllCaughtUp />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {filtered.map((t) => <TaskRow key={t.id} task={t} />)}
-            </div>
-          )}
-        </div>
-
-        {/* sidebar */}
-        <aside className="lg:col-span-1 order-1 lg:order-2 flex flex-col gap-4">
-          {/* quick stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <MiniStat value={usd(todayEarned, { sign: true })} label="Today" accent />
-            <MiniStat value={String(profile.tasks_done)} label="Tasks" />
-            <MiniStat value={`${profile.streak_days}d`} label="Streak" />
-          </div>
-
-          {/* streak nudge */}
-          <button
-            onClick={() => nav('/rewards')}
-            className="card-hover flex items-center gap-3 p-4 rounded-[16px] bg-[#15161C] border border-white/6 text-left"
-          >
-            <div className="w-10 h-10 rounded-[12px] bg-[rgba(255,107,90,.14)] flex items-center justify-center flex-none">
-              <Flame width={18} height={18} className="text-[var(--coral)]" />
-            </div>
-            <div className="flex-1">
-              <div className="text-white text-[14px] font-bold">{profile.streak_days}-day streak</div>
-              <div className="text-[#767884] text-[12px] font-semibold">Claim today's +$0.05 bonus</div>
-            </div>
-            <ArrowRight width={16} height={16} className="text-[#5E606C]" />
-          </button>
-
-          {/* refer CTA */}
-          <button
-            onClick={() => nav('/refer')}
-            className="card-hover flex items-center gap-3 p-4 rounded-[16px] border border-[rgba(194,249,77,.2)] text-left"
-            style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.1),rgba(194,249,77,.02))' }}
-          >
-            <div className="flex-1">
-              <div className="text-white text-[14px] font-bold">Invite friends</div>
-              <div className="text-[#9DAA7E] text-[12px] font-semibold">Earn $0.50 + 10% forever</div>
-            </div>
-            <ArrowRight width={16} height={16} className="text-[var(--accent)]" />
-          </button>
-        </aside>
+      <div className="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
+        {CATS.map((c) => (
+          <Chip key={c} active={cat === c} onClick={() => setCat(c)}>{c}</Chip>
+        ))}
       </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-white text-[18px] font-extrabold font-head">{cat === 'All' ? 'Hot right now' : cat}</div>
+        <div className="text-[#767884] text-[13px] font-semibold">{filtered.length} tasks</div>
+      </div>
+
+      {filtered.length === 0 ? (
+        <AllCaughtUp />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.map((t) => <TaskRow key={t.id} task={t} />)}
+        </div>
+      )}
     </Page>
   )
 }
@@ -114,18 +61,9 @@ function AllCaughtUp() {
           <Bell width={16} height={16} /> Notify me when live
         </button>
         <button onClick={() => nav('/refer')} className="font-head font-extrabold text-[14px] bg-white/6 text-white border border-white/12 px-5 py-3 rounded-[13px]">
-          Invite a friend, get $0.50
+          Invite a friend, earn 10%
         </button>
       </div>
-    </div>
-  )
-}
-
-function MiniStat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
-  return (
-    <div className="rounded-[16px] p-4 bg-[#15161C] border border-white/6">
-      <div className={`font-head text-[18px] font-extrabold ${accent ? 'text-[var(--accent)]' : 'text-white'}`}>{value}</div>
-      <div className="text-[#767884] text-[11px] font-semibold mt-1">{label}</div>
     </div>
   )
 }
