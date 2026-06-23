@@ -112,7 +112,12 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         if (error) throw new Error(error.message)
         const id = data.user?.id
         if (!id) throw new Error('Sign up failed.')
-        if (data.session) await onSession(data.session)
+        if (data.session) {
+          await onSession(data.session)
+        } else {
+          // Email confirmation is enabled in Supabase but no email was delivered.
+          throw new Error('Account created — please confirm your email, then sign in.')
+        }
         return id
       },
       async signIn(email, password) {
