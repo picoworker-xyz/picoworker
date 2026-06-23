@@ -36,7 +36,7 @@ export function CreateTask() {
     setTarget('')
   }
 
-  function review() {
+  async function review() {
     const titleMap: Record<TaskType, string> = {
       follow_x: `Follow ${target || '@yourhandle'} on X`,
       yt_views: 'Watch your video',
@@ -45,7 +45,7 @@ export function CreateTask() {
       visit_site: 'Visit your site',
       custom: 'Custom task',
     }
-    const task = createTask({
+    const task = await createTask({
       type: t.type,
       title: titleMap[t.type],
       subtitle: t.label,

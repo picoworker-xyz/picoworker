@@ -24,10 +24,10 @@ export function FundLaunch() {
   const total = +(rewards + fee).toFixed(2)
   const enough = total <= wallet.business_escrow
 
-  function launch() {
+  async function launch() {
     setBusy(true)
     setErr('')
-    const res = fundAndLaunch(t!.id)
+    const res = await fundAndLaunch(t!.id)
     setBusy(false)
     if (res.ok) setLaunched(true)
     else setErr(res.reason ?? 'Could not launch.')

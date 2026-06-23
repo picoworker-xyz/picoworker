@@ -162,6 +162,11 @@ begin
   values (t.owner_id, -t.reward, 'escrow_release', t.title, p_task::text,
           (select business_escrow from wallets where profile_id = t.owner_id));
 
+  -- queue an "earning" email to the earner
+  insert into email_outbox(to_email, template, data)
+  select u.email, 'earning', jsonb_build_object('title', t.title, 'amount', t.reward, 'balance', new_bal)
+  from auth.users u where u.id = me;
+
   return json_build_object('manual', false, 'reward', t.reward, 'balance', new_bal);
 end;
 $$;
@@ -219,6 +224,10 @@ begin
     insert into ledger_entries(profile_id, amount, type, title, balance_after)
     values (new.id, 0.05, 'welcome_bonus', 'Welcome bonus', 0.05);
   end if;
+  -- queue a welcome email (sent by the send-email Edge Function via webhook)
+  insert into email_outbox(to_email, template, data)
+  values (new.email, 'welcome',
+          jsonb_build_object('name', coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email,'@',1)), 'mode', m));
   return new;
 end; $$;
 
@@ -226,5 +235,158 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function handle_new_user();
 
--- Storage bucket for proof screenshots:
---   insert into storage.buckets (id, name, public) values ('proofs','proofs', true);
+-- ============================================================================
+-- Storage: public bucket for proof screenshots + upload policy
+-- ============================================================================
+insert into storage.buckets (id, name, public)
+values ('proofs', 'proofs', true)
+on conflict (id) do nothing;
+
+create policy "proofs upload" on storage.objects for insert to authenticated
+  with check (bucket_id = 'proofs');
+create policy "proofs read" on storage.objects for select using (bucket_id = 'proofs');
+
+-- ============================================================================
+-- Email outbox — RPCs/triggers enqueue here; the send-email Edge Function
+-- (fired by a Database Webhook on insert) renders + sends via Resend.
+-- No RLS policies → only the service_role (Edge Function) can read it.
+-- ============================================================================
+create table if not exists email_outbox (
+  id         uuid primary key default gen_random_uuid(),
+  to_email   text not null,
+  template   text not null check (template in ('welcome','earning','task_rejected','withdrawal','deposit')),
+  data       jsonb not null default '{}',
+  status     text not null default 'queued' check (status in ('queued','sent','failed')),
+  error      text,
+  created_at timestamptz not null default now(),
+  sent_at    timestamptz
+);
+alter table email_outbox enable row level security;
+
+-- ============================================================================
+-- Money RPCs (SECURITY DEFINER) — the client never writes balances directly;
+-- RLS blocks direct wallet writes, so all value movement goes through these.
+-- ============================================================================
+
+-- Earner: cash out (simulated payout; swap for real Solana/Polygon later)
+create or replace function request_withdrawal(p_amount numeric, p_asset text, p_network text, p_address text)
+returns json language plpgsql security definer as $$
+declare me uuid := auth.uid(); bal numeric; fee numeric := 0.01;
+begin
+  select earner_balance into bal from wallets where profile_id = me for update;
+  if bal is null then raise exception 'No wallet'; end if;
+  if p_amount <= 0 or p_amount > bal then raise exception 'Invalid amount'; end if;
+  update wallets set earner_balance = earner_balance - p_amount where profile_id = me;
+  insert into withdrawals(profile_id, amount, asset, network, address, fee, status)
+  values (me, p_amount, p_asset, p_network, p_address, fee, 'sent');
+  insert into ledger_entries(profile_id, amount, type, title, balance_after)
+  values (me, -p_amount, 'withdrawal', 'Withdraw · ' || p_network, bal - p_amount);
+  insert into email_outbox(to_email, template, data)
+  select u.email, 'withdrawal',
+         jsonb_build_object('amount', p_amount, 'net', p_amount - fee, 'asset', p_asset, 'network', p_network)
+  from auth.users u where u.id = me;
+  return json_build_object('balance', bal - p_amount, 'net', p_amount - fee);
+end; $$;
+
+-- Business: add escrow funds
+create or replace function add_business_funds(p_amount numeric)
+returns numeric language plpgsql security definer as $$
+declare me uuid := auth.uid(); bal numeric;
+begin
+  if p_amount <= 0 then raise exception 'Invalid amount'; end if;
+  update wallets set business_escrow = business_escrow + p_amount where profile_id = me
+    returning business_escrow into bal;
+  insert into ledger_entries(profile_id, amount, type, title, balance_after)
+  values (me, p_amount, 'deposit', 'Deposit · USDC', bal);
+  insert into email_outbox(to_email, template, data)
+  select u.email, 'deposit', jsonb_build_object('amount', p_amount, 'balance', bal)
+  from auth.users u where u.id = me;
+  return bal;
+end; $$;
+
+-- Business: create a (paused) campaign
+create or replace function create_campaign(
+  p_type text, p_title text, p_subtitle text, p_target text,
+  p_reward numeric, p_goal int, p_auto boolean, p_category text)
+returns tasks language plpgsql security definer as $$
+declare me uuid := auth.uid(); row tasks;
+begin
+  insert into tasks(owner_id, type, title, subtitle, target, reward, goal_count, auto_verify, status, category,
+                    est_seconds)
+  values (me, p_type, p_title, p_subtitle, nullif(p_target,''), p_reward, p_goal, p_auto, 'paused', p_category,
+          case when p_type='survey' then 240 when p_type='app_install' then 120 else 30 end)
+  returning * into row;
+  return row;
+end; $$;
+
+-- Business: hold escrow + go live
+create or replace function fund_and_launch(p_task uuid)
+returns json language plpgsql security definer as $$
+declare me uuid := auth.uid(); t tasks; total numeric; esc numeric;
+begin
+  select * into t from tasks where id = p_task and owner_id = me for update;
+  if t.id is null then raise exception 'Task not found'; end if;
+  total := round(t.reward * t.goal_count * (1 + t.fee), 2);
+  select business_escrow into esc from wallets where profile_id = me for update;
+  if total > esc then return json_build_object('ok', false, 'reason', 'Not enough escrow'); end if;
+  update wallets set business_escrow = business_escrow - total where profile_id = me;
+  update tasks set status = 'live' where id = p_task;
+  insert into ledger_entries(profile_id, amount, type, title, ref_id, balance_after)
+  values (me, -total, 'escrow_hold', 'Funded: ' || t.title, p_task::text, esc - total);
+  return json_build_object('ok', true);
+end; $$;
+
+-- Provider: approve/reject a manual proof
+create or replace function review_proof(p_completion uuid, p_approve boolean)
+returns void language plpgsql security definer as $$
+declare me uuid := auth.uid(); c task_completions; t tasks; new_bal numeric;
+begin
+  select * into c from task_completions where id = p_completion for update;
+  if c.id is null then raise exception 'Not found'; end if;
+  select * into t from tasks where id = c.task_id;
+  if t.owner_id <> me then raise exception 'Not your task'; end if;
+  if c.status <> 'pending_proof' then return; end if;
+
+  if not p_approve then
+    update task_completions set status = 'rejected' where id = p_completion;
+    insert into email_outbox(to_email, template, data)
+    select u.email, 'task_rejected', jsonb_build_object('title', t.title, 'amount', c.reward)
+    from auth.users u where u.id = c.earner_id;
+    return;
+  end if;
+
+  update task_completions set status = 'approved' where id = p_completion;
+  update wallets set earner_balance = earner_balance + c.reward,
+                     lifetime_earned = lifetime_earned + c.reward
+   where profile_id = c.earner_id returning earner_balance into new_bal;
+  update wallets set business_escrow = greatest(0, business_escrow - c.reward) where profile_id = me;
+  update tasks set done_count = done_count + 1,
+                   status = case when done_count + 1 >= goal_count then 'complete' else status end
+   where id = t.id;
+  insert into ledger_entries(profile_id, amount, type, title, ref_id, balance_after)
+  values (c.earner_id, c.reward, 'task_reward', t.title, t.id::text, coalesce(new_bal, c.reward));
+  insert into email_outbox(to_email, template, data)
+  select u.email, 'earning', jsonb_build_object('title', t.title, 'amount', c.reward, 'balance', new_bal)
+  from auth.users u where u.id = c.earner_id;
+end; $$;
+
+-- Earner: claim daily streak bonus
+create or replace function claim_daily_bonus()
+returns json language plpgsql security definer as $$
+declare me uuid := auth.uid(); bal numeric;
+begin
+  update wallets set earner_balance = earner_balance + 0.05,
+                     lifetime_earned = lifetime_earned + 0.05
+   where profile_id = me returning earner_balance into bal;
+  update profiles set streak_days = streak_days + 1, last_active = now() where id = me;
+  insert into ledger_entries(profile_id, amount, type, title, balance_after)
+  values (me, 0.05, 'welcome_bonus', 'Daily streak bonus', bal);
+  return json_build_object('amount', 0.05, 'balance', bal);
+end; $$;
+
+-- Earner: mark identity verified (KYC mock)
+create or replace function verify_identity_now()
+returns void language plpgsql security definer as $$
+begin
+  update profiles set identity_verified = true where id = auth.uid();
+end; $$;

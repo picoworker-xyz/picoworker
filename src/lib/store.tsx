@@ -86,7 +86,7 @@ const uid = (p: string) => `${p}-${Math.random().toString(36).slice(2, 9)}`
 
 // ----------------------------------------------------------------------------
 
-interface StoreApi {
+export interface StoreApi {
   ready: boolean
   userId: string | null
   profile: Profile | null
@@ -115,8 +115,8 @@ interface StoreApi {
   verifyIdentity(): void
 
   // business mutations
-  createTask(draft: TaskDraft): Task
-  fundAndLaunch(taskId: string): { ok: boolean; reason?: string }
+  createTask(draft: TaskDraft): Promise<Task>
+  fundAndLaunch(taskId: string): Promise<{ ok: boolean; reason?: string }>
   pauseCampaign(taskId: string): void
   addFunds(amount: number): number
 
@@ -136,9 +136,9 @@ export interface TaskDraft {
   category: string
 }
 
-const StoreCtx = createContext<StoreApi | null>(null)
+export const StoreCtx = createContext<StoreApi | null>(null)
 
-export function StoreProvider({ children }: { children: ReactNode }) {
+export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [db, setDb] = useState<DB | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -396,7 +396,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
 
       // ---- business ----
-      createTask(draft) {
+      async createTask(draft) {
         const next = get()
         const task: Task = {
           id: uid('task'),
@@ -421,7 +421,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return task
       },
 
-      fundAndLaunch(taskId) {
+      async fundAndLaunch(taskId) {
         const next = get()
         const t = next.tasks.find((x) => x.id === taskId)
         const w = next.wallets.find((x) => x.profile_id === userId)
