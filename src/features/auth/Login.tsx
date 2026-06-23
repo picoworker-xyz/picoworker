@@ -68,7 +68,13 @@ export function Login() {
         nav('/', { replace: true })
       }
     } catch (e) {
-      setErr(cleanAuthError((e as Error).message))
+      const raw = (e as Error).message ?? ''
+      // Unconfirmed account (sign-in or signup) → show the confirm screen with Resend.
+      if (raw.toLowerCase().includes('not confirmed') || raw.toLowerCase().includes('email_not_confirmed')) {
+        setPendingEmail(email.trim())
+      } else {
+        setErr(cleanAuthError(raw))
+      }
     } finally {
       setBusy(false)
     }
