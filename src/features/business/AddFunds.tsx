@@ -1,59 +1,52 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
-import { usd } from '../../lib/format'
-import { Page, CenteredPage } from '../../components/Page'
+import { usd, timeAgo } from '../../lib/format'
+import { Page } from '../../components/Page'
 import { Check, Shield } from '../../components/icons'
 
 // Real custodial Solana USDC deposits: per-user address + on-chain detection.
 export function AddFunds() {
-  const nav = useNavigate()
   const { wallet, refresh } = useStore()
   const [address, setAddress] = useState<string | null>(null)
   const [addrErr, setAddrErr] = useState('')
   const [copied, setCopied] = useState(false)
   const [checking, setChecking] = useState(false)
   const [msg, setMsg] = useState('')
-  const [done, setDone] = useState<{ credited: number; balance: number } | null>(null)
+  const [success, setSuccess] = useState('')
+  const [deposits, setDeposits] = useState<Deposit[]>([])
+
+  async function loadDeposits() {
+    // RLS limits this to the signed-in user's own deposits.
+    const { data } = await supabase!
+      .from('deposits')
+      .select('id,signature,amount,status,created_at')
+      .order('created_at', { ascending: false })
+    setDeposits((data ?? []).map((d) => ({ ...d, amount: Number(d.amount) })) as Deposit[])
+  }
 
   useEffect(() => {
     supabase!.functions.invoke('solana-deposit-address').then(({ data, error }) => {
       if (error || data?.error) setAddrErr('Could not load your deposit address. Make sure the Solana functions are deployed.')
       else setAddress(data.address)
     })
+    loadDeposits()
   }, [])
 
   async function check() {
     setChecking(true)
     setMsg('')
+    setSuccess('')
     const { data, error } = await supabase!.functions.invoke('solana-check-deposits')
     setChecking(false)
     if (error || data?.error) return setMsg('Could not check for payment right now. Try again in a moment.')
     if (data.credited > 0) {
       await refresh()
-      setDone({ credited: data.credited, balance: data.balance })
+      await loadDeposits()
+      setSuccess(`✓ Credited ${Number(data.credited).toFixed(2)} USDC to your escrow.`)
     } else {
-      setMsg("No payment detected yet. It can take ~30 seconds after sending — tap “Check for payment” again.")
+      setMsg('No payment detected yet. It can take ~30 seconds after sending — tap “Check for payment” again.')
     }
-  }
-
-  if (done) {
-    return (
-      <CenteredPage>
-        <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
-          <div className="flex flex-col items-center" style={{ animation: 'pico-pop .4s ease both' }}>
-            <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
-              <Check width={38} height={38} className="text-[var(--accent-ink)]" />
-            </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Deposit received</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">{done.credited.toFixed(2)} USDC credited to your escrow.</div>
-            <div className="mt-4 font-head text-[20px] font-extrabold text-white">New balance {usd(done.balance)}</div>
-          </div>
-          <button onClick={() => nav('/business', { replace: true })} className="w-full mt-8 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>Done</button>
-        </div>
-      </CenteredPage>
-    )
   }
 
   return (
@@ -95,14 +88,55 @@ export function AddFunds() {
             </p>
           </div>
 
+          {success && <div className="text-[var(--green)] text-[13px] font-bold mt-3 text-center">{success}</div>}
           {msg && <div className="text-[#9A9CA8] text-[12.5px] font-semibold mt-3 text-center">{msg}</div>}
 
           <button onClick={check} disabled={checking} className="w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
             {checking ? 'Checking…' : "I've sent it · check for payment"}
           </button>
           <div className="text-center text-[#767884] text-[12px] font-semibold mt-3">We scan the Solana chain and credit any USDC received.</div>
+
+          {/* Deposit history — every on-chain transfer, credited once by signature */}
+          <div className="mt-7">
+            <div className="text-white text-[15px] font-extrabold font-head mb-3">Your deposits</div>
+            {deposits.length === 0 ? (
+              <div className="rounded-[14px] bg-[#15161C] border border-white/6 py-8 text-center text-[#767884] text-[13px] font-semibold">
+                No deposits yet. Sent USDC shows here once it confirms.
+              </div>
+            ) : (
+              <div className="rounded-[16px] bg-[#15161C] border border-white/6 overflow-hidden">
+                {deposits.map((d, i) => (
+                  <div key={d.id} className={`flex items-center gap-3 px-4 py-[13px] ${i === 0 ? '' : 'border-t border-white/5'}`}>
+                    <div className="w-9 h-9 flex-none rounded-[11px] bg-[rgba(68,209,122,.14)] flex items-center justify-center">
+                      <Check width={16} height={16} className="text-[var(--green)]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white text-[14px] font-bold">{d.amount.toFixed(2)} USDC</div>
+                      <a
+                        href={`https://solscan.io/tx/${d.signature}?cluster=devnet`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#767884] text-[11.5px] font-semibold mt-[1px] hover:text-[var(--accent)] inline-flex items-center gap-1"
+                      >
+                        {timeAgo(d.created_at)} · {d.signature.slice(0, 6)}…{d.signature.slice(-6)} ↗
+                      </a>
+                    </div>
+                    <span className="text-[var(--green)] text-[11px] font-extrabold uppercase">Credited</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
     </Page>
   )
+}
+
+interface Deposit {
+  id: string
+  signature: string
+  amount: number
+  status: string
+  created_at: string
 }
