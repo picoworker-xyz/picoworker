@@ -16,6 +16,19 @@ export function passwordError(pw: string): string | null {
   return null
 }
 
+// Turn a raw auth/network error into a friendly, never-blank message.
+export function cleanAuthError(message?: string, status?: number): string {
+  const m = (message ?? '').trim()
+  const low = m.toLowerCase()
+  if (status === 429 || low.includes('rate') || low.includes('security purposes') || low.includes('too many')) {
+    return "Too many requests — please wait a few minutes and try again."
+  }
+  if (!m || m === '{}' || m === '[object Object]') return 'Something went wrong. Please try again.'
+  if (low.includes('invalid login')) return 'Wrong email or password.'
+  if (low.includes('email not confirmed')) return 'Please confirm your email first, then sign in.'
+  return m
+}
+
 // 0–4 strength score for a small meter.
 export function passwordStrength(pw: string): number {
   let s = 0

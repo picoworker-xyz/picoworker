@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
-import { emailError, passwordError, passwordStrength } from '../../lib/validate'
+import { cleanAuthError, emailError, passwordError, passwordStrength } from '../../lib/validate'
 import { collectSignals } from '../../lib/fraud'
 import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
@@ -29,7 +29,7 @@ export function Login() {
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/reset-password`,
     })
-    if (error) setErr(error.message)
+    if (error) setErr(cleanAuthError(error.message, error.status))
     else setResetSent(true)
   }
 
@@ -52,7 +52,7 @@ export function Login() {
         nav('/', { replace: true })
       }
     } catch (e) {
-      setErr((e as Error).message)
+      setErr(cleanAuthError((e as Error).message))
     } finally {
       setBusy(false)
     }

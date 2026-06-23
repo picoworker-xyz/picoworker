@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { emailError, passwordError } from '../../lib/validate'
+import { cleanAuthError, emailError, passwordError } from '../../lib/validate'
 import { collectSignals } from '../../lib/fraud'
 import { BrandMark, FraudNotice } from '../../components/layout'
 import { ArrowRight, Check } from '../../components/icons'
@@ -38,7 +38,7 @@ export function BusinessSignup() {
       await signUp(email, password, name.trim(), 'business', signals)
       nav('/business', { replace: true })
     } catch (e) {
-      setErr((e as Error).message)
+      setErr(cleanAuthError((e as Error).message))
       setBusy(false)
     }
   }
