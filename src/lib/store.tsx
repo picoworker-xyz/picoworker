@@ -27,6 +27,7 @@ import {
   DEMO_EARNER_ID,
 } from '../data/seed'
 import { submitWithdrawal, type WithdrawalInput } from './payments'
+import type { FraudSignals } from './fraud'
 
 // ----------------------------------------------------------------------------
 // Local persistent mock backing the whole app. Every method here has a 1:1
@@ -39,8 +40,8 @@ const KEY = 'picoworker:db:v2'
 const SESSION_KEY = 'picoworker:session:v2'
 
 interface DB {
-  // auth: email -> {password, profileId}
-  accounts: Record<string, { password: string; profileId: string }>
+  // auth: email -> {password, profileId, deviceHash?, ip?}
+  accounts: Record<string, { password: string; profileId: string; deviceHash?: string; ip?: string | null }>
   profiles: Profile[]
   wallets: Wallet[]
   tasks: Task[]
@@ -92,7 +93,7 @@ export interface StoreApi {
   profile: Profile | null
   wallet: Wallet | null
 
-  signUp(email: string, password: string, displayName: string, mode: Mode): Promise<string>
+  signUp(email: string, password: string, displayName: string, mode: Mode, fraud?: FraudSignals): Promise<string>
   signIn(email: string, password: string): Promise<void>
   signOut(): void
 
@@ -187,13 +188,18 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       profile: profileById(userId),
       wallet: walletById(userId),
 
-      async signUp(email, password, displayName, mode) {
+      async signUp(email, password, displayName, mode, fraud) {
         const next = get()
         const key = email.toLowerCase().trim()
         if (next.accounts[key]) throw new Error('An account with this email already exists.')
+        // One account per person: block a second signup from the same device.
+        if (fraud?.deviceHash) {
+          const dup = Object.values(next.accounts).some((a) => a.deviceHash === fraud.deviceHash)
+          if (dup) throw new Error('We detected an existing PicoWorker account on this device. Only one account per person is allowed.')
+        }
         const id = uid('user')
         const code = displayName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8).toUpperCase() || 'FRIEND'
-        next.accounts[key] = { password, profileId: id }
+        next.accounts[key] = { password, profileId: id, deviceHash: fraud?.deviceHash, ip: fraud?.ip ?? null }
         next.profiles.push({
           id,
           display_name: displayName,

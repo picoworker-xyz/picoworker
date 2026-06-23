@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { emailError, passwordError } from '../../lib/validate'
-import { BrandMark } from '../../components/layout'
+import { collectSignals } from '../../lib/fraud'
+import { BrandMark, FraudNotice } from '../../components/layout'
 import { ArrowRight, Check } from '../../components/icons'
 
 const CATEGORIES = ['App / startup', 'Creator', 'E-commerce', 'Agency']
@@ -29,7 +30,12 @@ export function BusinessSignup() {
     if (!agree) return setErr('Please accept the advertiser terms.')
     setBusy(true)
     try {
-      await signUp(email, password, name.trim(), 'business')
+      const signals = await collectSignals()
+      if (signals.vpn) {
+        setBusy(false)
+        return setErr('Please turn off your VPN or proxy to create an account.')
+      }
+      await signUp(email, password, name.trim(), 'business', signals)
       nav('/business', { replace: true })
     } catch (e) {
       setErr((e as Error).message)
@@ -101,6 +107,7 @@ export function BusinessSignup() {
           <button onClick={submit} disabled={busy} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] disabled:opacity-50 flex items-center justify-center gap-2" style={{ boxShadow: 'var(--glow)' }}>
             {busy ? 'Creating…' : 'Create business account'} {!busy && <ArrowRight width={16} height={16} />}
           </button>
+          <FraudNotice />
         </div>
       </div>
     </div>

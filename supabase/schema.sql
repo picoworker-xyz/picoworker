@@ -20,8 +20,11 @@ create table if not exists profiles (
   streak_days       int not null default 0,
   last_active       timestamptz,
   tasks_done        int not null default 0,
+  device_hash       text,        -- anti-fraud: signup device fingerprint
+  signup_ip         text,        -- anti-fraud: signup IP
   created_at        timestamptz not null default now()
 );
+create index if not exists profiles_device_idx on profiles (device_hash);
 
 -- ---- wallets (1:1 with profile) ----
 create table if not exists wallets (
@@ -212,12 +215,14 @@ create or replace function handle_new_user()
 returns trigger language plpgsql security definer as $$
 declare m text := coalesce(new.raw_user_meta_data->>'mode', 'earner');
 begin
-  insert into profiles(id, display_name, mode, referral_code, member_since)
+  insert into profiles(id, display_name, mode, referral_code, member_since, device_hash, signup_ip)
   values (new.id,
           coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email,'@',1)),
           m,
           upper(substr(md5(new.id::text),1,8)),
-          to_char(now(),'Mon YYYY'));
+          to_char(now(),'Mon YYYY'),
+          new.raw_user_meta_data->>'device_hash',
+          new.raw_user_meta_data->>'signup_ip');
   insert into wallets(profile_id, earner_balance, lifetime_earned)
   values (new.id, case when m='earner' then 0.05 else 0 end, case when m='earner' then 0.05 else 0 end);
   if m = 'earner' then

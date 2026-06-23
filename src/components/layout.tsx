@@ -8,10 +8,24 @@ import {
   ListIcon,
   PicoLogo,
   Play,
+  Shield,
   User,
   Wallet as WalletIcon,
   XLogo,
 } from './icons'
+
+// Anti-fraud notice shown on signup forms.
+export function FraudNotice() {
+  return (
+    <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-[rgba(255,107,90,.06)] border border-[rgba(255,107,90,.18)] p-3">
+      <Shield width={16} height={16} className="text-[var(--coral)] flex-none mt-[1px]" />
+      <p className="text-[#B6B8C2] text-[11.5px] font-semibold leading-[1.5]">
+        One account per person. We detect duplicate accounts (same device/IP) and VPN/proxy use —
+        violators forfeit earnings and are banned.
+      </p>
+    </div>
+  )
+}
 
 // ---- Brand mark ----
 export function BrandMark({ size = 48, withText = true }: { size?: number; withText?: boolean }) {

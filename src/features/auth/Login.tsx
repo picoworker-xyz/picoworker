@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
 import { emailError, passwordError, passwordStrength } from '../../lib/validate'
-import { BrandMark } from '../../components/layout'
+import { collectSignals } from '../../lib/fraud'
+import { BrandMark, FraudNotice } from '../../components/layout'
 import { Apple, ArrowRight, Check, Google, Phone } from '../../components/icons'
 import { Avatar } from '../../components/ui'
 
@@ -28,7 +29,9 @@ export function Login() {
         if (ee) throw new Error(ee)
         const pe = passwordError(password)
         if (pe) throw new Error(pe)
-        await signUp(email, password, name.trim(), mode)
+        const signals = await collectSignals()
+        if (signals.vpn) throw new Error('Please turn off your VPN or proxy to create an account.')
+        await signUp(email, password, name.trim(), mode, signals)
         nav(mode === 'business' ? '/business' : '/onboarding', { replace: true })
       } else {
         await signIn(email, password)
@@ -134,6 +137,8 @@ export function Login() {
               {!busy && <ArrowRight width={16} height={16} />}
             </button>
           </div>
+
+          {isSignup && <FraudNotice />}
 
           <button onClick={() => { setIsSignup((v) => !v); setErr('') }} className="block w-full text-center text-[#767884] text-[13px] font-semibold mt-3">
             {isSignup ? 'Already have an account? ' : 'New here? '}
