@@ -27,6 +27,7 @@ export function Landing() {
             <a href="#how" className="hover:text-white">How it works</a>
             <a href="#earn" className="hover:text-white">Earn</a>
             <a href="#business" className="hover:text-white">For business</a>
+            <a href="#faq" className="hover:text-white">FAQ</a>
           </nav>
           <div className="flex items-center gap-2">
             <button onClick={go} className="px-4 py-[9px] rounded-[12px] text-[14px] font-bold text-white hover:bg-white/6">
@@ -214,6 +215,22 @@ export function Landing() {
         </div>
       </section>
 
+      {/* ===== FAQ (mirrors FAQPage JSON-LD in index.html) ===== */}
+      <section id="faq" className="border-t border-white/6 bg-white/[.02]">
+        <div className="app-container py-16 lg:py-24">
+          <Eyebrow>FAQ</Eyebrow>
+          <SectionTitle>Micro-tasks, paid in USDC — answered.</SectionTitle>
+          <div className="grid md:grid-cols-2 gap-4 mt-10">
+            {FAQS.map((f) => (
+              <div key={f.q} className="rounded-[18px] p-6 bg-[#15161C] border border-white/6">
+                <h3 className="text-white text-[17px] font-extrabold font-head">{f.q}</h3>
+                <p className="text-[#A9ABB6] text-[14px] font-medium mt-2 leading-[1.6]">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== Trust / CTA ===== */}
       <section className="border-t border-white/6">
         <div className="app-container py-16 lg:py-24 text-center">
@@ -252,6 +269,34 @@ export function Landing() {
     </div>
   )
 }
+
+// Keep in sync with the FAQPage JSON-LD in index.html (text must match for rich results).
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'What is PicoWorker?',
+    a: 'PicoWorker is a micro-task marketplace where you get paid in USDC for tiny online tasks like following accounts, watching videos, testing apps and answering surveys. Businesses post tasks and only pay for verified results.',
+  },
+  {
+    q: 'How do I earn money on PicoWorker?',
+    a: 'Sign up for free, pick a task from the live feed, complete it in seconds, and most tasks auto-verify in about 10 seconds. Your USDC reward is added to your wallet instantly.',
+  },
+  {
+    q: 'How much can I earn from micro-tasks?',
+    a: 'Rewards range from a few cents for quick social tasks up to $0.35 or more for app tests and surveys. Higher levels and streaks unlock up to 2x higher payouts, and you also earn from referrals.',
+  },
+  {
+    q: 'When and how do I get paid?',
+    a: "You're paid in USDC the moment a task is verified. Cash out to any wallet on Polygon, Base or other networks — withdrawals arrive in about 30 seconds. PicoWorker is non-custodial: your keys, your USDC.",
+  },
+  {
+    q: 'Is PicoWorker free to join?',
+    a: 'Yes. Joining and earning is completely free, and new earners get a $0.05 welcome bonus on their first task.',
+  },
+  {
+    q: 'Can businesses post tasks on PicoWorker?',
+    a: 'Yes. Businesses fund a campaign in USDC, set a reward and quantity, and get real followers, views, installs and survey responses. Funds sit in escrow and you only pay per verified completion.',
+  },
+]
 
 const Eyebrow = ({ children }: { children: React.ReactNode }) => (
   <div className="text-[var(--accent)] text-[13px] font-extrabold font-head uppercase tracking-[.14em]">{children}</div>

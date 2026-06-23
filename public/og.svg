@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="'Space Grotesk', system-ui, sans-serif">
+  <defs>
+    <radialGradient id="g1" cx="18%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#C2F94D" stop-opacity="0.16" />
+      <stop offset="100%" stop-color="#C2F94D" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="g2" cx="100%" cy="100%" r="60%">
+      <stop offset="0%" stop-color="#8B6CFF" stop-opacity="0.20" />
+      <stop offset="100%" stop-color="#8B6CFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#0C0D11" />
+  <rect width="1200" height="630" fill="url(#g1)" />
+  <rect width="1200" height="630" fill="url(#g2)" />
+
+  <!-- brand -->
+  <g transform="translate(80,80)">
+    <rect width="64" height="64" rx="18" fill="#C2F94D" />
+    <path d="M18 13h16.5c8 0 13.3 5 13.3 12.5 0 7.7-5.3 12.8-13.3 12.8H27V51h-9V13Zm9 8v9h6.6c3.2 0 5.3-1.8 5.3-4.5 0-2.8-2.1-4.5-5.3-4.5H27Z" fill="#0B0C10" />
+    <text x="84" y="44" font-size="30" font-weight="700" fill="#ffffff">picoworker<tspan fill="#5E606C">.xyz</tspan></text>
+  </g>
+
+  <!-- headline -->
+  <text x="80" y="300" font-size="84" font-weight="700" fill="#ffffff" letter-spacing="-2">Get paid for</text>
+  <text x="80" y="392" font-size="84" font-weight="700" letter-spacing="-2"><tspan fill="#ffffff">the</tspan><tspan fill="#C2F94D" dx="28">tiny stuff.</tspan></text>
+
+  <!-- subline -->
+  <text x="82" y="456" font-size="30" font-weight="500" fill="#C7C9D4">Micro-tasks → instant USDC. Follow, watch, test, survey.</text>
+
+  <!-- chips -->
+  <g transform="translate(82,500)" font-size="24" font-weight="600">
+    <g>
+      <rect width="240" height="56" rx="28" fill="#15161C" stroke="#ffffff" stroke-opacity="0.08" />
+      <text x="30" y="37" fill="#C2F94D">⚡ Earn in seconds</text>
+    </g>
+    <g transform="translate(264,0)">
+      <rect width="250" height="56" rx="28" fill="#15161C" stroke="#ffffff" stroke-opacity="0.08" />
+      <text x="30" y="37" fill="#44D17A">✓ Paid in USDC</text>
+    </g>
+    <g transform="translate(538,0)">
+      <rect width="270" height="56" rx="28" fill="#15161C" stroke="#ffffff" stroke-opacity="0.08" />
+      <text x="30" y="37" fill="#ffffff">Free to join</text>
+    </g>
+  </g>
+
+  <!-- big reward badge -->
+  <g transform="translate(870,150)">
+    <rect width="250" height="250" rx="40" fill="#C2F94D" />
+    <text x="125" y="120" font-size="38" font-weight="700" fill="#0B0C10" text-anchor="middle">+$0.35</text>
+    <text x="125" y="165" font-size="22" font-weight="600" fill="#0B0C10" text-anchor="middle" opacity="0.7">per task</text>
+    <text x="125" y="205" font-size="20" font-weight="600" fill="#0B0C10" text-anchor="middle" opacity="0.55">paid instantly</text>
+  </g>
+</svg>
