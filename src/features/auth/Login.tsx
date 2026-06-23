@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
@@ -23,12 +23,21 @@ export function Login() {
   const [pendingEmail, setPendingEmail] = useState('')
   const [existingHint, setExistingHint] = useState('')
   const [infoMsg, setInfoMsg] = useState('')
+  const [cooldown, setCooldown] = useState(0)
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [cooldown])
 
   async function resend() {
+    if (cooldown > 0) return
     setInfoMsg('')
     if (!supabase || !pendingEmail) return
     const { error } = await supabase.auth.resend({ type: 'signup', email: pendingEmail })
     setInfoMsg(error ? cleanAuthError(error.message, error.status) : 'Confirmation email sent again — check your inbox and spam.')
+    setCooldown(60)
   }
 
   async function sendReset() {
@@ -121,12 +130,17 @@ export function Login() {
             <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
               We sent a confirmation link to<br /><span className="text-white font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
             </div>
+            <div className="mt-4 rounded-[14px] bg-[rgba(255,176,90,.1)] border border-[rgba(255,176,90,.3)] p-3 text-left">
+              <div className="text-[#FFB05A] text-[12.5px] font-extrabold">📬 Check your Spam / Junk folder</div>
+              <div className="text-[#C7C9D4] text-[12px] font-semibold mt-1 leading-[1.45]">
+                Our emails often land there. Mark it “Not spam” so future emails reach your inbox.
+              </div>
+            </div>
             {infoMsg && <div className="text-[var(--green)] text-[12.5px] font-semibold mt-3">{infoMsg}</div>}
-            <button onClick={resend} className="w-full mt-5 font-head font-extrabold text-[15px] bg-white/6 text-white border border-white/12 py-[13px] rounded-[14px]">
-              Resend confirmation email
+            <button onClick={resend} disabled={cooldown > 0} className="w-full mt-4 font-head font-extrabold text-[15px] bg-white/6 text-white border border-white/12 py-[13px] rounded-[14px] disabled:opacity-50">
+              {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend confirmation email'}
             </button>
             <button onClick={() => { setPendingEmail(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent)] text-[13px] font-extrabold py-2">Back to sign in</button>
-            <div className="text-[#767884] text-[11.5px] font-semibold mt-3">Didn't get it? Check spam, or resend above.</div>
           </div>
         </div>
       </div>
@@ -219,7 +233,7 @@ export function Login() {
           {!isSignup && supabaseEnabled && (
             <div className="text-center mt-3">
               {resetSent ? (
-                <span className="text-[var(--green)] text-[13px] font-semibold">Reset link sent — check your email.</span>
+                <span className="text-[var(--green)] text-[13px] font-semibold">Reset link sent — check your email <span className="text-[#FFB05A]">and Spam folder</span>.</span>
               ) : (
                 <button onClick={sendReset} className="text-[#9A9CA8] text-[13px] font-semibold hover:text-white">
                   Forgot password?

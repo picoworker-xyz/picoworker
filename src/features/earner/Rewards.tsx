@@ -17,13 +17,16 @@ export function Rewards() {
   const goal = 200
   const progress = Math.min(100, Math.round((profile.tasks_done / goal) * 100))
 
-  function claim() {
-    const res = claimDailyBonus()
-    if (res) {
+  async function claim() {
+    if (claimed) return
+    try {
+      const res = await claimDailyBonus()
       setClaimed(true)
-      setFlash(`+${usd(res.amount).slice(1)} added!`)
-      setTimeout(() => setFlash(''), 1800)
-    } else setClaimed(true)
+      setFlash(res.claimed ? `+${usd(res.amount).slice(1)} added!` : 'Already claimed today')
+      setTimeout(() => setFlash(''), 2200)
+    } catch {
+      setClaimed(true)
+    }
   }
 
   return (

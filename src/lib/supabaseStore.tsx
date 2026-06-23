@@ -166,11 +166,12 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const r = data as { balance: number; net: number }
         return { netReceived: num(r.net), balance: num(r.balance) }
       },
-      claimDailyBonus() {
-        // optimistic-ish: fire RPC, refresh; return current cache estimate
-        const before = cache.wallet?.earner_balance ?? 0
-        void sb.rpc('claim_daily_bonus').then(refresh)
-        return { amount: 0.05, balance: +(before + 0.05).toFixed(2) }
+      async claimDailyBonus() {
+        const { data, error } = await sb.rpc('claim_daily_bonus')
+        if (error) throw new Error(error.message)
+        await refresh()
+        const r = (data ?? {}) as { claimed?: boolean; amount?: number; balance?: number }
+        return { claimed: !!r.claimed, amount: num(r.amount), balance: num(r.balance) }
       },
       verifyIdentity() {
         setCache((c) => (c.profile ? { ...c, profile: { ...c.profile, identity_verified: true } } : c))

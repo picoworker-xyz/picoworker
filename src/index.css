@@ -45,6 +45,9 @@ body,
 #root {
   margin: 0;
   min-height: 100svh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* no horizontal swipe/overflow on mobile */
 }
 
 html {

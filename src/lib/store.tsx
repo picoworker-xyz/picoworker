@@ -31,7 +31,7 @@ export interface StoreApi {
   // earner mutations
   completeTask(taskId: string, proofUrl?: string): Promise<{ reward: number; balance: number; manual: boolean }>
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
-  claimDailyBonus(): { amount: number; balance: number } | null
+  claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number }>
 
   verifyIdentity(): void
 
