@@ -10,8 +10,8 @@ export function emailError(email: string): string | null {
 
 export function passwordError(pw: string): string | null {
   if (pw.length < 8) return 'Password must be at least 8 characters.'
-  if (!/[a-z]/.test(pw) || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw)) {
-    return 'Use upper & lower case letters and a number.'
+  if (!/[a-z]/.test(pw) || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw) || !/[^a-zA-Z0-9]/.test(pw)) {
+    return 'Use upper & lower case letters, a number, and a special character.'
   }
   return null
 }
@@ -37,4 +37,18 @@ export function passwordStrength(pw: string): number {
   if (/[0-9]/.test(pw)) s++
   if (/[^a-zA-Z0-9]/.test(pw) || pw.length >= 12) s++
   return s
+}
+
+export interface PasswordRequirement {
+  label: string
+  met: boolean
+}
+
+export function passwordRequirements(pw: string): PasswordRequirement[] {
+  return [
+    { label: '8+ characters', met: pw.length >= 8 },
+    { label: 'Upper & lower case', met: /[a-z]/.test(pw) && /[A-Z]/.test(pw) },
+    { label: 'At least one number', met: /[0-9]/.test(pw) },
+    { label: 'Special character', met: /[^a-zA-Z0-9]/.test(pw) },
+  ]
 }

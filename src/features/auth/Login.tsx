@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
-import { cleanAuthError, emailError, passwordError, passwordStrength } from '../../lib/validate'
+import { cleanAuthError, emailError, passwordError, passwordStrength, passwordRequirements } from '../../lib/validate'
 import { collectSignals } from '../../lib/fraud'
 import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
@@ -253,9 +253,9 @@ export function Login() {
                   showPassword={showConfirmPassword}
                   onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
                 />
-                {password.length > 0 && <PasswordMeter pw={password} />}
+                {password.length > 0 && <PasswordRequirements pw={password} />}
                 {password.length === 0 && (
-                  <div className="text-[#767884] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case and a number.</div>
+                  <div className="text-[#767884] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case, a number, and a special character (#@$).</div>
                 )}
               </>
             )}
@@ -356,18 +356,24 @@ function PasswordField({
   )
 }
 
-function PasswordMeter({ pw }: { pw: string }) {
-  const s = passwordStrength(pw)
-  const labels = ['Too weak', 'Weak', 'Okay', 'Good', 'Strong']
-  const colors = ['#FF6B5A', '#FF6B5A', '#FFB05A', '#C2F94D', '#44D17A']
+function PasswordRequirements({ pw }: { pw: string }) {
+  const reqs = passwordRequirements(pw)
+  const missing = reqs.filter(r => !r.met).map(r => r.label.toLowerCase())
+  const allMet = reqs.every(r => r.met)
+
+  if (allMet) {
+    return (
+      <div className="px-1">
+        <div className="text-[11px] font-bold text-[var(--green)]">Strong password ✓</div>
+      </div>
+    )
+  }
+
   return (
     <div className="px-1">
-      <div className="flex gap-1">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="flex-1 h-[4px] rounded-full" style={{ background: i < s ? colors[s] : 'rgba(255,255,255,.1)' }} />
-        ))}
+      <div className="text-[#767884] text-[11.5px] font-semibold">
+        Missing: {missing.join(', ')}
       </div>
-      <div className="text-[11px] font-bold mt-1" style={{ color: colors[s] }}>{labels[s]}</div>
     </div>
   )
 }
