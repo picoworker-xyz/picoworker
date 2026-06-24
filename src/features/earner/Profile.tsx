@@ -110,7 +110,7 @@ export function Profile() {
           <Item
             icon={<Shield width={18} height={18} className="text-[var(--green)]" />}
             label="Verify identity"
-            value={profile.identity_verified ? 'Verified' : 'Unlock instant withdrawals'}
+            value={profile.identity_verified ? 'Verified' : 'Currently disabled'}
             tag={profile.identity_verified}
             onClick={profile.identity_verified ? undefined : () => nav('/verify')}
           />

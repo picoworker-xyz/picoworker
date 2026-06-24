@@ -41,6 +41,8 @@ export interface Profile {
   last_active: string | null
   tasks_done: number
   is_admin?: boolean
+  kyc_status?: 'none' | 'pending' | 'approved' | 'rejected'
+  kyc_doc_type?: string | null
   created_at: string
 }
 
