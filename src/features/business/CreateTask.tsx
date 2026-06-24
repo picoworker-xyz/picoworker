@@ -20,6 +20,8 @@ export function CreateTask() {
   const { createTask } = useStore()
   const [typeIdx, setTypeIdx] = useState(0)
   const [target, setTarget] = useState('')
+  const [customTitle, setCustomTitle] = useState('')
+  const [instructions, setInstructions] = useState('')
   const [reward, setReward] = useState('0.04')
   const [count, setCount] = useState('500')
 
@@ -34,7 +36,12 @@ export function CreateTask() {
     setTypeIdx(i)
     setReward(TYPES[i].reward.toFixed(2))
     setTarget('')
+    setCustomTitle('')
+    setInstructions('')
   }
+
+  const isCustom = t.type === 'custom'
+  const customReady = !isCustom || (!!customTitle.trim() && !!instructions.trim())
 
   async function review() {
     const titleMap: Record<TaskType, string> = {
@@ -47,8 +54,8 @@ export function CreateTask() {
     }
     const task = await createTask({
       type: t.type,
-      title: titleMap[t.type],
-      subtitle: t.label,
+      title: isCustom ? customTitle.trim() : titleMap[t.type],
+      subtitle: isCustom ? instructions.trim() : t.label,
       target: target.trim(),
       reward: r,
       goal_count: n,
@@ -79,6 +86,17 @@ export function CreateTask() {
                 {t.needsTarget === 'handle' && <span className="text-[#9A9CA8] text-[16px] font-bold">@</span>}
                 <input value={target} onChange={(e) => setTarget(e.target.value)} placeholder={t.needsTarget === 'handle' ? 'yourhandle' : 'https://…'} className="flex-1 bg-transparent outline-none py-[14px] px-2 text-white text-[15px] font-semibold placeholder:text-[#6E6F7A]" />
               </div>
+            </>
+          )}
+
+          {isCustom && (
+            <>
+              <Label>What should people do?</Label>
+              <input value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} placeholder="e.g. Join our Facebook group" className="w-full bg-white/4 border border-white/8 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none mb-5" />
+              <Label>Link to open (optional)</Label>
+              <input value={target} onChange={(e) => setTarget(e.target.value)} placeholder="https://facebook.com/groups/yourgroup" className="w-full bg-white/4 border border-white/8 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none mb-5" />
+              <Label>Instructions for the worker</Label>
+              <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} placeholder="Explain exactly what to do and what screenshot to send as proof. Example: Join the group, then send a screenshot showing you are a member." className="w-full bg-white/4 border border-white/8 rounded-[14px] px-4 py-[12px] text-white text-[14px] font-semibold placeholder:text-[#6E6F7A] outline-none mb-6 leading-[1.5] resize-none" />
             </>
           )}
 
@@ -125,7 +143,7 @@ export function CreateTask() {
             <div className="h-px bg-white/8 my-1" />
             <Line label="Est. budget" value={usd(budget)} strong />
           </div>
-          <button onClick={review} disabled={n <= 0 || r <= 0} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>
+          <button onClick={review} disabled={n <= 0 || r <= 0 || !customReady} className="w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>
             Review &amp; fund
           </button>
         </aside>

@@ -94,17 +94,27 @@ export function TaskFlow() {
             </div>
           </div>
 
-          <div className="text-white text-[15px] font-extrabold font-head mt-8 mb-4">How it works</div>
-          <div className="flex flex-col gap-4">
-            {steps.map((s, i) => (
-              <div key={i} className="flex items-center gap-4">
-                <div className={`w-9 h-9 flex-none rounded-[12px] flex items-center justify-center font-head font-extrabold text-[15px] ${i === 0 ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-white/8 text-white'}`}>
-                  {i + 1}
-                </div>
-                <div className="text-[#D9DAE2] text-[15px] font-semibold leading-[1.4]">{s}</div>
+          {t.type === 'custom' && t.subtitle ? (
+            <>
+              <div className="text-white text-[15px] font-extrabold font-head mt-8 mb-3">What to do</div>
+              <div className="text-[#D9DAE2] text-[15px] font-semibold leading-[1.55] whitespace-pre-line">{t.subtitle}</div>
+              <div className="text-[#9A9CA8] text-[13px] font-semibold mt-4">Then capture a screenshot as proof and upload it for review.</div>
+            </>
+          ) : (
+            <>
+              <div className="text-white text-[15px] font-extrabold font-head mt-8 mb-4">How it works</div>
+              <div className="flex flex-col gap-4">
+                {steps.map((s, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className={`w-9 h-9 flex-none rounded-[12px] flex items-center justify-center font-head font-extrabold text-[15px] ${i === 0 ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-white/8 text-white'}`}>
+                      {i + 1}
+                    </div>
+                    <div className="text-[#D9DAE2] text-[15px] font-semibold leading-[1.4]">{s}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           <div className="flex items-center gap-3 mt-8 px-4 py-4 rounded-[14px] bg-white/4 border border-white/7">
             <Shield width={18} height={18} className="text-[var(--green)] flex-none" />
