@@ -6,7 +6,7 @@ import { cleanAuthError, emailError, passwordError, passwordStrength } from '../
 import { collectSignals } from '../../lib/fraud'
 import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
-import { Apple, ArrowRight, Check, Google, Phone } from '../../components/icons'
+import { Apple, ArrowRight, Check, Google, Phone, Eye, EyeOff } from '../../components/icons'
 import { Avatar } from '../../components/ui'
 
 export function Login() {
@@ -17,6 +17,9 @@ export function Login() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const [resetSent, setResetSent] = useState(false)
@@ -75,6 +78,7 @@ export function Login() {
         if (ee) throw new Error(ee)
         const pe = passwordError(password)
         if (pe) throw new Error(pe)
+        if (password !== confirmPassword) throw new Error('Passwords do not match.')
         const signals = await collectSignals()
         if (signals.vpn) throw new Error('Please turn off your VPN or proxy to create an account.')
         // Already have an account on this device? Offer to sign into it instead of blocking.
@@ -220,9 +224,8 @@ export function Login() {
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`flex-1 text-center py-[11px] rounded-[10px] text-[13.5px] font-head ${
-                  mode === m ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[#9A9CA8] font-bold'
-                }`}
+                className={`flex-1 text-center py-[11px] rounded-[10px] text-[13.5px] font-head ${mode === m ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[#9A9CA8] font-bold'
+                  }`}
               >
                 {m === 'earner' ? 'I want to earn' : 'I post tasks'}
               </button>
@@ -234,15 +237,32 @@ export function Login() {
               <Field placeholder={mode === 'business' ? 'Business name' : 'Your name'} value={name} onChange={setName} />
             )}
             <Field placeholder="Email" value={email} onChange={setEmail} type="email" />
-            <Field placeholder="Password" value={password} onChange={setPassword} type="password" />
-            {isSignup && password.length > 0 && <PasswordMeter pw={password} />}
-            {isSignup && password.length === 0 && (
-              <div className="text-[#767884] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case and a number.</div>
+            <PasswordField
+              placeholder="Password"
+              value={password}
+              onChange={setPassword}
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword(!showPassword)}
+            />
+            {isSignup && (
+              <>
+                <PasswordField
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={setConfirmPassword}
+                  showPassword={showConfirmPassword}
+                  onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+                {password.length > 0 && <PasswordMeter pw={password} />}
+                {password.length === 0 && (
+                  <div className="text-[#767884] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case and a number.</div>
+                )}
+              </>
             )}
             {err && <div className="text-[var(--coral)] text-[12.5px] font-semibold px-1">{err}</div>}
             <button
               onClick={submit}
-              disabled={busy || !email || !password}
+              disabled={busy || !email || !password || (isSignup && !confirmPassword)}
               className="w-full font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] disabled:opacity-50 flex items-center justify-center gap-2"
               style={{ boxShadow: 'var(--glow)' }}
             >
@@ -298,6 +318,41 @@ function Field({ placeholder, value, onChange, type = 'text' }: { placeholder: s
       autoCapitalize="none"
       className="w-full bg-[#15161C] border border-white/12 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
     />
+  )
+}
+
+function PasswordField({
+  placeholder,
+  value,
+  onChange,
+  showPassword,
+  onTogglePassword
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  showPassword: boolean;
+  onTogglePassword: () => void;
+}) {
+  return (
+    <div className="relative">
+      <input
+        type={showPassword ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoCapitalize="none"
+        className="w-full bg-[#15161C] border border-white/12 rounded-[14px] px-4 py-[14px] pr-12 text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
+      />
+      <button
+        type="button"
+        onClick={onTogglePassword}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E6F7A] hover:text-white transition-colors"
+        tabIndex={-1}
+      >
+        {showPassword ? <EyeOff width={20} height={20} /> : <Eye width={20} height={20} />}
+      </button>
+    </div>
   )
 }
 
