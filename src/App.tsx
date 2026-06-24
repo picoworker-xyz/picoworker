@@ -23,6 +23,8 @@ import { VerifyIdentity } from './features/earner/VerifyIdentity'
 import { Support } from './features/earner/Support'
 import { SurveyTask } from './features/earner/SurveyTask'
 import { TaskRejected } from './features/earner/TaskRejected'
+import { MySubmissions } from './features/earner/MySubmissions'
+import { SubmissionDetail } from './features/earner/SubmissionDetail'
 import { SwitchAccount } from './features/business/SwitchAccount'
 import { Dashboard } from './features/business/Dashboard'
 import { CreateTask } from './features/business/CreateTask'
@@ -86,6 +88,8 @@ export default function App() {
       <Route path="/verify" element={<Shell><VerifyIdentity /></Shell>} />
       <Route path="/support" element={<Shell><Support /></Shell>} />
       <Route path="/profile" element={<Shell><Profile /></Shell>} />
+      <Route path="/submissions" element={<Shell><MySubmissions /></Shell>} />
+      <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
 
       {/* Business app */}

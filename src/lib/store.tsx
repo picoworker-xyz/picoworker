@@ -25,6 +25,7 @@ export interface StoreApi {
   myCampaigns(): Task[]
   ledgerFor(profileId: string): LedgerEntry[]
   completionsForTask(taskId: string): TaskCompletion[]
+  myCompletions(): TaskCompletion[]
   referralsFor(profileId: string): Referral[]
   hasCompleted(taskId: string): boolean
 
@@ -43,6 +44,7 @@ export interface StoreApi {
 
   // provider review
   pendingProofs(): { completion: TaskCompletion; task: Task }[]
+  allProofs(): { completion: TaskCompletion; task: Task }[]
   reviewProof(completionId: string, approve: boolean): void
 }
 

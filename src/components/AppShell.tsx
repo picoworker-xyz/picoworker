@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 import { usd } from '../lib/format'
 import { BrandMark } from './layout'
 import { Avatar } from './ui'
-import { Bell, Bolt, Check, Flame, Home, Plus, Shield, Trophy, User, Wallet as WalletIcon } from './icons'
+import { Bell, Bolt, Check, Flame, Home, ListIcon, Plus, Shield, Trophy, User, Wallet as WalletIcon } from './icons'
 
 interface NavItem {
   label: string
@@ -18,6 +18,7 @@ const EARNER_NAV: NavItem[] = [
   { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
   { label: 'Refer', path: '/refer', icon: User },
+  { label: 'My Submissions', path: '/submissions', icon: ListIcon },
 ]
 const BUSINESS_NAV: NavItem[] = [
   { label: 'Dashboard', path: '/business', icon: Home },
@@ -84,9 +85,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <button
                 key={it.label}
                 onClick={() => nav(it.path)}
-                className={`flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-bold transition-colors ${
-                  on ? 'bg-[var(--accent)]/12 text-[var(--accent)]' : 'text-[#9A9CA8] hover:text-white hover:bg-white/5'
-                }`}
+                className={`flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-bold transition-colors ${on ? 'bg-[var(--accent)]/12 text-[var(--accent)]' : 'text-[#9A9CA8] hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <Icon width={19} height={19} />
                 {it.label}
@@ -96,9 +96,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           {profile.is_admin && (
             <button
               onClick={() => nav('/admin')}
-              className={`flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-bold transition-colors ${
-                active('/admin') ? 'bg-[var(--accent)]/12 text-[var(--accent)]' : 'text-[#9A9CA8] hover:text-white hover:bg-white/5'
-              }`}
+              className={`flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-bold transition-colors ${active('/admin') ? 'bg-[var(--accent)]/12 text-[var(--accent)]' : 'text-[#9A9CA8] hover:text-white hover:bg-white/5'
+                }`}
             >
               <Shield width={19} height={19} /> Team admin
             </button>

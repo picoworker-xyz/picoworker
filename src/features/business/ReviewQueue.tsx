@@ -3,17 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { usd, timeAgo } from '../../lib/format'
 import { DEMO_EARNER_NAMES } from '../../data/seed'
+import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { Avatar } from '../../components/ui'
-import { ArrowRight, Check } from '../../components/icons'
+import { ArrowRight, Check, Clock, X } from '../../components/icons'
+
+const STATUS_CONFIG: Record<CompletionStatus, { icon: typeof Check; color: string; bgColor: string; label: string }> = {
+  verified: { icon: Check, color: 'text-[var(--green)]', bgColor: 'bg-[rgba(68,209,122,.14)]', label: 'Verified' },
+  pending_proof: { icon: Clock, color: 'text-[#FFB05A]', bgColor: 'bg-[rgba(255,176,90,.14)]', label: 'Pending' },
+  approved: { icon: Check, color: 'text-[var(--green)]', bgColor: 'bg-[rgba(68,209,122,.14)]', label: 'Approved' },
+  rejected: { icon: X, color: 'text-[var(--coral)]', bgColor: 'bg-[rgba(255,107,90,.14)]', label: 'Rejected' },
+}
 
 export function ReviewQueue() {
   const nav = useNavigate()
-  const { pendingProofs, reviewProof, task } = useStore()
+  const { pendingProofs, allProofs, reviewProof } = useStore()
   const [tab, setTab] = useState<'pending' | 'approved' | 'rejected'>('pending')
   const [, force] = useState(0)
 
   const pending = pendingProofs()
+  const all = allProofs()
+  const filtered = tab === 'pending' ? pending : all.filter((p) => p.completion.status === tab)
 
   function approveAll() {
     pending.forEach((p) => reviewProof(p.completion.id, true))
@@ -34,31 +44,43 @@ export function ReviewQueue() {
           ))}
         </div>
 
-        {tab !== 'pending' ? (
-          <div className="rounded-[var(--r)] border border-white/6 bg-[#15161C] py-14 text-center text-[#767884] text-[14px] font-semibold">
-            No {tab} proofs to show.
-          </div>
-        ) : pending.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="rounded-[var(--r)] border border-white/6 bg-[#15161C] py-14 text-center">
-            <Check width={28} height={28} className="text-[var(--green)] mx-auto" />
-            <div className="text-white text-[15px] font-bold mt-3">All caught up</div>
-            <div className="text-[#767884] text-[13px] font-semibold mt-1">No proofs waiting on review.</div>
+            {tab === 'pending' && (
+              <>
+                <Check width={28} height={28} className="text-[var(--green)] mx-auto" />
+                <div className="text-white text-[15px] font-bold mt-3">All caught up</div>
+                <div className="text-[#767884] text-[13px] font-semibold mt-1">No proofs waiting on review.</div>
+              </>
+            )}
+            {tab !== 'pending' && (
+              <>
+                <div className="text-white text-[15px] font-bold">No {tab} proofs</div>
+                <div className="text-[#767884] text-[13px] font-semibold mt-1">No {tab} submissions found.</div>
+              </>
+            )}
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 mb-3 text-[#767884] text-[12.5px] font-semibold">
-              Unreviewed proofs auto-approve in 24h so earners aren't left waiting.
-            </div>
+            {tab === 'pending' && (
+              <div className="flex items-center gap-2 mb-3 text-[#767884] text-[12.5px] font-semibold">
+                Unreviewed proofs auto-approve in 24h so earners aren't left waiting.
+              </div>
+            )}
             <div className="rounded-[var(--r)] border border-white/6 bg-[#15161C] overflow-hidden">
-              {pending.map((p, i) => {
+              {filtered.map((p, i) => {
                 const name = DEMO_EARNER_NAMES[p.completion.earner_id] ?? 'Earner'
-                const tk = task(p.completion.task_id)
+                const config = STATUS_CONFIG[p.completion.status]
+                const Icon = config.icon
                 return (
                   <button key={p.completion.id} onClick={() => nav(`/business/review/${p.completion.id}`)} className={`w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-white/[.04] ${i === 0 ? '' : 'border-t border-white/5'}`}>
                     <Avatar name={name} size={40} gradient="linear-gradient(135deg,#5B8DEF,#8B6CFF)" />
                     <div className="flex-1 min-w-0">
                       <div className="text-white text-[14px] font-bold truncate">{name}</div>
-                      <div className="text-[#767884] text-[12px] font-semibold mt-[1px] truncate">{tk?.title ?? 'Manual proof'} · {timeAgo(p.completion.created_at)}</div>
+                      <div className="text-[#767884] text-[12px] font-semibold mt-[1px] truncate">{p.task.title} · {timeAgo(p.completion.created_at)}</div>
+                    </div>
+                    <div className={`w-[28px] h-[28px] flex-none rounded-[8px] flex items-center justify-center ${config.bgColor}`}>
+                      <Icon width={14} height={14} className={config.color} />
                     </div>
                     <span className="font-head text-[14px] font-extrabold text-[var(--accent)]">{usd(p.completion.reward, { sign: true })}</span>
                     <ArrowRight width={16} height={16} className="text-[#5E606C]" />
@@ -67,9 +89,11 @@ export function ReviewQueue() {
               })}
             </div>
 
-            <button onClick={approveAll} className="w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
-              Approve all · pay {usd(payTotal)}
-            </button>
+            {tab === 'pending' && (
+              <button onClick={approveAll} className="w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
+                Approve all · pay {usd(payTotal)}
+              </button>
+            )}
           </>
         )}
       </div>

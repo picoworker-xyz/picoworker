@@ -145,6 +145,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       myCampaigns: () => cache.tasks.filter((t) => t.owner_id === uid).sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)),
       ledgerFor: (pid) => cache.ledger.filter((l) => l.profile_id === pid),
       completionsForTask: (taskId) => cache.completions.filter((c) => c.task_id === taskId),
+      myCompletions: () => cache.completions.filter((c) => c.earner_id === uid).sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)),
       referralsFor: (pid) => cache.referrals.filter((r) => r.referrer_id === pid),
       hasCompleted: (taskId) => cache.completions.some((c) => c.task_id === taskId && c.earner_id === uid),
 
@@ -216,6 +217,14 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
           .filter((c) => c.status === 'pending_proof' && mine.has(c.task_id))
           .map((completion) => ({ completion, task: cache.tasks.find((t) => t.id === completion.task_id)! }))
           .filter((x) => x.task)
+      },
+      allProofs() {
+        const mine = new Set(cache.tasks.filter((t) => t.owner_id === uid).map((t) => t.id))
+        return cache.completions
+          .filter((c) => mine.has(c.task_id))
+          .map((completion) => ({ completion, task: cache.tasks.find((t) => t.id === completion.task_id)! }))
+          .filter((x) => x.task)
+          .sort((a, b) => +new Date(b.completion.created_at) - +new Date(a.completion.created_at))
       },
       reviewProof(completionId, approve) {
         setCache((c) => ({ ...c, completions: c.completions.map((x) => (x.id === completionId ? { ...x, status: approve ? 'approved' : 'rejected' } : x)) }))
