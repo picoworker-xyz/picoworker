@@ -4,7 +4,7 @@ import { useStore } from '../../lib/store'
 import { usd, timeAgo } from '../../lib/format'
 import type { LedgerEntry } from '../../lib/types'
 import { Page } from '../../components/Page'
-import { ArrowDown, ArrowUp } from '../../components/icons'
+import { ArrowDown, ArrowUp, ArrowRight } from '../../components/icons'
 
 export function Wallet() {
   const nav = useNavigate()
@@ -69,7 +69,27 @@ function Stat({ value, label, accent }: { value: string; label: string; accent?:
 }
 
 function Row({ e, first }: { e: LedgerEntry; first: boolean }) {
+  const nav = useNavigate()
   const positive = e.amount > 0
+  const isTaskReward = e.type === 'task_reward' && e.ref_id
+  const isClickable = isTaskReward
+
+  if (isClickable) {
+    return (
+      <button onClick={() => nav(`/submissions/${e.ref_id}`)} className={`w-full flex items-center gap-3 px-5 py-[14px] text-left hover:bg-white/[.04] ${first ? '' : 'border-t border-white/5'}`}>
+        <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-white/6 text-[#C2C4CE]'}`}>
+          {positive ? <ArrowUp width={17} height={17} /> : <ArrowDown width={17} height={17} />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-white text-[14px] font-bold truncate">{e.title}</div>
+          <div className="text-[#767884] text-[11.5px] font-semibold mt-[1px]">{timeAgo(e.created_at)}</div>
+        </div>
+        <div className={`font-head text-[15px] font-extrabold ${positive ? 'text-[var(--green)]' : 'text-white'}`}>{usd(e.amount, { sign: true })}</div>
+        <ArrowRight width={16} height={16} className="text-[#5E606C]" />
+      </button>
+    )
+  }
+
   return (
     <div className={`flex items-center gap-3 px-5 py-[14px] ${first ? '' : 'border-t border-white/5'}`}>
       <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-white/6 text-[#C2C4CE]'}`}>

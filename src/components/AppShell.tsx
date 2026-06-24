@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 import { usd } from '../lib/format'
 import { BrandMark } from './layout'
 import { Avatar } from './ui'
-import { Bell, Bolt, Check, Flame, Home, ListIcon, Plus, Shield, Trophy, User, Wallet as WalletIcon } from './icons'
+import { Bell, Bolt, Check, Flame, Home, ListIcon, Plus, Shield, Share, Trophy, User, Wallet as WalletIcon } from './icons'
 
 interface NavItem {
   label: string
@@ -17,7 +17,7 @@ const EARNER_NAV: NavItem[] = [
   { label: 'Wallet', path: '/wallet', icon: WalletIcon },
   { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
-  { label: 'Refer', path: '/refer', icon: User },
+  { label: 'Referral', path: '/refer', icon: Share },
   { label: 'My Submissions', path: '/submissions', icon: ListIcon },
 ]
 const BUSINESS_NAV: NavItem[] = [
@@ -168,7 +168,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {/* Mobile bottom tabs */}
         <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 h-[68px] bg-[rgba(12,13,17,.95)] border-t border-white/7 backdrop-blur flex items-center justify-around px-2">
-          {[...items.slice(0, 3), { label: 'Profile', path: '/profile', icon: User }].map((it) => {
+          {(isBiz ? [...items, { label: 'Profile', path: '/profile', icon: User }] : [items[0], items[1], items[2], { label: 'Referral', path: '/refer', icon: Share }, { label: 'Profile', path: '/profile', icon: User }]).map((it) => {
             const on = active(it.path)
             const Icon = it.icon
             return (
