@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
 import { usd, timeAgo } from '../../lib/format'
@@ -7,6 +8,7 @@ import { Check, Shield } from '../../components/icons'
 
 // Real custodial Solana USDC deposits: per-user address + on-chain detection.
 export function AddFunds() {
+  const nav = useNavigate()
   const { wallet, refresh } = useStore()
   const [address, setAddress] = useState<string | null>(null)
   const [addrErr, setAddrErr] = useState('')
@@ -54,6 +56,12 @@ export function AddFunds() {
       <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6 mb-4 text-center">
         <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Campaign balance</div>
         <div className="font-head text-[36px] font-extrabold text-white mt-1">{usd(wallet?.business_escrow ?? 0)}</div>
+        <div className="text-[#767884] text-[11.5px] font-semibold mt-1">Leftover not committed to live campaigns</div>
+        {(wallet?.business_escrow ?? 0) > 0.2 && (
+          <button onClick={() => nav('/wallet/withdraw?source=business')} className="mt-4 px-5 py-2.5 rounded-[12px] bg-white/6 text-white text-[13px] font-extrabold font-head">
+            Withdraw leftover
+          </button>
+        )}
       </div>
 
       {addrErr ? (

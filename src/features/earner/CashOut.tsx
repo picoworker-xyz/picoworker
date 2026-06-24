@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
+import { supabase } from '../../lib/supabase'
 import { usd, shortAddr } from '../../lib/format'
 import { Page, CenteredPage } from '../../components/Page'
 import { ArrowUp, Shield } from '../../components/icons'
@@ -9,40 +10,50 @@ const FEE = 0.2 // fixed fee, covers creating the USDC token account (PDA) on So
 
 export function CashOut() {
   const nav = useNavigate()
-  const { wallet, profile } = useStore()
+  const [params] = useSearchParams()
+  const source = params.get('source') === 'business' ? 'business' : 'earner'
+  const { wallet, profile, refresh } = useStore()
   const [amount, setAmount] = useState('10.00')
   const [address, setAddress] = useState(profile?.payout_wallet ?? '')
-  const [comingSoon, setComingSoon] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [result, setResult] = useState<{ net: number; sig: string } | null>(null)
   const [err, setErr] = useState('')
 
   if (!wallet) return null
+  const isBiz = source === 'business'
+  const avail = isBiz ? wallet.business_escrow : wallet.earner_balance
   const amt = parseFloat(amount) || 0
   const netReceived = Math.max(0, +(amt - FEE).toFixed(2))
 
-  function confirm() {
+  async function confirm() {
     setErr('')
     if (amt <= 0) return setErr('Enter an amount.')
-    if (amt > wallet!.earner_balance) return setErr('Amount exceeds your balance.')
+    if (amt > avail) return setErr('Amount exceeds your balance.')
     if (amt <= FEE) return setErr('Amount must be more than the $0.20 fee.')
     if (!address.trim()) return setErr('Enter your Solana USDC wallet address.')
-    setComingSoon(true)
+    setBusy(true)
+    const { data, error } = await supabase!.functions.invoke('solana-withdraw', { body: { amount: amt, address: address.trim(), source } })
+    setBusy(false)
+    if (error || data?.error) return setErr(data?.error || 'Withdrawal failed. Please try again.')
+    await refresh()
+    setResult({ net: data.net, sig: data.signature })
   }
 
-  if (comingSoon) {
+  if (result) {
     return (
       <CenteredPage>
         <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-8 text-center">
           <div className="flex flex-col items-center" style={{ animation: 'pico-pop .4s ease both' }}>
-            <div className="w-[80px] h-[80px] rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center">
-              <ArrowUp width={34} height={34} className="text-[var(--accent)]" />
+            <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
+              <ArrowUp width={34} height={34} className="text-[var(--accent-ink)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawals coming soon</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
-              USDC withdrawals to Solana are almost ready. We will let you know the moment they go live. Your balance stays safe in the meantime.
-            </div>
+            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal sent</div>
+            <div className="font-head font-bold text-[32px] text-[var(--accent)] mt-2">{result.net.toFixed(2)} USDC</div>
+            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">Sent to your Solana address.</div>
+            <a href={`https://solscan.io/tx/${result.sig}?cluster=devnet`} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
           </div>
           <button onClick={() => nav('/wallet', { replace: true })} className="w-full mt-7 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
-            Back to wallet
+            Done
           </button>
         </div>
       </CenteredPage>
@@ -50,17 +61,18 @@ export function CashOut() {
   }
 
   return (
-    <Page title="Withdraw USDC" back narrow>
+    <Page title={isBiz ? 'Withdraw leftover' : 'Withdraw USDC'} back narrow>
       <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6 mb-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Amount to withdraw</div>
-          <button onClick={() => setAmount(wallet.earner_balance.toFixed(2))} className="text-[var(--accent)] text-[12px] font-extrabold">MAX</button>
+          <button onClick={() => setAmount(avail.toFixed(2))} className="text-[var(--accent)] text-[12px] font-extrabold">MAX</button>
         </div>
         <div className="flex items-center gap-1">
           <span className="font-head text-[34px] font-bold text-white">$</span>
           <input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))} inputMode="decimal" className="bg-transparent outline-none font-head text-[34px] font-bold text-white w-full" />
         </div>
-        <div className="text-[#767884] text-[12px] font-semibold mt-1">Available {usd(wallet.earner_balance)}</div>
+        <div className="text-[#767884] text-[12px] font-semibold mt-1">{isBiz ? 'Leftover available' : 'Available'} {usd(avail)}</div>
+        {isBiz && <div className="text-[#767884] text-[11px] font-semibold mt-1">Funds committed to live campaigns are held and cannot be withdrawn.</div>}
       </div>
 
       {/* USDC on Solana, fixed */}
@@ -93,8 +105,8 @@ export function CashOut() {
       {address && <div className="text-[#767884] text-[12px] font-semibold px-1">To {shortAddr(address)} on Solana</div>}
       {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-3 px-1">{err}</div>}
 
-      <button onClick={confirm} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px]" style={{ boxShadow: 'var(--glow)' }}>
-        Confirm withdrawal
+      <button onClick={confirm} disabled={busy} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
+        {busy ? 'Sending…' : 'Confirm withdrawal'}
       </button>
     </Page>
   )
