@@ -171,8 +171,8 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const { data, error } = await sb.rpc('claim_daily_bonus')
         if (error) throw new Error(error.message)
         await refresh()
-        const r = (data ?? {}) as { claimed?: boolean; amount?: number; balance?: number }
-        return { claimed: !!r.claimed, amount: num(r.amount), balance: num(r.balance) }
+        const r = (data ?? {}) as { claimed?: boolean; amount?: number; balance?: number; day?: number }
+        return { claimed: !!r.claimed, amount: num(r.amount), balance: num(r.balance), day: num(r.day) }
       },
       verifyIdentity() {
         setCache((c) => (c.profile ? { ...c, profile: { ...c.profile, identity_verified: true } } : c))

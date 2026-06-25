@@ -38,6 +38,7 @@ export interface Profile {
   referral_code: string
   referred_by: string | null
   streak_days: number
+  last_bonus_date?: string | null
   last_active: string | null
   tasks_done: number
   is_admin?: boolean
