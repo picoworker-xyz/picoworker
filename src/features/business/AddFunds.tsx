@@ -121,7 +121,7 @@ export function AddFunds() {
                     <div className="flex-1 min-w-0">
                       <div className="text-white text-[14px] font-bold">{d.amount.toFixed(2)} USDC</div>
                       <a
-                        href={`https://solscan.io/tx/${d.signature}?cluster=devnet`}
+                        href={`https://solscan.io/tx/${d.signature}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[#767884] text-[11.5px] font-semibold mt-[1px] hover:text-[var(--accent)] inline-flex items-center gap-1"

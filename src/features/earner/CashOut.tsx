@@ -50,7 +50,7 @@ export function CashOut() {
             <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal sent</div>
             <div className="font-head font-bold text-[32px] text-[var(--accent)] mt-2">{result.net.toFixed(2)} USDC</div>
             <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">Sent to your Solana address.</div>
-            <a href={`https://solscan.io/tx/${result.sig}?cluster=devnet`} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
+            <a href={`https://solscan.io/tx/${result.sig}`} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
           </div>
           <button onClick={() => nav('/wallet', { replace: true })} className="w-full mt-7 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
             Done

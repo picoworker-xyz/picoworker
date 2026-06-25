@@ -162,7 +162,7 @@ function Cell({ col, value }: { col: string; value: unknown }) {
     )
   }
   if (col === 'signature' && typeof value === 'string') {
-    return <a href={`https://solscan.io/tx/${value}?cluster=devnet`} target="_blank" rel="noreferrer" className="text-[var(--accent)] font-mono">{value.slice(0, 8)}…↗</a>
+    return <a href={`https://solscan.io/tx/${value}`} target="_blank" rel="noreferrer" className="text-[var(--accent)] font-mono">{value.slice(0, 8)}…↗</a>
   }
   if ((col === 'status' && value === 'pending_proof') || value === 'rejected') {
     return <span className="text-[#FFB05A] font-bold">{String(value)}</span>
