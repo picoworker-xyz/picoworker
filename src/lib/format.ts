@@ -4,9 +4,10 @@ export function usd(amount: number, opts: { sign?: boolean } = {}): string {
   const sign = opts.sign && amount > 0 ? '+' : ''
   const neg = amount < 0 ? '-' : ''
   const v = Math.abs(amount)
-  // tiny rewards need more precision (e.g. $0.04), balances 2dp
-  const dp = v > 0 && v < 1 ? 2 : 2
-  return `${neg}${sign}$${v.toFixed(dp)}`
+  // Sub-dollar amounts show up to 4 decimals so sub-cent rewards ($0.001,
+  // $0.005) are visible; trailing zeros past 2 places are trimmed. $1+ uses 2dp.
+  const s = v > 0 && v < 1 ? v.toFixed(4).replace(/(\.\d{2}\d*?)0+$/, '$1') : v.toFixed(2)
+  return `${neg}${sign}$${s}`
 }
 
 export function usdc(amount: number): string {
