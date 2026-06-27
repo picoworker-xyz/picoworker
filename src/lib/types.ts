@@ -41,6 +41,9 @@ export interface Profile {
   last_bonus_date?: string | null
   suspended?: boolean
   suspended_reason?: string | null
+  device_hash?: string | null
+  signup_ip?: string | null
+  signup_vpn?: boolean
   last_active: string | null
   tasks_done: number
   is_admin?: boolean

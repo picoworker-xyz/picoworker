@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
+import { collectSignals } from './fraud'
 import { StoreCtx, type StoreApi, type TaskDraft } from './store'
 import type {
   LedgerEntry,
@@ -85,6 +86,23 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
     const { data } = sb.auth.onAuthStateChange((_e, session) => onSession(session))
     return () => data.subscription.unsubscribe()
   }, [sb, onSession])
+
+  // OAuth (Google) signups skip the signup form, so they have no device/IP yet.
+  // Capture the same fraud signals on first login so they show in the Fraud tab.
+  const fraudRef = useRef<string | null>(null)
+  useEffect(() => {
+    const p = cache.profile
+    if (!p || p.device_hash || fraudRef.current === p.id) return
+    fraudRef.current = p.id
+    void (async () => {
+      try {
+        const s = await collectSignals()
+        await sb.rpc('attach_fraud_signals', { p_device: s.deviceHash, p_ip: s.ip, p_vpn: s.vpn })
+      } catch {
+        /* non-fatal */
+      }
+    })()
+  }, [cache.profile, sb])
 
   const refresh = useCallback(async () => {
     if (uidRef.current) await loadAll(uidRef.current)
