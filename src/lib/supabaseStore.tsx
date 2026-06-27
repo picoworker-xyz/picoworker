@@ -120,8 +120,19 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         return { userId: id, needsConfirmation: true }
       },
       async signIn(email, password) {
-        const { error } = await sb.auth.signInWithPassword({ email, password })
-        if (error) throw new Error(error.message)
+        // Goes through the secure-login function which enforces a 1-hour lockout
+        // after 5 wrong passwords, then sets the session locally.
+        const { data, error } = await sb.functions.invoke('secure-login', { body: { email, password } })
+        if (error) throw new Error('Could not sign in. Please try again.')
+        const d = data as { ok?: boolean; locked?: boolean; minutes?: number; error?: string; remaining?: number; access_token?: string; refresh_token?: string }
+        if (d.locked) throw new Error(`Too many wrong attempts. Try again in ${d.minutes} minute${d.minutes === 1 ? '' : 's'}, or reset your password.`)
+        if (d.error) {
+          let m = d.error
+          if (typeof d.remaining === 'number' && d.remaining <= 2) m += ` ${d.remaining} attempt${d.remaining === 1 ? '' : 's'} left before a 1-hour lock.`
+          throw new Error(m)
+        }
+        const { error: sErr } = await sb.auth.setSession({ access_token: d.access_token!, refresh_token: d.refresh_token! })
+        if (sErr) throw new Error(sErr.message)
       },
       signOut() {
         void sb.auth.signOut()

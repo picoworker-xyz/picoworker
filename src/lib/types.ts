@@ -39,6 +39,8 @@ export interface Profile {
   referred_by: string | null
   streak_days: number
   last_bonus_date?: string | null
+  suspended?: boolean
+  suspended_reason?: string | null
   last_active: string | null
   tasks_done: number
   is_admin?: boolean
@@ -82,6 +84,8 @@ export interface TaskCompletion {
   proof_note: string | null
   reward: number
   created_at: string
+  appeal_status?: 'none' | 'pending' | 'reviewed' | 'denied'
+  appeal_note?: string | null
 }
 
 export interface LedgerEntry {

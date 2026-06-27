@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
+import { supabase } from '../../lib/supabase'
 import { usd, timeAgo } from '../../lib/format'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
@@ -18,6 +20,9 @@ export function SubmissionDetail() {
     const { myCompletions, task } = useStore()
 
     const completion = myCompletions().find((c) => c.id === id)
+    const [appealNote, setAppealNote] = useState('')
+    const [sent, setSent] = useState(false)
+    const [appealErr, setAppealErr] = useState('')
 
     if (!completion) {
         return (
@@ -34,6 +39,16 @@ export function SubmissionDetail() {
     const tk = task(completion.task_id)
     const config = STATUS_CONFIG[completion.status]
     const Icon = config.icon
+    const appealed = sent || completion.appeal_status === 'pending'
+    const denied = completion.appeal_status === 'denied'
+
+    async function submitAppeal() {
+        if (!appealNote.trim()) { setAppealErr('Tell us why this should be approved.'); return }
+        setAppealErr('')
+        const { error } = await supabase!.rpc('appeal_completion', { p_completion: completion!.id, p_note: appealNote.trim() })
+        if (error) { setAppealErr(error.message); return }
+        setSent(true)
+    }
 
     return (
         <Page title="Submission Details" back narrow>
@@ -86,6 +101,25 @@ export function SubmissionDetail() {
                 <div className="rounded-[18px] border border-white/8 bg-[#15161C] p-8 mb-4 flex flex-col items-center justify-center gap-2 text-[#767884] text-[13px] font-semibold">
                     <Zoom width={24} height={24} />
                     No screenshot provided
+                </div>
+            )}
+
+            {/* appeal (rejected only) */}
+            {completion.status === 'rejected' && (
+                <div className="rounded-[16px] p-4 bg-[#15161C] border border-white/6 mb-4">
+                    <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Appeal this decision</div>
+                    {appealed ? (
+                        <div className="text-[var(--green)] text-[13.5px] font-semibold leading-[1.5]">Appeal submitted. Our team will review it and get back to you.</div>
+                    ) : denied ? (
+                        <div className="text-[#9A9CA8] text-[13.5px] font-semibold leading-[1.5]">Your appeal was reviewed and the rejection stands.</div>
+                    ) : (
+                        <>
+                            <div className="text-[#A9ABB6] text-[13px] font-semibold mb-3 leading-[1.5]">If you think this was rejected by mistake, tell us why and our team will review it.</div>
+                            <textarea value={appealNote} onChange={(e) => setAppealNote(e.target.value)} rows={3} placeholder="Explain why your proof meets the task requirements…" className="w-full bg-white/4 border border-white/8 rounded-[12px] px-4 py-3 text-white text-[14px] font-medium placeholder:text-[#6E6F7A] outline-none resize-none" />
+                            {appealErr && <div className="text-[var(--coral)] text-[12.5px] font-semibold mt-2">{appealErr}</div>}
+                            <button onClick={submitAppeal} className="w-full mt-3 font-head font-extrabold text-[14px] bg-[var(--accent)] text-[var(--accent-ink)] py-3 rounded-[12px]">Submit appeal</button>
+                        </>
+                    )}
                 </div>
             )}
 

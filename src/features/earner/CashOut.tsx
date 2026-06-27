@@ -14,9 +14,9 @@ export function CashOut() {
   const source = params.get('source') === 'business' ? 'business' : 'earner'
   const { wallet, profile, refresh } = useStore()
   const [amount, setAmount] = useState('10.00')
-  const [address, setAddress] = useState(profile?.payout_wallet ?? '')
+  const address = profile?.payout_wallet ?? '' // email-confirmed payout address only
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState<{ net: number; sig: string } | null>(null)
+  const [result, setResult] = useState<{ net: number; sig?: string; review?: boolean } | null>(null)
   const [err, setErr] = useState('')
 
   if (!wallet) return null
@@ -30,13 +30,13 @@ export function CashOut() {
     if (amt <= 0) return setErr('Enter an amount.')
     if (amt > avail) return setErr('Amount exceeds your balance.')
     if (amt <= FEE) return setErr('Amount must be more than the $0.20 fee.')
-    if (!address.trim()) return setErr('Enter your Solana USDC wallet address.')
+    if (!address) return setErr('Add a confirmed payout address first.')
     setBusy(true)
-    const { data, error } = await supabase!.functions.invoke('solana-withdraw', { body: { amount: amt, address: address.trim(), source } })
+    const { data, error } = await supabase!.functions.invoke('solana-withdraw', { body: { amount: amt, address, source } })
     setBusy(false)
     if (error || data?.error) return setErr(data?.error || 'Withdrawal failed. Please try again.')
     await refresh()
-    setResult({ net: data.net, sig: data.signature })
+    setResult({ net: data.net, sig: data.signature, review: data.review })
   }
 
   if (result) {
@@ -47,10 +47,16 @@ export function CashOut() {
             <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
               <ArrowUp width={34} height={34} className="text-[var(--accent-ink)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-white mt-6">Withdrawal sent</div>
+            <div className="font-head font-bold text-[24px] text-white mt-6">{result.review ? 'Pending approval' : 'Withdrawal sent'}</div>
             <div className="font-head font-bold text-[32px] text-[var(--accent)] mt-2">{result.net.toFixed(2)} USDC</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">Sent to your Solana address.</div>
-            <a href={`https://solscan.io/tx/${result.sig}`} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
+            {result.review ? (
+              <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold.</div>
+            ) : (
+              <>
+                <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">Sent to your Solana address.</div>
+                <a href={`https://solscan.io/tx/${result.sig}`} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
+              </>
+            )}
           </div>
           <button onClick={() => nav('/wallet', { replace: true })} className="w-full mt-7 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px]" style={{ boxShadow: 'var(--glow)' }}>
             Done
@@ -84,13 +90,17 @@ export function CashOut() {
         </div>
       </div>
 
-      <Label>Your Solana USDC address</Label>
-      <div className="flex gap-2 mb-5">
-        <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Paste your Solana address" className="flex-1 bg-[#15161C] border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[14px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60" />
-        {profile?.payout_wallet && (
-          <button onClick={() => setAddress(profile.payout_wallet!)} className="px-4 rounded-[14px] bg-white/6 text-white text-[13px] font-bold">Use saved</button>
-        )}
-      </div>
+      <Label>Payout address</Label>
+      {address ? (
+        <div className="flex items-center justify-between gap-2 mb-5 rounded-[14px] bg-[#15161C] border border-white/10 px-4 py-[14px]">
+          <span className="font-mono text-[13px] text-white break-all">{shortAddr(address)}</span>
+          <button onClick={() => nav('/payout-address')} className="text-[var(--accent)] text-[13px] font-bold flex-none">Change</button>
+        </div>
+      ) : (
+        <button onClick={() => nav('/payout-address')} className="w-full mb-5 rounded-[14px] bg-white/6 text-white py-[14px] text-[14px] font-bold">
+          Add a confirmed payout address
+        </button>
+      )}
 
       <div className="rounded-[16px] p-4 bg-white/4 border border-white/7 flex flex-col gap-2 mb-2">
         <Line label="You send" value={`${usd(amt)} USDC`} />

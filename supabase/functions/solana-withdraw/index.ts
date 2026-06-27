@@ -26,7 +26,10 @@ Deno.serve(async (req) => {
     // 1. Debit + create the pending withdrawal (refunded later if the send fails).
     const start = await admin.rpc('start_withdrawal', { p_profile: user.id, p_amount: amt, p_address: String(address), p_source: src })
     if (start.error) return json({ error: start.error.message }, 400)
-    const { id, net } = start.data as { id: string; net: number }
+    const { id, net, review } = start.data as { id: string; net: number; review: boolean }
+
+    // Over the $5/day limit: held for admin approval, no payout now.
+    if (review) return json({ ok: true, review: true, net })
 
     // 2. Pay out from the treasury.
     try {

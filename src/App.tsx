@@ -14,6 +14,7 @@ import { ProofUpload } from './features/earner/ProofUpload'
 import { TaskComplete } from './features/earner/TaskComplete'
 import { Wallet } from './features/earner/Wallet'
 import { CashOut } from './features/earner/CashOut'
+import { PayoutAddress } from './features/earner/PayoutAddress'
 import { Refer } from './features/earner/Refer'
 import { Rewards } from './features/earner/Rewards'
 import { Profile } from './features/earner/Profile'
@@ -81,6 +82,7 @@ export default function App() {
       <Route path="/task/:id/rejected" element={<Shell><TaskRejected /></Shell>} />
       <Route path="/wallet" element={<Shell><Wallet /></Shell>} />
       <Route path="/wallet/withdraw" element={<Shell><CashOut /></Shell>} />
+      <Route path="/payout-address" element={<Shell><PayoutAddress /></Shell>} />
       <Route path="/refer" element={<Shell><Refer /></Shell>} />
       <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
       <Route path="/notifications" element={<Shell><Notifications /></Shell>} />

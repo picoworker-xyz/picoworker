@@ -57,6 +57,25 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   if (!profile || !wallet) return null
 
+  // Suspended accounts are locked out of everything except the support chat.
+  if (profile.suspended && loc.pathname !== '/support') {
+    return (
+      <div className="min-h-svh flex items-center justify-center p-6">
+        <div className="w-full max-w-[440px] text-center rounded-[22px] bg-[#15161C] border border-white/8 p-8">
+          <div className="w-14 h-14 rounded-full bg-[rgba(255,107,90,.14)] border border-[rgba(255,107,90,.35)] flex items-center justify-center mx-auto mb-5">
+            <Shield width={26} height={26} className="text-[var(--coral)]" />
+          </div>
+          <div className="font-head font-bold text-[22px] text-white">Account suspended</div>
+          <div className="text-[#9A9CA8] text-[14px] font-semibold mt-2 leading-[1.5]">
+            Your account has been suspended. If you think this is a mistake, reach our team at hello@picoworker.xyz and we'll help sort it out.
+          </div>
+          <a href="mailto:hello@picoworker.xyz" className="block w-full mt-6 font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] py-3 rounded-[13px]">Email hello@picoworker.xyz</a>
+          <button onClick={() => nav('/support')} className="w-full mt-2 font-head font-extrabold text-[14px] bg-white/6 text-white border border-white/10 py-3 rounded-[13px]">Open support chat</button>
+        </div>
+      </div>
+    )
+  }
+
   const isBiz = profile.mode === 'business'
   const items = isBiz ? BUSINESS_NAV : EARNER_NAV
   const balance = isBiz ? wallet.business_escrow : wallet.earner_balance
