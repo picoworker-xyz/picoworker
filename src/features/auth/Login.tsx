@@ -12,6 +12,11 @@ import { Avatar } from '../../components/ui'
 export function Login() {
   const { signIn, signUp } = useStore()
   const nav = useNavigate()
+
+  async function googleSignIn() {
+    const { error } = await supabase!.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/` } })
+    if (error) alert(error.message)
+  }
   const [mode, setMode] = useState<Mode>('earner')
   const [isSignup, setIsSignup] = useState(false)
   const [name, setName] = useState('')
@@ -297,7 +302,7 @@ export function Login() {
           </div>
 
           <div className="grid grid-cols-3 gap-[10px]">
-            <Social icon={<Google width={20} height={20} />} />
+            <Social icon={<Google width={20} height={20} />} onClick={googleSignIn} title="Continue with Google" />
             <Social icon={<Apple width={18} height={18} className="text-white" />} />
             <Social icon={<Phone width={18} height={18} className="text-white" />} />
           </div>
@@ -378,13 +383,13 @@ function PasswordRequirements({ pw }: { pw: string }) {
   )
 }
 
-function Social({ icon }: { icon: React.ReactNode }) {
+function Social({ icon, onClick, title }: { icon: React.ReactNode; onClick?: () => void; title?: string }) {
   const [done, setDone] = useState(false)
   return (
     <button
-      onClick={() => { setDone(true); setTimeout(() => setDone(false), 1400) }}
+      onClick={onClick ?? (() => { setDone(true); setTimeout(() => setDone(false), 1400) })}
       className="py-[13px] rounded-[14px] bg-[#15161C] border border-white/12 flex items-center justify-center hover:bg-white/8"
-      title="Coming soon — use email"
+      title={title ?? 'Coming soon — use email'}
     >
       {done ? <Check width={18} height={18} className="text-[var(--green)]" /> : icon}
     </button>
