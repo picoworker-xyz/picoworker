@@ -43,6 +43,11 @@ export function TaskFlow() {
   }
 
   const steps = STEPS[t.type]
+  const need = Math.max(1, t.screenshots_required ?? 1)
+  const specs = t.screenshot_specs ?? []
+  const refImgs = t.reference_images ?? []
+  const openTarget =
+    t.type === 'follow_x' && t.target ? `https://x.com/${t.target.replace(/^@/, '')}` : t.target ?? ''
 
   async function verify() {
     setBusy(true)
@@ -114,6 +119,56 @@ export function TaskFlow() {
                 ))}
               </div>
             </>
+          )}
+
+          {/* Task giver's own brief + example proof, shown up front so workers know exactly what to do */}
+          {(t.proof_instructions || refImgs.length > 0 || specs.some((s) => s)) && (
+            <div className="mt-8 rounded-[16px] bg-white/4 border border-white/8 p-5">
+              {t.proof_instructions && (
+                <>
+                  <div className="text-white text-[14px] font-extrabold font-head mb-2">Instructions from the task giver</div>
+                  <div className="text-[#D9DAE2] text-[14px] font-semibold leading-[1.55] whitespace-pre-line">{t.proof_instructions}</div>
+                </>
+              )}
+
+              {t.target && (
+                <div className="mt-4 flex items-center gap-2 rounded-[12px] bg-black/25 border border-white/8 px-4 py-3">
+                  <span className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.06em] flex-none">Open</span>
+                  {openTarget.startsWith('http') ? (
+                    <a href={openTarget} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[14px] font-bold break-all hover:underline">{t.target}</a>
+                  ) : (
+                    <span className="text-[var(--accent)] text-[14px] font-bold break-all">{t.target}</span>
+                  )}
+                </div>
+              )}
+
+              {specs.some((s) => s) && (
+                <div className="mt-4">
+                  <div className="text-white text-[13px] font-extrabold font-head mb-2">Proof needed ({need} screenshot{need > 1 ? 's' : ''})</div>
+                  <div className="flex flex-col gap-1.5">
+                    {Array.from({ length: need }, (_, i) => (
+                      <div key={i} className="flex items-start gap-2 text-[#D9DAE2] text-[13px] font-semibold">
+                        <span className="w-5 h-5 rounded-full bg-white/8 text-[#9A9CA8] text-[10px] font-extrabold flex items-center justify-center flex-none mt-[1px]">{i + 1}</span>
+                        <span>{specs[i] || 'A clear screenshot of your completed action'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {refImgs.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-[#8B8D99] text-[12px] font-semibold mb-2">Example{refImgs.length > 1 ? 's' : ''} from the task giver:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {refImgs.map((url, i) => (
+                      <a key={i} href={url} target="_blank" rel="noreferrer" className="w-24 h-24 rounded-[12px] overflow-hidden border border-white/10 block">
+                        <img src={url} alt="example" className="w-full h-full object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           <div className="flex items-center gap-3 mt-8 px-4 py-4 rounded-[14px] bg-white/4 border border-white/7">
