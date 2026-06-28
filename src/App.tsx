@@ -37,6 +37,7 @@ import { Targeting } from './features/business/Targeting'
 import { ReviewQueue } from './features/business/ReviewQueue'
 import { ProofDetail } from './features/business/ProofDetail'
 import { BusinessSignup } from './features/business/BusinessSignup'
+import { Terms, Privacy } from './features/marketing/Legal'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
 function Shell({ children }: { children: ReactNode }) {
@@ -73,6 +74,8 @@ export default function App() {
       <Route path="/r/:code" element={<RefCapture />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/business/signup" element={<BusinessSignup />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />

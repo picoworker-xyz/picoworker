@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { BrandMark } from '../../components/layout'
 import { Avatar } from '../../components/ui'
 import {
@@ -53,6 +53,7 @@ export function Landing() {
         </div>
       </header>
 
+      <main>
       {/* ===== Hero ===== */}
       <section className="hero-grid border-b border-white/6">
         <div className="app-container py-16 lg:py-28 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -138,28 +139,25 @@ export function Landing() {
             <SectionTitle>Tiny tasks. Real money.</SectionTitle>
           </div>
           <p className="text-[#9A9CA8] text-[15px] font-medium max-w-[340px] sm:text-right">
-            Hundreds of live micro-tasks across four categories — new ones added every minute.
+            Micro-tasks across four categories. Pick one and get paid in USDC.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { icon: <XLogo width={22} height={22} className="text-white" />, color: '#000000', ring: 'rgba(255,255,255,.14)', t: 'Social', d: 'Follow, like & repost on X, IG, TikTok', p: 'from $0.04', live: '2.1k live' },
-            { icon: <Play width={24} height={24} className="text-white" />, color: '#FF0033', ring: 'transparent', t: 'Watch', d: 'Watch short videos & ads', p: 'from $0.02', live: '980 live' },
-            { icon: <Bolt width={22} height={22} className="text-white" />, color: '#5B8DEF', ring: 'transparent', t: 'App tests', d: 'Install & try new apps', p: 'up to $0.35', live: '340 live' },
-            { icon: <ListIcon width={22} height={22} className="text-white" />, color: '#26A17B', ring: 'transparent', t: 'Surveys', d: 'Share your opinion', p: 'up to $0.20', live: '510 live' },
+            { icon: <XLogo width={22} height={22} className="text-white" />, color: '#000000', ring: 'rgba(255,255,255,.14)', t: 'Social', d: 'Follow, like & repost on X, IG, TikTok', p: 'from $0.04' },
+            { icon: <Play width={24} height={24} className="text-white" />, color: '#FF0033', ring: 'transparent', t: 'Watch', d: 'Watch short videos & ads', p: 'from $0.02' },
+            { icon: <Bolt width={22} height={22} className="text-white" />, color: '#5B8DEF', ring: 'transparent', t: 'App tests', d: 'Install & try new apps', p: 'up to $0.35' },
+            { icon: <ListIcon width={22} height={22} className="text-white" />, color: '#26A17B', ring: 'transparent', t: 'Surveys', d: 'Share your opinion', p: 'up to $0.20' },
           ].map((c) => (
             <div key={c.t} className="card-hover group relative overflow-hidden rounded-[22px] p-6 bg-[#15161C] border border-white/6">
               <div
                 className="absolute -right-10 -top-10 w-32 h-32 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40"
                 style={{ background: c.color === '#000000' ? '#C2F94D' : c.color }}
               />
-              <div className="relative flex items-center justify-between mb-5">
+              <div className="relative mb-5">
                 <div className="w-12 h-12 rounded-[14px] flex items-center justify-center" style={{ background: c.color, border: `1px solid ${c.ring}` }}>
                   {c.icon}
                 </div>
-                <span className="text-[10px] font-extrabold text-[var(--green)] bg-[rgba(68,209,122,.12)] px-2 py-1 rounded-full flex items-center gap-1">
-                  <span className="w-[6px] h-[6px] rounded-full bg-[var(--green)]" /> {c.live}
-                </span>
               </div>
               <div className="relative text-white text-[18px] font-extrabold font-head">{c.t}</div>
               <div className="relative text-[#8A8C98] text-[13px] font-semibold mt-1 leading-[1.5]">{c.d}</div>
@@ -281,12 +279,15 @@ export function Landing() {
           </button>
         </div>
       </section>
+      </main>
 
       {/* ===== Footer ===== */}
       <footer className="border-t border-white/7">
         <div className="app-container py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <BrandMark size={32} />
-          <div className="text-[#767884] text-[13px] font-semibold">© 2026 PicoWorker · Terms · Privacy</div>
+          <div className="text-[#767884] text-[13px] font-semibold">
+            © 2026 PicoWorker · <Link to="/terms" className="hover:text-white">Terms</Link> · <Link to="/privacy" className="hover:text-white">Privacy</Link>
+          </div>
           <div className="flex items-center gap-3 text-[#9A9CA8]">
             <a href="#" className="w-9 h-9 rounded-full bg-white/6 flex items-center justify-center hover:text-white">
               <XLogo width={15} height={15} />

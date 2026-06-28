@@ -29,5 +29,6 @@ PicoWorker is a micro-task platform. Earners complete tiny online tasks and get 
 - How do I get paid? In USDC, withdrawn to a Solana wallet.
 
 ## Links
-- Home: https://picoworker.xyz/
-- Sign up or log in: https://picoworker.xyz/login
+- [Home](https://picoworker.xyz/): the PicoWorker home page
+- [Sign up or log in](https://picoworker.xyz/login): create an account or sign in
+- [Sitemap](https://picoworker.xyz/sitemap.xml): list of indexable pages

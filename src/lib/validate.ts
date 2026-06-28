@@ -45,8 +45,11 @@ export function passwordError(pw: string): string | null {
 export function cleanAuthError(message?: string, status?: number): string {
   const m = (message ?? '').trim()
   const low = m.toLowerCase()
-  if (status === 429 || low.includes('rate') || low.includes('security purposes') || low.includes('too many')) {
-    return "Too many requests — please wait a few minutes and try again."
+  // Keep our own lockout message intact (it tells them to reset); only rewrite
+  // the generic provider rate-limit errors.
+  if (low.includes('wrong attempts')) return m
+  if (status === 429 || low.includes('rate limit') || low.includes('security purposes') || low.includes('over_email_send')) {
+    return 'Too many requests. Please wait a few minutes and try again.'
   }
   if (!m || m === '{}' || m === '[object Object]') return 'Something went wrong. Please try again.'
   if (low.includes('invalid login')) return 'Wrong email or password.'

@@ -87,26 +87,38 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe()
   }, [sb, onSession])
 
-  // OAuth (Google) signups skip the signup form, so they have no device/IP yet.
-  // Capture the same fraud signals on first login so they show in the Fraud tab.
+  const refresh = useCallback(async () => {
+    if (uidRef.current) await loadAll(uidRef.current)
+  }, [loadAll])
+
+  // OAuth (Google) signups skip the signup form, so they miss two things the
+  // email form handles: the referral code and the device/IP fraud signals.
+  // Backfill both on first login.
   const fraudRef = useRef<string | null>(null)
   useEffect(() => {
     const p = cache.profile
-    if (!p || p.device_hash || fraudRef.current === p.id) return
+    if (!p || fraudRef.current === p.id) return
     fraudRef.current = p.id
+    const ref = localStorage.getItem('picoworker:ref')
+    const needsReferral = !!ref && !p.referred_by
+    const needsFraud = !p.device_hash
+    if (!needsReferral && !needsFraud) return
     void (async () => {
       try {
-        const s = await collectSignals()
-        await sb.rpc('attach_fraud_signals', { p_device: s.deviceHash, p_ip: s.ip, p_vpn: s.vpn })
+        if (needsReferral) {
+          await sb.rpc('apply_referral', { p_ref_code: ref })
+          localStorage.removeItem('picoworker:ref')
+        }
+        if (needsFraud) {
+          const s = await collectSignals()
+          await sb.rpc('attach_fraud_signals', { p_device: s.deviceHash, p_ip: s.ip, p_vpn: s.vpn })
+        }
+        await refresh()
       } catch {
         /* non-fatal */
       }
     })()
-  }, [cache.profile, sb])
-
-  const refresh = useCallback(async () => {
-    if (uidRef.current) await loadAll(uidRef.current)
-  }, [loadAll])
+  }, [cache.profile, sb, refresh])
 
   const api = useMemo<StoreApi>(() => {
     const uid = userId

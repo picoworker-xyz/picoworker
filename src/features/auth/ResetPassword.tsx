@@ -23,8 +23,10 @@ export function ResetPassword() {
     setBusy(true)
     const { error } = await supabase.auth.updateUser({ password: pw })
     setBusy(false)
-    if (error) setErr(error.message)
-    else setDone(true)
+    if (error) return setErr(error.message)
+    // Clear any login lockout from earlier wrong attempts so they can sign in now.
+    await supabase.rpc('clear_login_lockout')
+    setDone(true)
   }
 
   return (

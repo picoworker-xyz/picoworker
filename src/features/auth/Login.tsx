@@ -27,7 +27,9 @@ export function Login() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
-  const [resetSent, setResetSent] = useState(false)
+  const [resetStage, setResetStage] = useState(false)
+  const [resetCode, setResetCode] = useState('')
+  const [resetNewPw, setResetNewPw] = useState('')
   const [pendingEmail, setPendingEmail] = useState('')
   const [existingHint, setExistingHint] = useState('')
   const [infoMsg, setInfoMsg] = useState('')
@@ -66,11 +68,31 @@ export function Login() {
     const ee = emailError(email)
     if (ee) return setErr('Enter your email above first, then tap reset.')
     if (!supabase) return
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
+    setBusy(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim())
+    setBusy(false)
     if (error) setErr(cleanAuthError(error.message, error.status))
-    else setResetSent(true)
+    else { setResetStage(true); setErr('') }
+  }
+
+  async function verifyReset() {
+    setErr('')
+    if (!/^\d{4,10}$/.test(resetCode.trim())) return setErr('Enter the code from your email.')
+    const pe = passwordError(resetNewPw)
+    if (pe) return setErr(pe)
+    if (!supabase) return
+    setBusy(true)
+    const { error: vErr } = await supabase.auth.verifyOtp({ email: email.trim(), token: resetCode.trim(), type: 'recovery' })
+    if (vErr) {
+      setBusy(false)
+      const low = vErr.message.toLowerCase()
+      return setErr(low.includes('expired') || low.includes('invalid') ? 'That code is invalid or expired. Request a new one.' : cleanAuthError(vErr.message, vErr.status))
+    }
+    const { error: uErr } = await supabase.auth.updateUser({ password: resetNewPw })
+    if (uErr) { setBusy(false); return setErr(uErr.message) }
+    await supabase.rpc('clear_login_lockout')
+    setBusy(false)
+    nav('/', { replace: true })
   }
 
   async function submit() {
@@ -115,6 +137,44 @@ export function Login() {
     } finally {
       setBusy(false)
     }
+  }
+
+  // Forgot password → enter the 6-digit code and a new password.
+  if (resetStage) {
+    return (
+      <div className="min-h-svh flex items-center justify-center p-6">
+        <div className="w-full max-w-[400px] reveal">
+          <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
+          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7">
+            <div className="font-head font-bold text-[22px] text-white">Reset your password</div>
+            <div className="text-[#9A9CA8] text-[14px] font-semibold mt-1 mb-5 leading-[1.5]">
+              We emailed a 6-digit code to <span className="text-white font-bold break-all">{email.trim()}</span>. Enter it and choose a new password.
+            </div>
+            <input
+              value={resetCode}
+              onChange={(e) => setResetCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
+              inputMode="numeric"
+              placeholder="000000"
+              className="w-full bg-white/4 border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[20px] font-head font-extrabold tracking-[.3em] text-center placeholder:text-[#3A3B44] outline-none focus:border-[var(--accent)]/60 mb-3"
+            />
+            <input
+              type="password"
+              value={resetNewPw}
+              onChange={(e) => setResetNewPw(e.target.value)}
+              placeholder="New password"
+              className="w-full bg-white/4 border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
+            />
+            <div className="text-[#767884] text-[11px] font-semibold mt-1.5">8+ chars with upper and lower case, a number and a symbol.</div>
+            {err && <div className="text-[var(--coral)] text-[12.5px] font-semibold mt-3">{err}</div>}
+            <button onClick={verifyReset} disabled={busy} className="w-full mt-4 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>
+              {busy ? 'Verifying…' : 'Reset password and sign in'}
+            </button>
+            <button onClick={sendReset} disabled={busy} className="w-full mt-2 text-[var(--accent)] text-[13px] font-bold py-1">Resend code</button>
+            <button onClick={() => { setResetStage(false); setResetCode(''); setResetNewPw(''); setErr('') }} className="w-full text-[#9A9CA8] text-[13px] font-bold py-1">Back to sign in</button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Already have an account on this device → recognise it and sign in.
@@ -289,13 +349,9 @@ export function Login() {
 
           {!isSignup && supabaseEnabled && (
             <div className="text-center mt-3">
-              {resetSent ? (
-                <span className="text-[var(--green)] text-[13px] font-semibold">Reset link sent — check your email <span className="text-[#FFB05A]">and Spam folder</span>.</span>
-              ) : (
-                <button onClick={sendReset} className="text-[#9A9CA8] text-[13px] font-semibold hover:text-white">
-                  Forgot password?
-                </button>
-              )}
+              <button onClick={sendReset} disabled={busy} className="text-[#9A9CA8] text-[13px] font-semibold hover:text-white disabled:opacity-50">
+                Forgot password?
+              </button>
             </div>
           )}
 
@@ -312,8 +368,8 @@ export function Login() {
 
           <div className="grid grid-cols-3 gap-[10px]">
             <Social icon={<Google width={20} height={20} />} onClick={googleSignIn} title="Continue with Google" />
-            <Social icon={<Apple width={18} height={18} className="text-white" />} />
-            <Social icon={<Phone width={18} height={18} className="text-white" />} />
+            <Social icon={<Apple width={18} height={18} className="text-white" />} title="Apple sign in coming soon" />
+            <Social icon={<Phone width={18} height={18} className="text-white" />} title="Phone sign in coming soon" />
           </div>
 
         </div>
@@ -396,6 +452,8 @@ function Social({ icon, onClick, title }: { icon: React.ReactNode; onClick?: () 
   const [done, setDone] = useState(false)
   return (
     <button
+      type="button"
+      aria-label={title ?? 'Sign in option'}
       onClick={onClick ?? (() => { setDone(true); setTimeout(() => setDone(false), 1400) })}
       className="py-[13px] rounded-[14px] bg-[#15161C] border border-white/12 flex items-center justify-center hover:bg-white/8"
       title={title ?? 'Coming soon — use email'}
