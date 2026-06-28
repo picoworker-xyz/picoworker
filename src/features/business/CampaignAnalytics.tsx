@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
+import { supabase } from '../../lib/supabase'
 import { usd, pct, etaLabel, timeAgo } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Pill } from '../../components/ui'
@@ -8,10 +10,18 @@ export function CampaignAnalytics() {
   const { id } = useParams()
   const nav = useNavigate()
   const { task, completionsForTask, pauseCampaign } = useStore()
+  const [available, setAvailable] = useState<number | null>(null)
+
+  useEffect(() => {
+    supabase!.rpc('business_balance').then(({ data }) => {
+      if (data) setAvailable(Number((data as { available: number }).available))
+    })
+  }, [])
 
   const t = id ? task(id) : undefined
   if (!t) return <Page title="Campaign" back><div className="text-center text-[#767884] text-[14px] font-semibold py-16">Campaign not found.</div></Page>
 
+  const lowBalance = available !== null && t.status === 'live' && t.reward > available
   const completions = completionsForTask(t.id)
   const spent = +(t.done_count * t.reward).toFixed(2)
   const remaining = +((t.goal_count - t.done_count) * t.reward).toFixed(2)
@@ -29,6 +39,15 @@ export function CampaignAnalytics() {
       }
     >
       <div className="mb-5"><Pill tone={t.status === 'live' ? 'green' : 'default'}>{t.status.toUpperCase()}</Pill></div>
+
+      {lowBalance && (
+        <div className="rounded-[16px] p-4 bg-[rgba(255,176,90,.08)] border border-[rgba(255,176,90,.25)] mb-5 flex items-start justify-between gap-3">
+          <div className="text-[#F1D9B5] text-[13px] font-semibold leading-[1.5]">
+            This task is hidden from earners right now. Your available balance ({usd(available ?? 0)}) is below its reward of {usd(t.reward)}. Add funds to make it visible again.
+          </div>
+          <button onClick={() => nav('/business/add-funds')} className="flex-none font-head font-extrabold text-[13px] bg-[#FFB05A] text-[#1A1206] px-3.5 py-2 rounded-[11px]">Add funds</button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* left: progress + chart */}

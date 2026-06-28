@@ -38,8 +38,9 @@ interface Cache {
   ledger: LedgerEntry[]
   withdrawals: Withdrawal[]
   referrals: Referral[]
+  underfundedIds: string[]
 }
-const EMPTY: Cache = { profile: null, wallet: null, tasks: [], completions: [], ledger: [], withdrawals: [], referrals: [] }
+const EMPTY: Cache = { profile: null, wallet: null, tasks: [], completions: [], ledger: [], withdrawals: [], referrals: [], underfundedIds: [] }
 
 export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
   const sb = supabase! // only mounted when supabaseEnabled
@@ -49,7 +50,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
   const uidRef = useRef<string | null>(null)
 
   const loadAll = useCallback(async (uid: string) => {
-    const [p, w, tk, comp, led, wd, ref] = await Promise.all([
+    const [p, w, tk, comp, led, wd, ref, uf] = await Promise.all([
       sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
       sb.from('wallets').select('*').eq('profile_id', uid).maybeSingle(),
       sb.from('tasks').select('*'), // RLS → live tasks + own campaigns
@@ -57,6 +58,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       sb.from('ledger_entries').select('*').order('created_at', { ascending: false }),
       sb.from('withdrawals').select('*').order('created_at', { ascending: false }),
       sb.from('referrals').select('*'),
+      sb.rpc('underfunded_task_ids'), // live tasks whose owner can't currently cover the reward
     ])
     setCache({
       profile: p.data ? mapProfile(p.data) : null,
@@ -66,6 +68,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       ledger: (led.data ?? []).map(mapLedger),
       withdrawals: (wd.data ?? []).map(mapWithdrawal),
       referrals: (ref.data ?? []).map(mapReferral),
+      underfundedIds: Array.isArray(uf.data) ? (uf.data as string[]) : [],
     })
   }, [sb])
 
@@ -187,8 +190,9 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       // ---- reads (from cache) ----
       liveTasks() {
         const completed = new Set(cache.completions.filter((c) => c.earner_id === uid).map((c) => c.task_id))
+        const underfunded = new Set(cache.underfundedIds)
         return cache.tasks
-          .filter((t) => t.status === 'live' && t.owner_id !== uid && t.done_count < t.goal_count && !completed.has(t.id))
+          .filter((t) => t.status === 'live' && t.owner_id !== uid && t.done_count < t.goal_count && !completed.has(t.id) && !underfunded.has(t.id))
           .sort((a, b) => Number(b.featured) - Number(a.featured))
       },
       task: (id) => cache.tasks.find((t) => t.id === id),
