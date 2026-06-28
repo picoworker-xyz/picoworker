@@ -1,0 +1,33 @@
+# PicoWorker
+
+> PicoWorker (picoworker.xyz) is a two-sided micro-task marketplace where people earn instant USDC for small online tasks and businesses post tasks and pay per verified result. Free to join. Payouts in USDC on Solana.
+
+## What PicoWorker is
+PicoWorker is a micro-task platform. Earners complete tiny online tasks and get paid in USDC. Businesses fund campaigns in USDC and only pay for verified completions.
+
+## How earners use it
+- Sign up free and get a $0.05 welcome bonus.
+- Pick a task from the live feed: follow on X, watch a video, install and test an app, take a survey, or a custom task.
+- Most tasks auto verify in about 10 seconds. Manual tasks are approved by the task giver.
+- USDC rewards are added to your wallet instantly. Withdraw to a Solana wallet.
+- Earn a daily check in bonus and 10 percent of everything the people you refer earn, for life.
+
+## How businesses use it
+- Fund a campaign in USDC, set the reward and the quantity.
+- Get real followers, views, app installs, and survey responses.
+- Funds sit in escrow and you only pay per verified result.
+
+## Key facts
+- Payment currency: USDC on the Solana network.
+- Free to join for earners.
+- Two sides: earners (workers) and businesses (task posters).
+
+## Common questions
+- What is PicoWorker? A micro-task marketplace that pays in USDC for small online tasks.
+- How do I earn money on PicoWorker? Sign up free, complete tasks from the feed, and get paid in USDC instantly.
+- Is PicoWorker free? Yes, joining and earning is free.
+- How do I get paid? In USDC, withdrawn to a Solana wallet.
+
+## Links
+- Home: https://picoworker.xyz/
+- Sign up or log in: https://picoworker.xyz/login
