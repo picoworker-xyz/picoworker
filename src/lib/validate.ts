@@ -8,6 +8,31 @@ export function emailError(email: string): string | null {
   return null
 }
 
+// Common mistyped email domains → the intended one. Returns a corrected email
+// (e.g. user@email.com → user@gmail.com) or null if the domain looks fine.
+const DOMAIN_TYPOS: Record<string, string> = {
+  'email.com': 'gmail.com',
+  'gmail.con': 'gmail.com', 'gmail.com.com': 'gmail.com', 'gmail.co': 'gmail.com', 'gmail.cm': 'gmail.com',
+  'gmal.com': 'gmail.com', 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gmil.com': 'gmail.com',
+  'gnail.com': 'gmail.com', 'gmaill.com': 'gmail.com', 'gmaul.com': 'gmail.com', ' gmail.com': 'gmail.com',
+  'gmailcom': 'gmail.com', 'gmail.om': 'gmail.com', 'gmali.com': 'gmail.com', 'g.mail.com': 'gmail.com',
+  'yaho.com': 'yahoo.com', 'yahooo.com': 'yahoo.com', 'yahoo.co': 'yahoo.com', 'yahoo.con': 'yahoo.com',
+  'hotmial.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmail.co': 'hotmail.com', 'hotmail.con': 'hotmail.com',
+  'outlok.com': 'outlook.com', 'outloo.com': 'outlook.com', 'outlook.co': 'outlook.com', 'outlook.con': 'outlook.com',
+  'iclod.com': 'icloud.com', 'icloud.co': 'icloud.com', 'iclould.com': 'icloud.com',
+}
+
+export function suggestEmail(email: string): string | null {
+  const e = email.trim()
+  const at = e.lastIndexOf('@')
+  if (at < 1) return null
+  const local = e.slice(0, at)
+  const domain = e.slice(at + 1).toLowerCase()
+  const fix = DOMAIN_TYPOS[domain]
+  if (fix && fix !== domain) return `${local}@${fix}`
+  return null
+}
+
 export function passwordError(pw: string): string | null {
   if (pw.length < 8) return 'Password must be at least 8 characters.'
   if (!/[a-z]/.test(pw) || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw) || !/[^a-zA-Z0-9]/.test(pw)) {

@@ -127,9 +127,18 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
           password,
           options: { data: { display_name: displayName, mode, device_hash: fraud?.deviceHash ?? null, signup_ip: fraud?.ip ?? null, ref_code: refCode ?? null } },
         })
-        if (error) throw new Error(error.message)
+        if (error) {
+          const m = error.message.toLowerCase()
+          if (m.includes('already') || m.includes('registered')) throw new Error('ACCOUNT_EXISTS')
+          throw new Error(error.message)
+        }
         const id = data.user?.id
         if (!id) throw new Error('Sign up failed.')
+        // Enumeration-protected response: an already-registered email comes back
+        // with an empty identities array. Treat that as "account exists".
+        if (Array.isArray(data.user?.identities) && data.user!.identities!.length === 0) {
+          throw new Error('ACCOUNT_EXISTS')
+        }
         if (data.session) {
           await onSession(data.session)
           return { userId: id, needsConfirmation: false }

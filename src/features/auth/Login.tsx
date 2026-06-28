@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import type { Mode } from '../../lib/types'
-import { cleanAuthError, emailError, passwordError, passwordRequirements } from '../../lib/validate'
+import { cleanAuthError, emailError, passwordError, passwordRequirements, suggestEmail } from '../../lib/validate'
 import { collectSignals } from '../../lib/fraud'
 import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
@@ -102,8 +102,12 @@ export function Login() {
       }
     } catch (e) {
       const raw = (e as Error).message ?? ''
-      // Unconfirmed account (sign-in or signup) → show the confirm screen with Resend.
-      if (raw.toLowerCase().includes('not confirmed') || raw.toLowerCase().includes('email_not_confirmed')) {
+      // Email already has an account → switch them to sign in instead of blocking.
+      if (raw === 'ACCOUNT_EXISTS') {
+        setIsSignup(false)
+        setErr('You already have an account with this email. Please sign in (or use Continue with Google).')
+      } else if (raw.toLowerCase().includes('not confirmed') || raw.toLowerCase().includes('email_not_confirmed')) {
+        // Unconfirmed account (sign-in or signup) → show the confirm screen with Resend.
         setPendingEmail(email.trim())
       } else {
         setErr(cleanAuthError(raw))
@@ -242,6 +246,11 @@ export function Login() {
               <Field placeholder={mode === 'business' ? 'Business name' : 'Your name'} value={name} onChange={setName} />
             )}
             <Field placeholder="Email" value={email} onChange={setEmail} type="email" />
+            {suggestEmail(email) && (
+              <button type="button" onClick={() => setEmail(suggestEmail(email)!)} className="text-left text-[12.5px] font-semibold text-[var(--accent)] -mt-[4px] px-1">
+                Did you mean {suggestEmail(email)}? Tap to fix.
+              </button>
+            )}
             <PasswordField
               placeholder="Password"
               value={password}
