@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd } from '../../lib/format'
+import { usd, earnerNet } from '../../lib/format'
 import { Page } from '../../components/Page'
 
 const QUESTIONS: { q: string; opts: string[] }[] = [
@@ -41,7 +41,7 @@ export function SurveyTask() {
   }
 
   return (
-    <Page back narrow title={t.title} subtitle={`Survey · ${usd(t.reward, { sign: true })}`}>
+    <Page back narrow title={t.title} subtitle={`Survey · ${usd(earnerNet(t.reward), { sign: true })}`}>
       {/* progress */}
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 h-[8px] rounded-full bg-white/8 overflow-hidden">
@@ -73,7 +73,7 @@ export function SurveyTask() {
       </div>
 
       <button onClick={next} disabled={picked === undefined || busy} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>
-        {busy ? 'Submitting…' : last ? `Finish & earn ${usd(t.reward, { sign: true })}` : 'Next question'}
+        {busy ? 'Submitting…' : last ? `Finish & earn ${usd(earnerNet(t.reward), { sign: true })}` : 'Next question'}
       </button>
     </Page>
   )

@@ -30,7 +30,7 @@ export interface StoreApi {
   hasCompleted(taskId: string): boolean
 
   // earner mutations
-  completeTask(taskId: string, proofUrl?: string, note?: string): Promise<{ reward: number; balance: number; manual: boolean }>
+  completeTask(taskId: string, proofUrl?: string, note?: string, proofUrls?: string[]): Promise<{ reward: number; balance: number; manual: boolean }>
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
   claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number; day: number }>
 
@@ -45,7 +45,7 @@ export interface StoreApi {
   // provider review
   pendingProofs(): { completion: TaskCompletion; task: Task }[]
   allProofs(): { completion: TaskCompletion; task: Task }[]
-  reviewProof(completionId: string, approve: boolean): void
+  reviewProof(completionId: string, approve: boolean, reason?: string): void
 }
 
 export interface TaskDraft {
@@ -57,6 +57,10 @@ export interface TaskDraft {
   goal_count: number
   auto_verify: boolean
   category: string
+  proof_instructions?: string
+  reference_images?: string[]
+  screenshots?: number
+  screenshot_specs?: string[]
 }
 
 export const StoreCtx = createContext<StoreApi | null>(null)

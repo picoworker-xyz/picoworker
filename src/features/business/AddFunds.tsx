@@ -17,6 +17,12 @@ export function AddFunds() {
   const [msg, setMsg] = useState('')
   const [success, setSuccess] = useState('')
   const [deposits, setDeposits] = useState<Deposit[]>([])
+  const [bal, setBal] = useState<{ balance: number; held: number; available: number } | null>(null)
+
+  async function loadBalance() {
+    const { data } = await supabase!.rpc('business_balance')
+    if (data) setBal({ balance: Number((data as { balance: number }).balance), held: Number((data as { held: number }).held), available: Number((data as { available: number }).available) })
+  }
 
   async function loadDeposits() {
     // RLS limits this to the signed-in user's own deposits.
@@ -33,6 +39,7 @@ export function AddFunds() {
       else setAddress(data.address)
     })
     loadDeposits()
+    loadBalance()
   }, [])
 
   async function check() {
@@ -54,12 +61,16 @@ export function AddFunds() {
   return (
     <Page title="Add funds" subtitle="Send USDC on Solana to your deposit address." back narrow>
       <div className="rounded-[var(--r)] p-5 bg-[#15161C] border border-white/6 mb-4 text-center">
-        <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Campaign balance</div>
-        <div className="font-head text-[36px] font-extrabold text-white mt-1">{usd(wallet?.business_escrow ?? 0)}</div>
-        <div className="text-[#767884] text-[11.5px] font-semibold mt-1">Leftover not committed to live campaigns</div>
-        {(wallet?.business_escrow ?? 0) > 0.2 && (
+        <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Available to spend & withdraw</div>
+        <div className="font-head text-[36px] font-extrabold text-white mt-1">{usd(bal?.available ?? wallet?.business_escrow ?? 0)}</div>
+        <div className="flex items-center justify-center gap-4 mt-2 text-[12px] font-semibold">
+          <span className="text-[#767884]">Total {usd(bal?.balance ?? wallet?.business_escrow ?? 0)}</span>
+          <span className="text-[#FFB05A]">Held {usd(bal?.held ?? 0)}</span>
+        </div>
+        {bal && bal.held > 0 && <div className="text-[#767884] text-[11px] font-semibold mt-1">Held covers pending submissions and rejections under 7-day review.</div>}
+        {(bal?.available ?? 0) > 0.2 && (
           <button onClick={() => nav('/wallet/withdraw?source=business')} className="mt-4 px-5 py-2.5 rounded-[12px] bg-white/6 text-white text-[13px] font-extrabold font-head">
-            Withdraw leftover
+            Withdraw available
           </button>
         )}
       </div>

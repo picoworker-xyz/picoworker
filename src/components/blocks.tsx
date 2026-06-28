@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import type { Task } from '../lib/types'
-import { usd, etaLabel } from '../lib/format'
+import { usd, etaLabel, earnerNet } from '../lib/format'
 import { ArrowRight } from './icons'
 import { TaskTypeIcon } from './layout'
 import { Pill } from './ui'
@@ -74,27 +74,41 @@ export function TaskRow({ task }: { task: Task }) {
     .filter(Boolean)
     .join(' · ')
 
+  const done = task.done_count
+  const goal = task.goal_count
+  const pct = goal > 0 ? Math.min(100, Math.round((done / goal) * 100)) : 0
+
   return (
     <button
       onClick={() => nav(`/task/${task.id}`)}
-      className={`w-full text-left flex items-center gap-[13px] p-[14px] rounded-[18px] border transition-[transform] active:scale-[.99] ${
+      className={`w-full text-left flex flex-col gap-2.5 p-[14px] rounded-[18px] border transition-[transform] active:scale-[.99] ${
         task.featured
           ? 'border-[rgba(139,108,255,.28)]'
           : 'bg-[#15161C] border-white/6'
       }`}
       style={task.featured ? { background: 'linear-gradient(135deg,rgba(139,108,255,.16),rgba(139,108,255,.05))' } : undefined}
     >
-      <TaskTypeIcon type={task.type} />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-[7px]">
-          <span className="text-white text-[15px] font-bold truncate">{task.title}</span>
-          {task.featured && <Pill tone="violet">FEATURED</Pill>}
+      <div className="flex items-start gap-[13px] w-full">
+        <TaskTypeIcon type={task.type} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-[7px]">
+            <span className="text-white text-[15px] font-bold leading-[1.25] line-clamp-2">{task.title}</span>
+            {task.featured && <Pill tone="violet">FEATURED</Pill>}
+          </div>
+          <div className="text-[#8A8C98] text-[12px] font-semibold mt-[3px]">{meta}</div>
         </div>
-        <div className="text-[#8A8C98] text-[12px] font-semibold mt-[3px] truncate">{meta}</div>
+        <div className="text-right flex-none">
+          <div className="font-head text-[17px] font-extrabold text-[var(--accent)]">{usd(earnerNet(task.reward), { sign: true })}</div>
+        </div>
       </div>
-      <div className="text-right flex-none">
-        <div className="font-head text-[17px] font-extrabold text-[var(--accent)]">{usd(task.reward, { sign: true })}</div>
-      </div>
+      {goal > 0 && (
+        <div>
+          <div className="h-[5px] rounded-full bg-white/8 overflow-hidden">
+            <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="text-[#767884] text-[10.5px] font-semibold mt-1">{done.toLocaleString()} of {goal.toLocaleString()} done</div>
+        </div>
+      )}
     </button>
   )
 }

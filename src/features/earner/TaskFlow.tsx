@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd, etaLabel } from '../../lib/format'
+import { usd, etaLabel, earnerNet } from '../../lib/format'
 import type { TaskType } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { TaskTypeIcon } from '../../components/layout'
@@ -129,7 +129,7 @@ export function TaskFlow() {
             style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.16),rgba(194,249,77,.04))' }}
           >
             <div className="text-[#9DAA7E] text-[12px] font-bold uppercase tracking-[.07em]">Reward</div>
-            <div className="font-head font-bold text-[48px] text-[var(--accent)] tracking-[-.02em] leading-tight my-1">{usd(t.reward, { sign: true })}</div>
+            <div className="font-head font-bold text-[48px] text-[var(--accent)] tracking-[-.02em] leading-tight my-1">{usd(earnerNet(t.reward), { sign: true })}</div>
             <div className="text-[#A9ABB6] text-[12px] font-semibold">Paid in USDC · instantly</div>
           </div>
 

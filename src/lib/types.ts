@@ -75,6 +75,10 @@ export interface Task {
   est_seconds: number
   category: string // Social | Surveys | Apps | Ads | Watch
   featured: boolean
+  proof_instructions?: string | null
+  reference_images?: string[]
+  screenshots_required?: number
+  screenshot_specs?: string[]
   created_at: string
 }
 
@@ -89,6 +93,8 @@ export interface TaskCompletion {
   created_at: string
   appeal_status?: 'none' | 'pending' | 'reviewed' | 'denied'
   appeal_note?: string | null
+  reject_reason?: string | null
+  proof_urls?: string[]
 }
 
 export interface LedgerEntry {

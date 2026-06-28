@@ -200,8 +200,8 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       hasCompleted: (taskId) => cache.completions.some((c) => c.task_id === taskId && c.earner_id === uid),
 
       // ---- earner mutations (RPC) ----
-      async completeTask(taskId, proofUrl, note) {
-        const { data, error } = await sb.rpc('complete_task', { p_task: taskId, p_proof: proofUrl ?? null, p_note: note ?? null })
+      async completeTask(taskId, proofUrl, note, proofUrls) {
+        const { data, error } = await sb.rpc('complete_task', { p_task: taskId, p_proof: proofUrl ?? null, p_note: note ?? null, p_proof_urls: proofUrls ?? [] })
         if (error) throw new Error(error.message)
         await refresh()
         const r = data as { manual: boolean; reward: number; balance?: number }
@@ -234,6 +234,8 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const { data, error } = await sb.rpc('create_campaign', {
           p_type: draft.type, p_title: draft.title, p_subtitle: draft.subtitle, p_target: draft.target,
           p_reward: draft.reward, p_goal: draft.goal_count, p_auto: draft.auto_verify, p_category: draft.category,
+          p_proof_instructions: draft.proof_instructions ?? null, p_reference_images: draft.reference_images ?? [],
+          p_screenshots: draft.screenshots ?? 1, p_screenshot_specs: draft.screenshot_specs ?? [],
         })
         if (error || !data) throw new Error(error?.message ?? 'Could not create task.')
         const task = mapTask(data)
@@ -276,9 +278,9 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
           .filter((x) => x.task)
           .sort((a, b) => +new Date(b.completion.created_at) - +new Date(a.completion.created_at))
       },
-      reviewProof(completionId, approve) {
-        setCache((c) => ({ ...c, completions: c.completions.map((x) => (x.id === completionId ? { ...x, status: approve ? 'approved' : 'rejected' } : x)) }))
-        void sb.rpc('review_proof', { p_completion: completionId, p_approve: approve }).then(refresh)
+      reviewProof(completionId, approve, reason) {
+        setCache((c) => ({ ...c, completions: c.completions.map((x) => (x.id === completionId ? { ...x, status: approve ? 'approved' : 'rejected', reject_reason: approve ? null : reason ?? null } : x)) }))
+        void sb.rpc('review_proof', { p_completion: completionId, p_approve: approve, p_reason: reason ?? null }).then(refresh)
       },
     }
   }, [ready, userId, cache, sb, onSession, refresh])

@@ -1,5 +1,11 @@
 // Money / display helpers. All amounts are stored as numbers (USD/USDC, simulated).
 
+// Workers keep 85% of a task's reward (10% goes to their referrer, 5% to the
+// platform). The business is not charged a fee, so task.reward is the gross
+// amount the business pays; earners see and receive this net share.
+export const WORKER_SHARE = 0.85
+export const earnerNet = (reward: number): number => +(reward * WORKER_SHARE).toFixed(6)
+
 export function usd(amount: number, opts: { sign?: boolean } = {}): string {
   const sign = opts.sign && amount > 0 ? '+' : ''
   const neg = amount < 0 ? '-' : ''
