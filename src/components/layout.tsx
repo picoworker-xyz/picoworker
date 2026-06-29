@@ -1,16 +1,11 @@
 import type { ReactNode } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { Mode, TaskType } from '../lib/types'
 import {
-  Bolt,
   ChevronLeft,
-  Home,
-  ListIcon,
   PicoLogo,
   Play,
   Shield,
-  User,
-  Wallet as WalletIcon,
   XLogo,
 } from './icons'
 
@@ -76,46 +71,6 @@ export function ScreenHeader({
       )}
       {title && <div className="font-head text-[17px] font-extrabold text-white">{title}</div>}
       <div className="min-w-10 flex justify-end">{right}</div>
-    </div>
-  )
-}
-
-// ---- Bottom tab bar ----
-const EARNER_TABS = [
-  { key: 'earn', label: 'Earn', path: '/', icon: Bolt },
-  { key: 'tasks', label: 'Tasks', path: '/rewards', icon: ListIcon },
-  { key: 'wallet', label: 'Wallet', path: '/wallet', icon: WalletIcon },
-  { key: 'profile', label: 'Profile', path: '/profile', icon: User },
-] as const
-
-const BUSINESS_TABS = [
-  { key: 'home', label: 'Home', path: '/business', icon: Home },
-  { key: 'campaigns', label: 'Campaigns', path: '/business', icon: ListIcon },
-  { key: 'wallet', label: 'Wallet', path: '/business/add-funds', icon: WalletIcon },
-  { key: 'profile', label: 'Profile', path: '/profile', icon: User },
-] as const
-
-export function TabBar({ mode }: { mode: Mode }) {
-  const nav = useNavigate()
-  const loc = useLocation()
-  const tabs = mode === 'business' ? BUSINESS_TABS : EARNER_TABS
-  return (
-    <div className="flex-none h-[78px] bg-[rgba(12,13,17,.92)] border-t border-white/7 backdrop-blur flex items-center justify-around px-[14px] pb-4">
-      {tabs.map((t) => {
-        const active = loc.pathname === t.path
-        const Icon = t.icon
-        return (
-          <button
-            key={t.key}
-            onClick={() => nav(t.path)}
-            className="flex flex-col items-center gap-[5px]"
-            style={{ color: active ? 'var(--accent)' : '#6E6F7A' }}
-          >
-            <Icon width={22} height={22} />
-            <span className={`text-[10px] ${active ? 'font-extrabold' : 'font-bold'}`}>{t.label}</span>
-          </button>
-        )
-      })}
     </div>
   )
 }

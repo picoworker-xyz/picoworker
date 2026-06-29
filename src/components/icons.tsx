@@ -97,6 +97,15 @@ export const Dots = (p: P) => (
   </svg>
 )
 
+export const Grid = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <rect x="3.5" y="3.5" width="7" height="7" rx="2.2" stroke="currentColor" strokeWidth="2" />
+    <rect x="13.5" y="3.5" width="7" height="7" rx="2.2" stroke="currentColor" strokeWidth="2" />
+    <rect x="3.5" y="13.5" width="7" height="7" rx="2.2" stroke="currentColor" strokeWidth="2" />
+    <rect x="13.5" y="13.5" width="7" height="7" rx="2.2" stroke="currentColor" strokeWidth="2" />
+  </svg>
+)
+
 export const Gear = (p: P) => (
   <svg viewBox="0 0 24 24" fill="none" {...p}>
     <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
