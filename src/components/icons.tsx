@@ -97,6 +97,32 @@ export const Dots = (p: P) => (
   </svg>
 )
 
+export const Sun = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="2" />
+    <path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+)
+
+export const Moon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M20 14.5A8 8 0 019.5 4a7 7 0 100 16 8 8 0 0010.5-5.5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  </svg>
+)
+
+export const LogOut = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10 17l-5-5 5-5M4.5 12H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const WhatsApp = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
+    <path d="M12 2a10 10 0 00-8.53 15.28L2 22l4.85-1.42A10 10 0 1012 2zm0 1.9a8.1 8.1 0 016.9 12.36l-.28.44.83 3-3.08-.8-.42.25A8.1 8.1 0 1112 3.9zm-3.2 3.7c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.6.13.17 1.77 2.82 4.38 3.85 2.17.85 2.61.68 3.08.64.47-.04 1.52-.62 1.73-1.22.21-.6.21-1.12.15-1.22-.06-.1-.23-.17-.48-.29-.25-.13-1.5-.74-1.73-.82-.23-.09-.4-.13-.57.13-.17.25-.65.82-.8.99-.15.17-.29.19-.54.06-.25-.12-1.06-.39-2.02-1.24-.75-.67-1.25-1.49-1.4-1.74-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.57-1.37-.78-1.87-.2-.49-.4-.42-.55-.43z" />
+  </svg>
+)
+
 export const Grid = (p: P) => (
   <svg viewBox="0 0 24 24" fill="none" {...p}>
     <rect x="3.5" y="3.5" width="7" height="7" rx="2.2" stroke="currentColor" strokeWidth="2" />

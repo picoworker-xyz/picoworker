@@ -37,7 +37,7 @@ export function TaskFlow() {
   if (!t) {
     return (
       <Page title="Task" back>
-        <div className="text-center text-[#767884] text-[14px] font-semibold py-16">This task is no longer available.</div>
+        <div className="text-center text-[var(--ink-4)] text-[14px] font-semibold py-16">This task is no longer available.</div>
       </Page>
     )
   }
@@ -86,11 +86,11 @@ export function TaskFlow() {
     <Page back>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* detail */}
-        <div className="lg:col-span-2 rounded-[var(--r)] bg-[#15161C] border border-white/6 p-6 lg:p-8">
+        <div className="lg:col-span-2 rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] p-6 lg:p-8">
           <div className="flex items-center gap-4">
             <TaskTypeIcon type={t.type} size={64} />
             <div>
-              <div className="text-white text-[24px] font-bold font-head tracking-[-.01em]">{t.title}</div>
+              <div className="text-[var(--ink)] text-[24px] font-bold font-head tracking-[-.01em]">{t.title}</div>
               <div className="flex gap-2 mt-2 flex-wrap">
                 <Pill>{t.category}</Pill>
                 <Pill>{etaLabel(t.est_seconds)}</Pill>
@@ -101,20 +101,20 @@ export function TaskFlow() {
 
           {t.type === 'custom' && t.subtitle ? (
             <>
-              <div className="text-white text-[15px] font-extrabold font-head mt-8 mb-3">What to do</div>
-              <div className="text-[#D9DAE2] text-[15px] font-semibold leading-[1.55] whitespace-pre-line">{t.subtitle}</div>
-              <div className="text-[#9A9CA8] text-[13px] font-semibold mt-4">Then capture a screenshot as proof and upload it for review.</div>
+              <div className="text-[var(--ink)] text-[15px] font-extrabold font-head mt-8 mb-3">What to do</div>
+              <div className="text-[var(--ink-2)] text-[15px] font-semibold leading-[1.55] whitespace-pre-line">{t.subtitle}</div>
+              <div className="text-[var(--ink-3)] text-[13px] font-semibold mt-4">Then capture a screenshot as proof and upload it for review.</div>
             </>
           ) : (
             <>
-              <div className="text-white text-[15px] font-extrabold font-head mt-8 mb-4">How it works</div>
+              <div className="text-[var(--ink)] text-[15px] font-extrabold font-head mt-8 mb-4">How it works</div>
               <div className="flex flex-col gap-4">
                 {steps.map((s, i) => (
                   <div key={i} className="flex items-center gap-4">
-                    <div className={`w-9 h-9 flex-none rounded-[12px] flex items-center justify-center font-head font-extrabold text-[15px] ${i === 0 ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-white/8 text-white'}`}>
+                    <div className={`w-9 h-9 flex-none rounded-[12px] flex items-center justify-center font-head font-extrabold text-[15px] ${i === 0 ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'bg-[var(--fill)] text-[var(--ink)]'}`}>
                       {i + 1}
                     </div>
-                    <div className="text-[#D9DAE2] text-[15px] font-semibold leading-[1.4]">{s}</div>
+                    <div className="text-[var(--ink-2)] text-[15px] font-semibold leading-[1.4]">{s}</div>
                   </div>
                 ))}
               </div>
@@ -123,32 +123,32 @@ export function TaskFlow() {
 
           {/* Task giver's own brief + example proof, shown up front so workers know exactly what to do */}
           {(t.proof_instructions || refImgs.length > 0 || specs.some((s) => s)) && (
-            <div className="mt-8 rounded-[16px] bg-white/4 border border-white/8 p-5">
+            <div className="mt-8 rounded-[16px] bg-[var(--fill)] border border-[var(--line)] p-5">
               {t.proof_instructions && (
                 <>
-                  <div className="text-white text-[14px] font-extrabold font-head mb-2">Instructions from the task giver</div>
-                  <div className="text-[#D9DAE2] text-[14px] font-semibold leading-[1.55] whitespace-pre-line">{t.proof_instructions}</div>
+                  <div className="text-[var(--ink)] text-[14px] font-extrabold font-head mb-2">Instructions from the task giver</div>
+                  <div className="text-[var(--ink-2)] text-[14px] font-semibold leading-[1.55] whitespace-pre-line">{t.proof_instructions}</div>
                 </>
               )}
 
               {t.target && (
-                <div className="mt-4 flex items-center gap-2 rounded-[12px] bg-black/25 border border-white/8 px-4 py-3">
-                  <span className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.06em] flex-none">Open</span>
+                <div className="mt-4 flex items-center gap-2 rounded-[12px] bg-[var(--fill)] border border-[var(--line)] px-4 py-3">
+                  <span className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.06em] flex-none">Open</span>
                   {openTarget.startsWith('http') ? (
-                    <a href={openTarget} target="_blank" rel="noreferrer" className="text-[var(--accent)] text-[14px] font-bold break-all hover:underline">{t.target}</a>
+                    <a href={openTarget} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] text-[14px] font-bold break-all hover:underline">{t.target}</a>
                   ) : (
-                    <span className="text-[var(--accent)] text-[14px] font-bold break-all">{t.target}</span>
+                    <span className="text-[var(--accent-strong)] text-[14px] font-bold break-all">{t.target}</span>
                   )}
                 </div>
               )}
 
               {specs.some((s) => s) && (
                 <div className="mt-4">
-                  <div className="text-white text-[13px] font-extrabold font-head mb-2">Proof needed ({need} screenshot{need > 1 ? 's' : ''})</div>
+                  <div className="text-[var(--ink)] text-[13px] font-extrabold font-head mb-2">Proof needed ({need} screenshot{need > 1 ? 's' : ''})</div>
                   <div className="flex flex-col gap-1.5">
                     {Array.from({ length: need }, (_, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[#D9DAE2] text-[13px] font-semibold">
-                        <span className="w-5 h-5 rounded-full bg-white/8 text-[#9A9CA8] text-[10px] font-extrabold flex items-center justify-center flex-none mt-[1px]">{i + 1}</span>
+                      <div key={i} className="flex items-start gap-2 text-[var(--ink-2)] text-[13px] font-semibold">
+                        <span className="w-5 h-5 rounded-full bg-[var(--fill)] text-[var(--ink-3)] text-[10px] font-extrabold flex items-center justify-center flex-none mt-[1px]">{i + 1}</span>
                         <span>{specs[i] || 'A clear screenshot of your completed action'}</span>
                       </div>
                     ))}
@@ -158,10 +158,10 @@ export function TaskFlow() {
 
               {refImgs.length > 0 && (
                 <div className="mt-4">
-                  <div className="text-[#8B8D99] text-[12px] font-semibold mb-2">Example{refImgs.length > 1 ? 's' : ''} from the task giver:</div>
+                  <div className="text-[var(--ink-4)] text-[12px] font-semibold mb-2">Example{refImgs.length > 1 ? 's' : ''} from the task giver:</div>
                   <div className="flex flex-wrap gap-2">
                     {refImgs.map((url, i) => (
-                      <a key={i} href={url} target="_blank" rel="noreferrer" className="w-24 h-24 rounded-[12px] overflow-hidden border border-white/10 block">
+                      <a key={i} href={url} target="_blank" rel="noreferrer" className="w-24 h-24 rounded-[12px] overflow-hidden border border-[var(--line-2)] block">
                         <img src={url} alt="example" className="w-full h-full object-cover" />
                       </a>
                     ))}
@@ -171,9 +171,9 @@ export function TaskFlow() {
             </div>
           )}
 
-          <div className="flex items-center gap-3 mt-8 px-4 py-4 rounded-[14px] bg-white/4 border border-white/7">
+          <div className="flex items-center gap-3 mt-8 px-4 py-4 rounded-[14px] bg-[var(--fill)] border border-[var(--line)]">
             <Shield width={18} height={18} className="text-[var(--green)] flex-none" />
-            <span className="text-[#B6B8C2] text-[13px] font-semibold">No login or password needed. We never post for you.</span>
+            <span className="text-[var(--ink-3)] text-[13px] font-semibold">No login or password needed. We never post for you.</span>
           </div>
         </div>
 
@@ -184,8 +184,8 @@ export function TaskFlow() {
             style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.16),rgba(194,249,77,.04))' }}
           >
             <div className="text-[#9DAA7E] text-[12px] font-bold uppercase tracking-[.07em]">Reward</div>
-            <div className="font-head font-bold text-[48px] text-[var(--accent)] tracking-[-.02em] leading-tight my-1">{usd(earnerNet(t.reward), { sign: true })}</div>
-            <div className="text-[#A9ABB6] text-[12px] font-semibold">Paid in USDC · instantly</div>
+            <div className="font-head font-bold text-[48px] text-[var(--accent-strong)] tracking-[-.02em] leading-tight my-1">{usd(earnerNet(t.reward), { sign: true })}</div>
+            <div className="text-[var(--ink-3)] text-[12px] font-semibold">Paid in USDC · instantly</div>
           </div>
 
           {err && <div className="text-[var(--coral)] text-[13px] font-semibold text-center">{err}</div>}
@@ -199,9 +199,9 @@ export function TaskFlow() {
               {busy ? 'Verifying…' : t.auto_verify ? 'Verify now' : 'Submit proof'}
             </button>
           )}
-          <div className="text-center text-[#767884] text-[13px] font-semibold">
+          <div className="text-center text-[var(--ink-4)] text-[13px] font-semibold">
             {t.auto_verify ? (
-              <>Already done it? <button onClick={proceed} className="text-[var(--accent)] font-extrabold">Verify now</button></>
+              <>Already done it? <button onClick={proceed} className="text-[var(--accent-strong)] font-extrabold">Verify now</button></>
             ) : (
               'Manual review · paid after the provider approves'
             )}

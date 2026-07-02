@@ -25,6 +25,7 @@ import { Support } from './features/earner/Support'
 import { SurveyTask } from './features/earner/SurveyTask'
 import { TaskRejected } from './features/earner/TaskRejected'
 import { MySubmissions } from './features/earner/MySubmissions'
+import { ProofOfIncome } from './features/earner/ProofOfIncome'
 import { MorePage } from './features/MorePage'
 import { SubmissionDetail } from './features/earner/SubmissionDetail'
 import { SwitchAccount } from './features/business/SwitchAccount'
@@ -96,6 +97,7 @@ export default function App() {
       <Route path="/profile" element={<Shell><Profile /></Shell>} />
       <Route path="/more" element={<Shell><MorePage /></Shell>} />
       <Route path="/submissions" element={<Shell><MySubmissions /></Shell>} />
+      <Route path="/proof-of-income" element={<Shell><ProofOfIncome /></Shell>} />
       <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
 

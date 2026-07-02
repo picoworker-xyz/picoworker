@@ -22,18 +22,18 @@ export function Wallet() {
       {/* balance on top */}
       <div
         className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(194,249,77,.14)]"
-        style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
+        style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
       >
         <div className="absolute left-1/2 -top-12 -translate-x-1/2 w-[260px] h-[140px] rounded-full bg-[var(--accent)] opacity-10 blur-2xl" />
-        <div className="relative inline-flex bg-black/35 rounded-full p-1 mb-4">
+        <div className="relative inline-flex bg-[var(--fill-2)] rounded-full p-1 mb-4">
           {(['USDC', 'USDT'] as const).map((a) => (
-            <button key={a} onClick={() => setAsset(a)} className={`px-[18px] py-[7px] rounded-full text-[13px] font-head ${asset === a ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[#9A9CA8] font-bold'}`}>
+            <button key={a} onClick={() => setAsset(a)} className={`px-[18px] py-[7px] rounded-full text-[13px] font-head ${asset === a ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[var(--ink-3)] font-bold'}`}>
               {a}
             </button>
           ))}
         </div>
-        <div className="text-[#8B8D99] text-[12px] font-bold tracking-[.08em] uppercase relative">Total balance</div>
-        <div className="font-head font-bold text-[52px] text-white tracking-[-.02em] leading-[1.1] relative">{usd(wallet.earner_balance)}</div>
+        <div className="text-[var(--ink-4)] text-[12px] font-bold tracking-[.08em] uppercase relative">Total balance</div>
+        <div className="font-head font-bold text-[52px] text-[var(--ink)] tracking-[-.02em] leading-[1.1] relative">{usd(wallet.earner_balance)}</div>
         <button onClick={() => nav('/wallet/withdraw')} className="relative mt-5 w-full font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[15px] flex items-center justify-center gap-2">
           <ArrowDown width={16} height={16} /> Withdraw
         </button>
@@ -47,10 +47,10 @@ export function Wallet() {
       </div>
 
       {/* activity full width below */}
-      <div className="mt-8 rounded-[var(--r)] bg-[#15161C] border border-white/6 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/6 text-white text-[15px] font-extrabold font-head">Activity</div>
+      <div className="mt-8 rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--line)] text-[var(--ink)] text-[15px] font-extrabold font-head">Activity</div>
         {entries.length === 0 ? (
-          <div className="text-center text-[#767884] text-[14px] font-semibold py-12">No activity yet. Complete a task to get paid.</div>
+          <div className="text-center text-[var(--ink-4)] text-[14px] font-semibold py-12">No activity yet. Complete a task to get paid.</div>
         ) : (
           <div>{entries.map((e, i) => <Row key={e.id} e={e} first={i === 0} />)}</div>
         )}
@@ -61,9 +61,9 @@ export function Wallet() {
 
 function Stat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
-    <div className="rounded-[16px] p-4 bg-[#15161C] border border-white/6">
-      <div className={`font-head text-[16px] font-extrabold ${accent ? 'text-[var(--accent)]' : 'text-white'}`}>{value}</div>
-      <div className="text-[#767884] text-[11px] font-semibold mt-1">{label}</div>
+    <div className="rounded-[16px] p-4 bg-[var(--card)] border border-[var(--line)]">
+      <div className={`font-head text-[16px] font-extrabold ${accent ? 'text-[var(--accent-strong)]' : 'text-[var(--ink)]'}`}>{value}</div>
+      <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-1">{label}</div>
     </div>
   )
 }
@@ -76,30 +76,30 @@ function Row({ e, first }: { e: LedgerEntry; first: boolean }) {
 
   if (isClickable) {
     return (
-      <button onClick={() => nav(`/submissions/${e.ref_id}`)} className={`w-full flex items-center gap-3 px-5 py-[14px] text-left hover:bg-white/[.04] ${first ? '' : 'border-t border-white/5'}`}>
-        <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-white/6 text-[#C2C4CE]'}`}>
+      <button onClick={() => nav(`/submissions/${e.ref_id}`)} className={`w-full flex items-center gap-3 px-5 py-[14px] text-left hover:bg-[var(--fill)] ${first ? '' : 'border-t border-[var(--line)]'}`}>
+        <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-[var(--fill)] text-[var(--ink-2)]'}`}>
           {positive ? <ArrowUp width={17} height={17} /> : <ArrowDown width={17} height={17} />}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-white text-[14px] font-bold truncate">{e.title}</div>
-          <div className="text-[#767884] text-[11.5px] font-semibold mt-[1px]">{timeAgo(e.created_at)}</div>
+          <div className="text-[var(--ink)] text-[14px] font-bold truncate">{e.title}</div>
+          <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-[1px]">{timeAgo(e.created_at)}</div>
         </div>
-        <div className={`font-head text-[15px] font-extrabold ${positive ? 'text-[var(--green)]' : 'text-white'}`}>{usd(e.amount, { sign: true })}</div>
-        <ArrowRight width={16} height={16} className="text-[#5E606C]" />
+        <div className={`font-head text-[15px] font-extrabold ${positive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>{usd(e.amount, { sign: true })}</div>
+        <ArrowRight width={16} height={16} className="text-[var(--ink-5)]" />
       </button>
     )
   }
 
   return (
-    <div className={`flex items-center gap-3 px-5 py-[14px] ${first ? '' : 'border-t border-white/5'}`}>
-      <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-white/6 text-[#C2C4CE]'}`}>
+    <div className={`flex items-center gap-3 px-5 py-[14px] ${first ? '' : 'border-t border-[var(--line)]'}`}>
+      <div className={`w-[38px] h-[38px] flex-none rounded-[11px] flex items-center justify-center ${positive ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-[var(--fill)] text-[var(--ink-2)]'}`}>
         {positive ? <ArrowUp width={17} height={17} /> : <ArrowDown width={17} height={17} />}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-white text-[14px] font-bold truncate">{e.title}</div>
-        <div className="text-[#767884] text-[11.5px] font-semibold mt-[1px]">{timeAgo(e.created_at)}</div>
+        <div className="text-[var(--ink)] text-[14px] font-bold truncate">{e.title}</div>
+        <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-[1px]">{timeAgo(e.created_at)}</div>
       </div>
-      <div className={`font-head text-[15px] font-extrabold ${positive ? 'text-[var(--green)]' : 'text-white'}`}>{usd(e.amount, { sign: true })}</div>
+      <div className={`font-head text-[15px] font-extrabold ${positive ? 'text-[var(--green)]' : 'text-[var(--ink)]'}`}>{usd(e.amount, { sign: true })}</div>
     </div>
   )
 }

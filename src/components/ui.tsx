@@ -11,8 +11,8 @@ export function Button({ variant = 'primary', block, className = '', children, .
     'font-head font-extrabold rounded-[14px] flex items-center justify-center gap-[9px] transition-[transform,opacity] active:scale-[.98] disabled:opacity-50 disabled:active:scale-100'
   const styles: Record<Variant, string> = {
     primary: 'bg-[var(--accent)] text-[var(--accent-ink)]',
-    dark: 'bg-[#15161C] text-white border border-white/12',
-    ghost: 'bg-white/5 text-white border border-white/12',
+    dark: 'bg-[var(--card)] text-[var(--ink)] border border-[var(--line-2)]',
+    ghost: 'bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]',
     white: 'bg-white text-[#111]',
   }
   return (
@@ -48,7 +48,7 @@ export function Chip({
       </button>
     )
   }
-  const toneCls = tone === 'green' ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-white/6 text-[#C2C4CE]'
+  const toneCls = tone === 'green' ? 'bg-[rgba(68,209,122,.14)] text-[var(--green)]' : 'bg-[var(--fill)] text-[var(--ink-2)]'
   return (
     <button onClick={onClick} className={`flex-none px-[15px] py-[9px] rounded-full text-[13px] font-bold ${toneCls}`}>
       {children}
@@ -60,7 +60,7 @@ export function Chip({
 export function Card({ children, className = '', glow }: { children: ReactNode; className?: string; glow?: boolean }) {
   return (
     <div
-      className={`rounded-[var(--r)] bg-[#15161C] border border-white/6 ${className}`}
+      className={`rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] ${className}`}
       style={glow ? { boxShadow: 'var(--glow)' } : undefined}
     >
       {children}
@@ -71,7 +71,7 @@ export function Card({ children, className = '', glow }: { children: ReactNode; 
 // ---- ProgressBar ----
 export function ProgressBar({ value }: { value: number }) {
   return (
-    <div className="h-[8px] rounded-full bg-white/8 overflow-hidden">
+    <div className="h-[8px] rounded-full bg-[var(--fill)] overflow-hidden">
       <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
     </div>
   )
@@ -80,9 +80,9 @@ export function ProgressBar({ value }: { value: number }) {
 // ---- StatTile ----
 export function StatTile({ value, label, accent }: { value: ReactNode; label: string; accent?: boolean }) {
   return (
-    <div className="flex-1 rounded-[16px] p-[14px] bg-[#15161C] border border-white/6">
-      <div className={`font-head text-[18px] font-extrabold ${accent ? 'text-[var(--accent)]' : 'text-white'}`}>{value}</div>
-      <div className="text-[#767884] text-[11px] font-semibold mt-[2px]">{label}</div>
+    <div className="flex-1 rounded-[16px] p-[14px] bg-[var(--card)] border border-[var(--line)]">
+      <div className={`font-head text-[18px] font-extrabold ${accent ? 'text-[var(--accent-strong)]' : 'text-[var(--ink)]'}`}>{value}</div>
+      <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-[2px]">{label}</div>
     </div>
   )
 }
@@ -91,7 +91,7 @@ export function StatTile({ value, label, accent }: { value: ReactNode; label: st
 export function Avatar({ name, size = 42, gradient }: { name: string; size?: number; gradient?: string }) {
   return (
     <div
-      className="flex-none rounded-[13px] flex items-center justify-center font-head font-bold text-white"
+      className="flex-none rounded-[13px] flex items-center justify-center font-head font-bold text-[var(--ink)]"
       style={{
         width: size,
         height: size,
@@ -107,9 +107,9 @@ export function Avatar({ name, size = 42, gradient }: { name: string; size?: num
 // ---- Pill (small tag) ----
 export function Pill({ children, tone = 'default' }: { children: ReactNode; tone?: 'default' | 'green' | 'violet' }) {
   const tones = {
-    default: 'bg-white/6 text-[#B6B8C2]',
+    default: 'bg-[var(--fill)] text-[var(--ink-3)]',
     green: 'bg-[rgba(68,209,122,.14)] text-[var(--green)]',
-    violet: 'bg-[#8B6CFF] text-white',
+    violet: 'bg-[#8B6CFF] text-[#fff]',
   }
   return <span className={`px-3 py-[6px] rounded-full text-[12px] font-bold ${tones[tone]}`}>{children}</span>
 }

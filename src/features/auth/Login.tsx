@@ -145,32 +145,32 @@ export function Login() {
       <div className="min-h-svh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] reveal">
           <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
-          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7">
-            <div className="font-head font-bold text-[22px] text-white">Reset your password</div>
-            <div className="text-[#9A9CA8] text-[14px] font-semibold mt-1 mb-5 leading-[1.5]">
-              We emailed a 6-digit code to <span className="text-white font-bold break-all">{email.trim()}</span>. Enter it and choose a new password.
+          <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7">
+            <div className="font-head font-bold text-[22px] text-[var(--ink)]">Reset your password</div>
+            <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-1 mb-5 leading-[1.5]">
+              We emailed a 6-digit code to <span className="text-[var(--ink)] font-bold break-all">{email.trim()}</span>. Enter it and choose a new password.
             </div>
             <input
               value={resetCode}
               onChange={(e) => setResetCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}
               inputMode="numeric"
               placeholder="000000"
-              className="w-full bg-white/4 border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[20px] font-head font-extrabold tracking-[.3em] text-center placeholder:text-[#3A3B44] outline-none focus:border-[var(--accent)]/60 mb-3"
+              className="w-full bg-[var(--fill)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[20px] font-head font-extrabold tracking-[.3em] text-center placeholder:text-[#3A3B44] outline-none focus:border-[var(--accent)]/60 mb-3"
             />
             <input
               type="password"
               value={resetNewPw}
               onChange={(e) => setResetNewPw(e.target.value)}
               placeholder="New password"
-              className="w-full bg-white/4 border border-white/10 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
+              className="w-full bg-[var(--fill)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[15px] font-semibold placeholder:text-[var(--ink-5)] outline-none focus:border-[var(--accent)]/60"
             />
-            <div className="text-[#767884] text-[11px] font-semibold mt-1.5">8+ chars with upper and lower case, a number and a symbol.</div>
+            <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-1.5">8+ chars with upper and lower case, a number and a symbol.</div>
             {err && <div className="text-[var(--coral)] text-[12.5px] font-semibold mt-3">{err}</div>}
             <button onClick={verifyReset} disabled={busy} className="w-full mt-4 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] disabled:opacity-50" style={{ boxShadow: 'var(--glow)' }}>
               {busy ? 'Verifying…' : 'Reset password and sign in'}
             </button>
-            <button onClick={sendReset} disabled={busy} className="w-full mt-2 text-[var(--accent)] text-[13px] font-bold py-1">Resend code</button>
-            <button onClick={() => { setResetStage(false); setResetCode(''); setResetNewPw(''); setErr('') }} className="w-full text-[#9A9CA8] text-[13px] font-bold py-1">Back to sign in</button>
+            <button onClick={sendReset} disabled={busy} className="w-full mt-2 text-[var(--accent-strong)] text-[13px] font-bold py-1">Resend code</button>
+            <button onClick={() => { setResetStage(false); setResetCode(''); setResetNewPw(''); setErr('') }} className="w-full text-[var(--ink-3)] text-[13px] font-bold py-1">Back to sign in</button>
           </div>
         </div>
       </div>
@@ -183,11 +183,11 @@ export function Login() {
       <div className="min-h-svh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] reveal">
           <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
-          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7 text-center">
-            <div className="font-head font-bold text-[22px] text-white">You already have an account</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2">This device is already linked to:</div>
-            <div className="font-head text-[18px] font-extrabold text-[var(--accent)] mt-2 break-all">{existingHint}</div>
-            <div className="text-[#767884] text-[12.5px] font-semibold mt-3 leading-[1.5]">
+          <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7 text-center">
+            <div className="font-head font-bold text-[22px] text-[var(--ink)]">You already have an account</div>
+            <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">This device is already linked to:</div>
+            <div className="font-head text-[18px] font-extrabold text-[var(--accent-strong)] mt-2 break-all">{existingHint}</div>
+            <div className="text-[var(--ink-4)] text-[12.5px] font-semibold mt-3 leading-[1.5]">
               One account per person. Sign in to that account instead — once you're in you can change the email or name in settings.
             </div>
             <button
@@ -197,7 +197,7 @@ export function Login() {
             >
               Sign in to this account
             </button>
-            <button onClick={() => setExistingHint('')} className="w-full mt-2 text-[#9A9CA8] text-[13px] font-bold py-2">Back</button>
+            <button onClick={() => setExistingHint('')} className="w-full mt-2 text-[var(--ink-3)] text-[13px] font-bold py-2">Back</button>
           </div>
         </div>
       </div>
@@ -210,25 +210,25 @@ export function Login() {
       <div className="min-h-svh flex items-center justify-center p-6">
         <div className="w-full max-w-[400px] reveal">
           <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
-          <div className="rounded-[24px] bg-[#15161C] border border-white/7 p-7 text-center">
+          <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7 text-center">
             <div className="w-14 h-14 rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center mx-auto">
-              <Check width={28} height={28} className="text-[var(--accent)]" />
+              <Check width={28} height={28} className="text-[var(--accent-strong)]" />
             </div>
-            <div className="font-head font-bold text-[22px] text-white mt-5">Confirm your email</div>
-            <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5]">
-              We sent a confirmation link to<br /><span className="text-white font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
+            <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Confirm your email</div>
+            <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">
+              We sent a confirmation link to<br /><span className="text-[var(--ink)] font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
             </div>
             <div className="mt-4 rounded-[14px] bg-[rgba(255,176,90,.1)] border border-[rgba(255,176,90,.3)] p-3 text-left">
               <div className="text-[#FFB05A] text-[12.5px] font-extrabold">Check your Spam or Junk folder</div>
-              <div className="text-[#C7C9D4] text-[12px] font-semibold mt-1 leading-[1.45]">
+              <div className="text-[var(--ink-2)] text-[12px] font-semibold mt-1 leading-[1.45]">
                 Our emails often land there. Mark it “Not spam” so future emails reach your inbox.
               </div>
             </div>
             {infoMsg && <div className="text-[var(--green)] text-[12.5px] font-semibold mt-3">{infoMsg}</div>}
-            <button onClick={resend} disabled={cooldown > 0} className="w-full mt-4 font-head font-extrabold text-[15px] bg-white/6 text-white border border-white/12 py-[13px] rounded-[14px] disabled:opacity-50">
+            <button onClick={resend} disabled={cooldown > 0} className="w-full mt-4 font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)] py-[13px] rounded-[14px] disabled:opacity-50">
               {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend confirmation email'}
             </button>
-            <button onClick={() => { setPendingEmail(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent)] text-[13px] font-extrabold py-2">Back to sign in</button>
+            <button onClick={() => { setPendingEmail(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent-strong)] text-[13px] font-extrabold py-2">Back to sign in</button>
           </div>
         </div>
       </div>
@@ -238,7 +238,7 @@ export function Login() {
   return (
     <div className="min-h-svh grid grid-cols-1 lg:grid-cols-2">
       {/* ===== Brand panel (desktop) ===== */}
-      <div className="hidden lg:flex flex-col justify-between p-12 border-r border-white/7 hero-grid relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between p-12 border-r border-[var(--line)] hero-grid relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(600px 400px at 20% 10%, rgba(194,249,77,.12), transparent 60%), radial-gradient(500px 400px at 90% 90%, rgba(139,108,255,.14), transparent 60%)' }}
@@ -247,20 +247,20 @@ export function Login() {
           <BrandMark size={40} />
         </button>
         <div className="relative">
-          <h1 className="font-head font-bold text-[44px] leading-[1.08] tracking-[-.02em] text-white">
-            Get paid for<br />the <span className="text-[var(--accent)]">tiny stuff.</span>
+          <h1 className="font-head font-bold text-[44px] leading-[1.08] tracking-[-.02em] text-[var(--ink)]">
+            Get paid for<br />the <span className="text-[var(--accent-strong)]">tiny stuff.</span>
           </h1>
-          <p className="text-[#A9ABB6] text-[16px] font-medium mt-4 max-w-[400px] leading-[1.55]">
+          <p className="text-[var(--ink-3)] text-[16px] font-medium mt-4 max-w-[400px] leading-[1.55]">
             Follow, watch, test, survey — cash out in USDC straight to your wallet.
           </p>
           <div className="flex items-center gap-2 mt-6 px-3 py-2 rounded-full bg-[rgba(68,209,122,.1)] border border-[rgba(68,209,122,.25)] w-fit">
             <Avatar name="B" size={22} gradient="linear-gradient(135deg,#FF6B5A,#FFB05A)" />
-            <span className="text-[#C7D8CB] text-[12.5px] font-semibold">
+            <span className="text-[var(--ink-2)] text-[12.5px] font-semibold">
               Bilal just earned <span className="text-[var(--green)] font-extrabold">$0.35</span>
             </span>
           </div>
         </div>
-        <div className="relative text-[#5E606C] text-[12.5px] font-semibold">Non-custodial — your keys, your USDC.</div>
+        <div className="relative text-[var(--ink-5)] text-[12.5px] font-semibold">Non-custodial — your keys, your USDC.</div>
       </div>
 
       {/* ===== Auth card ===== */}
@@ -271,29 +271,29 @@ export function Login() {
           </div>
 
           <div className="text-center lg:text-left mb-7">
-            <h2 className="font-head font-bold text-[28px] text-white tracking-[-.02em]">
+            <h2 className="font-head font-bold text-[28px] text-[var(--ink)] tracking-[-.02em]">
               {isSignup ? 'Create your account' : 'Welcome back'}
             </h2>
-            <p className="text-[#9A9CA8] text-[14.5px] font-semibold mt-2">
+            <p className="text-[var(--ink-3)] text-[14.5px] font-semibold mt-2">
               {isSignup ? 'Start earning USDC in seconds.' : 'Log in to keep earning.'}
             </p>
           </div>
 
           {invitedBy && isSignup && (
             <div className="rounded-[14px] bg-[rgba(194,249,77,.1)] border border-[rgba(194,249,77,.3)] p-3 mb-4">
-              <span className="text-[#C7C9D4] text-[13px] font-semibold">
-                You were invited by <span className="text-[var(--accent)] font-extrabold">{invitedBy}</span>. Sign up to start earning.
+              <span className="text-[var(--ink-2)] text-[13px] font-semibold">
+                You were invited by <span className="text-[var(--accent-strong)] font-extrabold">{invitedBy}</span>. Sign up to start earning.
               </span>
             </div>
           )}
 
           {/* role segmented */}
-          <div className="flex gap-[6px] bg-black/35 border border-white/7 rounded-[14px] p-[5px] mb-4">
+          <div className="flex gap-[6px] bg-[var(--fill-2)] border border-[var(--line)] rounded-[14px] p-[5px] mb-4">
             {(['earner', 'business'] as Mode[]).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`flex-1 text-center py-[11px] rounded-[10px] text-[13.5px] font-head ${mode === m ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[#9A9CA8] font-bold'
+                className={`flex-1 text-center py-[11px] rounded-[10px] text-[13.5px] font-head ${mode === m ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[var(--ink-3)] font-bold'
                   }`}
               >
                 {m === 'earner' ? 'I want to earn' : 'I post tasks'}
@@ -307,7 +307,7 @@ export function Login() {
             )}
             <Field placeholder="Email" value={email} onChange={setEmail} type="email" />
             {suggestEmail(email) && (
-              <button type="button" onClick={() => setEmail(suggestEmail(email)!)} className="text-left text-[12.5px] font-semibold text-[var(--accent)] -mt-[4px] px-1">
+              <button type="button" onClick={() => setEmail(suggestEmail(email)!)} className="text-left text-[12.5px] font-semibold text-[var(--accent-strong)] -mt-[4px] px-1">
                 Did you mean {suggestEmail(email)}? Tap to fix.
               </button>
             )}
@@ -329,7 +329,7 @@ export function Login() {
                 />
                 {password.length > 0 && <PasswordRequirements pw={password} />}
                 {password.length === 0 && (
-                  <div className="text-[#767884] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case, a number, and a special character (#@$).</div>
+                  <div className="text-[var(--ink-4)] text-[11.5px] font-semibold px-1">8+ characters with upper & lower case, a number, and a special character (#@$).</div>
                 )}
               </>
             )}
@@ -349,27 +349,27 @@ export function Login() {
 
           {!isSignup && supabaseEnabled && (
             <div className="text-center mt-3">
-              <button onClick={sendReset} disabled={busy} className="text-[#9A9CA8] text-[13px] font-semibold hover:text-white disabled:opacity-50">
+              <button onClick={sendReset} disabled={busy} className="text-[var(--ink-3)] text-[13px] font-semibold hover:text-[var(--ink)] disabled:opacity-50">
                 Forgot password?
               </button>
             </div>
           )}
 
-          <button onClick={() => { setIsSignup((v) => !v); setErr('') }} className="block w-full text-center text-[#767884] text-[13px] font-semibold mt-3">
+          <button onClick={() => { setIsSignup((v) => !v); setErr('') }} className="block w-full text-center text-[var(--ink-4)] text-[13px] font-semibold mt-3">
             {isSignup ? 'Already have an account? ' : 'New here? '}
-            <span className="text-[var(--accent)] font-extrabold">{isSignup ? 'Sign in' : 'Create one'}</span>
+            <span className="text-[var(--accent-strong)] font-extrabold">{isSignup ? 'Sign in' : 'Create one'}</span>
           </button>
 
           <div className="flex items-center gap-[10px] my-5">
-            <div className="flex-1 h-px bg-white/8" />
-            <span className="text-[#9A9CA8] text-[12px] font-bold">or</span>
-            <div className="flex-1 h-px bg-white/8" />
+            <div className="flex-1 h-px bg-[var(--fill)]" />
+            <span className="text-[var(--ink-3)] text-[12px] font-bold">or</span>
+            <div className="flex-1 h-px bg-[var(--fill)]" />
           </div>
 
           <div className="grid grid-cols-3 gap-[10px]">
             <Social icon={<Google width={20} height={20} />} onClick={googleSignIn} title="Continue with Google" />
-            <Social icon={<Apple width={18} height={18} className="text-white" />} title="Apple sign in coming soon" />
-            <Social icon={<Phone width={18} height={18} className="text-white" />} title="Phone sign in coming soon" />
+            <Social icon={<Apple width={18} height={18} className="text-[#fff]" />} title="Apple sign in coming soon" />
+            <Social icon={<Phone width={18} height={18} className="text-[#fff]" />} title="Phone sign in coming soon" />
           </div>
 
         </div>
@@ -386,7 +386,7 @@ function Field({ placeholder, value, onChange, type = 'text' }: { placeholder: s
       value={value}
       onChange={(e) => onChange(e.target.value)}
       autoCapitalize="none"
-      className="w-full bg-[#15161C] border border-white/12 rounded-[14px] px-4 py-[14px] text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
+      className="w-full bg-[var(--card)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[15px] font-semibold placeholder:text-[var(--ink-5)] outline-none focus:border-[var(--accent)]/60"
     />
   )
 }
@@ -412,12 +412,12 @@ function PasswordField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         autoCapitalize="none"
-        className="w-full bg-[#15161C] border border-white/12 rounded-[14px] px-4 py-[14px] pr-12 text-white text-[15px] font-semibold placeholder:text-[#6E6F7A] outline-none focus:border-[var(--accent)]/60"
+        className="w-full bg-[var(--card)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] pr-12 text-[var(--ink)] text-[15px] font-semibold placeholder:text-[var(--ink-5)] outline-none focus:border-[var(--accent)]/60"
       />
       <button
         type="button"
         onClick={onTogglePassword}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E6F7A] hover:text-white transition-colors"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-5)] hover:text-[var(--ink)] transition-colors"
         tabIndex={-1}
       >
         {showPassword ? <EyeOff width={20} height={20} /> : <Eye width={20} height={20} />}
@@ -441,7 +441,7 @@ function PasswordRequirements({ pw }: { pw: string }) {
 
   return (
     <div className="px-1">
-      <div className="text-[#767884] text-[11.5px] font-semibold">
+      <div className="text-[var(--ink-4)] text-[11.5px] font-semibold">
         Missing: {missing.join(', ')}
       </div>
     </div>
@@ -455,7 +455,7 @@ function Social({ icon, onClick, title }: { icon: React.ReactNode; onClick?: () 
       type="button"
       aria-label={title ?? 'Sign in option'}
       onClick={onClick ?? (() => { setDone(true); setTimeout(() => setDone(false), 1400) })}
-      className="py-[13px] rounded-[14px] bg-[#15161C] border border-white/12 flex items-center justify-center hover:bg-white/8"
+      className="py-[13px] rounded-[14px] bg-[var(--card)] border border-[var(--line-2)] flex items-center justify-center hover:bg-[var(--fill)]"
       title={title ?? 'Coming soon — use email'}
     >
       {done ? <Check width={18} height={18} className="text-[var(--green)]" /> : icon}

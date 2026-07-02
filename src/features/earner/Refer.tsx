@@ -36,32 +36,32 @@ export function Refer() {
         {/* invite */}
         <div
           className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.16)]"
-          style={{ background: 'linear-gradient(150deg,#191B22,#121319)', boxShadow: 'var(--glow)' }}
+          style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
         >
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <div className="text-white text-[20px] font-extrabold font-head">Earn 10% forever</div>
-              <div className="text-[#A9ABB6] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
-                Get <span className="text-[var(--accent)] font-bold">10%</span> of everything your friends earn,
+              <div className="text-[var(--ink)] text-[20px] font-extrabold font-head">Earn 10% forever</div>
+              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
+                Get <span className="text-[var(--accent-strong)] font-bold">10%</span> of everything your friends earn,
                 forever. The more they earn, the more you do.
               </div>
             </div>
             <div className="flex gap-6">
               <div>
-                <div className="font-head text-[24px] font-extrabold text-[var(--accent)]">{usd(earnings)}</div>
-                <div className="text-[#767884] text-[11px] font-semibold mt-[2px]">Referral earnings</div>
+                <div className="font-head text-[24px] font-extrabold text-[var(--accent-strong)]">{usd(earnings)}</div>
+                <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-[2px]">Referral earnings</div>
               </div>
               <div>
-                <div className="font-head text-[24px] font-extrabold text-white">{crew.length}</div>
-                <div className="text-[#767884] text-[11px] font-semibold mt-[2px]">Friends joined</div>
+                <div className="font-head text-[24px] font-extrabold text-[var(--ink)]">{crew.length}</div>
+                <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-[2px]">Friends joined</div>
               </div>
             </div>
           </div>
 
-          <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mt-6 mb-2">Your invite link</div>
-            <div className="flex items-center gap-2 rounded-[14px] bg-black/30 border border-white/8 p-2 pl-4">
-              <div className="flex-1 text-[#C2C4CE] text-[14px] font-bold truncate font-head">
-                picoworker.xyz/r/<span className="text-[var(--accent)]">{profile.referral_code}</span>
+          <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em] mt-6 mb-2">Your invite link</div>
+            <div className="flex items-center gap-2 rounded-[14px] bg-[var(--fill)] border border-[var(--line)] p-2 pl-4">
+              <div className="flex-1 text-[var(--ink-2)] text-[14px] font-bold truncate font-head">
+                picoworker.xyz/r/<span className="text-[var(--accent-strong)]">{profile.referral_code}</span>
               </div>
               <button onClick={copy} className="px-4 py-[10px] rounded-[11px] bg-[var(--accent)] text-[var(--accent-ink)] text-[13px] font-extrabold font-head">
                 {copied ? 'Copied!' : 'Copy'}
@@ -69,27 +69,27 @@ export function Refer() {
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={whatsapp} className="flex-1 py-[12px] rounded-[13px] bg-[#25D366]/15 text-[#25D366] text-[14px] font-extrabold">WhatsApp</button>
-              <button onClick={share} className="flex-1 py-[12px] rounded-[13px] bg-white/6 text-white text-[14px] font-extrabold">Share link</button>
+              <button onClick={share} className="flex-1 py-[12px] rounded-[13px] bg-[var(--fill)] text-[var(--ink)] text-[14px] font-extrabold">Share link</button>
             </div>
           </div>
 
           {/* crew */}
-          <div className="rounded-[var(--r)] bg-[#15161C] border border-white/6 overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/6 flex items-center justify-between">
-              <span className="text-white text-[15px] font-extrabold font-head">Your crew</span>
-              <span className="text-[#767884] text-[13px] font-semibold">{crew.length} friends</span>
+          <div className="rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] overflow-hidden">
+            <div className="px-5 py-4 border-b border-[var(--line)] flex items-center justify-between">
+              <span className="text-[var(--ink)] text-[15px] font-extrabold font-head">Your crew</span>
+              <span className="text-[var(--ink-4)] text-[13px] font-semibold">{crew.length} friends</span>
             </div>
             {crew.length === 0 ? (
-              <div className="px-5 py-10 text-center text-[#767884] text-[13.5px] font-semibold">
+              <div className="px-5 py-10 text-center text-[var(--ink-4)] text-[13.5px] font-semibold">
                 No friends yet. Share your link and you'll earn 10% of whatever they make.
               </div>
             ) : (
               crew.map((r, i) => (
-                <div key={r.id} className={`flex items-center gap-3 px-5 py-[14px] ${i === 0 ? '' : 'border-t border-white/5'}`}>
+                <div key={r.id} className={`flex items-center gap-3 px-5 py-[14px] ${i === 0 ? '' : 'border-t border-[var(--line)]'}`}>
                   <Avatar name={r.display_name} size={38} gradient="linear-gradient(135deg,#5B8DEF,#8B6CFF)" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-white text-[14px] font-bold truncate">{r.display_name}</div>
-                    <div className="text-[#767884] text-[12px] font-semibold mt-[1px]">{r.status === 'active' ? `Active · ${r.tasks} tasks` : 'Joined · no tasks yet'}</div>
+                    <div className="text-[var(--ink)] text-[14px] font-bold truncate">{r.display_name}</div>
+                    <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-[1px]">{r.status === 'active' ? `Active · ${r.tasks} tasks` : 'Joined · no tasks yet'}</div>
                   </div>
                   <div className="font-head text-[14px] font-extrabold text-[var(--green)]">{usd(r.earnings, { sign: true })}</div>
                 </div>

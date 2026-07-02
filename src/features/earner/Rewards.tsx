@@ -51,11 +51,11 @@ export function Rewards() {
 
   return (
     <Page title="Daily check-in" subtitle="Claim every day. The longer your streak runs, the more you earn, up to $1 a day at day 100.">
-      <div className="rounded-[var(--r)] p-5 sm:p-6 bg-[#15161C] border border-white/6 mb-6">
+      <div className="rounded-[var(--r)] p-5 sm:p-6 bg-[var(--card)] border border-[var(--line)] mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
-            <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Your streak</div>
-            <div className="font-head text-[28px] font-extrabold text-white mt-1">Day {completedThrough} of 100</div>
+            <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em]">Your streak</div>
+            <div className="font-head text-[28px] font-extrabold text-[var(--ink)] mt-1">Day {completedThrough} of 100</div>
           </div>
           <button
             onClick={claim}
@@ -73,9 +73,9 @@ export function Rewards() {
             return (
               <div key={tier}>
                 <div className="flex items-center gap-3 mb-2.5">
-                  <div className="h-px flex-1 bg-white/8" />
-                  <span className="text-[#9A9CA8] text-[12px] font-extrabold font-head uppercase tracking-[.09em]">{tier}</span>
-                  <div className="h-px flex-1 bg-white/8" />
+                  <div className="h-px flex-1 bg-[var(--fill)]" />
+                  <span className="text-[var(--ink-3)] text-[12px] font-extrabold font-head uppercase tracking-[.09em]">{tier}</span>
+                  <div className="h-px flex-1 bg-[var(--fill)]" />
                 </div>
                 <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
                   {Array.from({ length: 10 }, (_, k) => {
@@ -89,8 +89,8 @@ export function Rewards() {
                           done
                             ? 'bg-[var(--accent)] border-transparent text-[var(--accent-ink)]'
                             : claimable
-                              ? 'bg-[#F0833A] border-transparent text-white animate-pulse'
-                              : 'bg-white/4 border-white/8 text-[#9A9CA8]'
+                              ? 'bg-[#F0833A] border-transparent text-[#fff] animate-pulse'
+                              : 'bg-[var(--fill)] border-[var(--line)] text-[var(--ink-3)]'
                         }`}
                       >
                         <div className="text-[10px] font-bold leading-none opacity-80">Day {day}</div>
@@ -108,27 +108,27 @@ export function Rewards() {
       </div>
 
       {/* level */}
-      <div className="rounded-[var(--r)] p-6 bg-[#15161C] border border-white/6">
+      <div className="rounded-[var(--r)] p-6 bg-[var(--card)] border border-[var(--line)]">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em]">Your level</div>
-            <div className="font-head text-[26px] font-extrabold text-white mt-1">{profile.level.toUpperCase()}</div>
+            <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em]">Your level</div>
+            <div className="font-head text-[26px] font-extrabold text-[var(--ink)] mt-1">{profile.level.toUpperCase()}</div>
           </div>
           <div className="text-right">
-            <div className="font-head text-[26px] font-extrabold text-[var(--accent)]">{progress}%</div>
-            <div className="text-[#767884] text-[11px] font-semibold">{profile.tasks_done} / {goal} tasks to Gold</div>
+            <div className="font-head text-[26px] font-extrabold text-[var(--accent-strong)]">{progress}%</div>
+            <div className="text-[var(--ink-4)] text-[11px] font-semibold">{profile.tasks_done} / {goal} tasks to Gold</div>
           </div>
         </div>
-        <div className="h-[10px] rounded-full bg-white/8 overflow-hidden mb-5">
+        <div className="h-[10px] rounded-full bg-[var(--fill)] overflow-hidden mb-5">
           <div className="h-full rounded-full bg-gradient-to-r from-[#7ec900] to-[var(--accent)]" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex flex-col gap-[10px]">
           {LEVEL_PERKS.map((p) => (
             <div key={p} className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full bg-[rgba(194,249,77,.14)] flex items-center justify-center flex-none">
-                <Check width={14} height={14} className="text-[var(--accent)]" />
+                <Check width={14} height={14} className="text-[var(--accent-strong)]" />
               </div>
-              <span className="text-[#D9DAE2] text-[14px] font-semibold">{p}</span>
+              <span className="text-[var(--ink-2)] text-[14px] font-semibold">{p}</span>
             </div>
           ))}
         </div>

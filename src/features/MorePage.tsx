@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { Page } from '../components/Page'
+import { WhatsAppJoin } from '../components/WhatsAppJoin'
 import {
-  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, Gear, ArrowRight,
+  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight,
 } from '../components/icons'
 
 type Item = { label: string; path: string; icon: typeof Bell }
@@ -23,6 +24,7 @@ const EARNER_SECTIONS: Section[] = [
     items: [
       { label: 'Wallet', path: '/wallet', icon: Wallet },
       { label: 'Payout address', path: '/payout-address', icon: Wallet },
+      { label: 'Proof of income', path: '/proof-of-income', icon: IdCard },
       { label: 'Verify identity', path: '/verify', icon: IdCard },
     ],
   },
@@ -80,68 +82,68 @@ export function MorePage() {
 
   return (
     <Page title="More" subtitle="Everything else, in one place.">
-      <div className="flex flex-col gap-7">
-        {/* prominent mode switch */}
+      <div className="flex flex-col gap-4">
+        {/* mode switch + community, side by side on desktop to save space */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {isBiz ? (
           <button
             onClick={toggleMode}
-            className="w-full flex items-center justify-between gap-3 rounded-[var(--r)] p-5 border border-[rgba(194,249,77,.3)]"
+            className="w-full flex items-center justify-between gap-3 rounded-[16px] p-4 border border-[rgba(194,249,77,.3)]"
             style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.16),rgba(194,249,77,.04))' }}
           >
             <span className="flex items-center gap-3">
-              <span className="w-11 h-11 rounded-[14px] bg-[var(--accent)] flex items-center justify-center flex-none"><Bolt width={22} height={22} className="text-[var(--accent-ink)]" /></span>
+              <span className="w-10 h-10 rounded-[12px] bg-[var(--accent)] flex items-center justify-center flex-none"><Bolt width={20} height={20} className="text-[var(--accent-ink)]" /></span>
               <span className="text-left">
-                <span className="block text-white text-[15px] font-extrabold font-head">Switch to earning</span>
+                <span className="block text-[var(--ink)] text-[15px] font-extrabold font-head">Switch to earning</span>
                 <span className="block text-[#9DAA7E] text-[12px] font-semibold">Do tasks and earn USDC</span>
               </span>
             </span>
-            <ArrowRight width={20} height={20} className="text-[var(--accent)] flex-none" />
+            <ArrowRight width={18} height={18} className="text-[var(--accent-strong)] flex-none" />
           </button>
         ) : (
           <button
             onClick={toggleMode}
-            className="w-full flex items-center justify-between gap-3 rounded-[var(--r)] p-5 border border-[rgba(139,108,255,.35)]"
+            className="w-full flex items-center justify-between gap-3 rounded-[16px] p-4 border border-[rgba(139,108,255,.35)]"
             style={{ background: 'linear-gradient(135deg,rgba(139,108,255,.18),rgba(139,108,255,.05))' }}
           >
             <span className="flex items-center gap-3">
-              <span className="w-11 h-11 rounded-[14px] bg-[#8B6CFF] flex items-center justify-center flex-none"><Home width={22} height={22} className="text-white" /></span>
+              <span className="w-10 h-10 rounded-[12px] bg-[#8B6CFF] flex items-center justify-center flex-none"><Home width={20} height={20} className="text-[#fff]" /></span>
               <span className="text-left">
-                <span className="block text-white text-[15px] font-extrabold font-head">Switch to business</span>
+                <span className="block text-[var(--ink)] text-[15px] font-extrabold font-head">Switch to business</span>
                 <span className="block text-[#B0A6E6] text-[12px] font-semibold">Post a task and grow fast</span>
               </span>
             </span>
-            <ArrowRight width={20} height={20} className="text-[#8B6CFF] flex-none" />
+            <ArrowRight width={18} height={18} className="text-[#8B6CFF] flex-none" />
           </button>
         )}
 
-        {sections.map((section) => (
-          <div key={section.title}>
-            <div className="text-white text-[15px] font-extrabold font-head mb-3">{section.title}</div>
-            <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2">
-              {section.items.map((item) => {
-                const Icon = item.icon
-                return (
-                  <button
-                    key={item.label}
-                    onClick={() => nav(item.path)}
-                    className="flex flex-col items-center gap-2 py-3 px-1 rounded-[14px] hover:bg-white/[.04] active:scale-[.97] transition"
-                  >
-                    <span className="w-12 h-12 rounded-[14px] bg-[#15161C] border border-white/8 flex items-center justify-center text-[var(--accent)]">
-                      <Icon width={22} height={22} />
-                    </span>
-                    <span className="text-[#C7C9D4] text-[11px] font-bold text-center leading-[1.25]">{item.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        ))}
+        <WhatsAppJoin />
+        </div>
+
+        {/* all shortcuts together in one grid — no section headers eating space */}
+        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1.5">
+          {sections.flatMap((s) => s.items).map((item) => {
+            const Icon = item.icon
+            return (
+              <button
+                key={item.label}
+                onClick={() => nav(item.path)}
+                className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-[12px] hover:bg-[var(--fill)] active:scale-[.97] transition"
+              >
+                <span className="w-10 h-10 rounded-[12px] bg-[var(--card)] border border-[var(--line)] flex items-center justify-center text-[var(--accent-strong)]">
+                  <Icon width={19} height={19} />
+                </span>
+                <span className="text-[var(--ink-2)] text-[10.5px] font-bold text-center leading-[1.2]">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
 
         <button
           onClick={() => { signOut() }}
-          className="self-start text-[var(--coral)] text-[13px] font-extrabold font-head flex items-center gap-2 mt-1"
+          className="w-full mt-1 flex items-center justify-center gap-2 py-[11px] rounded-[12px] bg-[var(--fill)] border border-[var(--line-2)] text-[var(--coral)] text-[13.5px] font-extrabold font-head hover:bg-[var(--fill-2)]"
         >
-          <Gear width={16} height={16} /> Log out
+          <LogOut width={16} height={16} /> Log out
         </button>
       </div>
     </Page>

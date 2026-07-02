@@ -34,7 +34,7 @@ export function Targeting() {
       subtitle="Optional · reach the right earners for your campaign."
       back
       narrow
-      actions={<span className="text-[#767884] text-[13px] font-semibold">Optional</span>}
+      actions={<span className="text-[var(--ink-4)] text-[13px] font-semibold">Optional</span>}
     >
       <Section label="Countries">
         <Chips options={COUNTRIES} selected={countries} onToggle={(v) => toggle(countries, setCountries, v)} />
@@ -51,10 +51,10 @@ export function Targeting() {
 
       <div className="flex items-center justify-between rounded-[16px] p-5 bg-[rgba(194,249,77,.06)] border border-[rgba(194,249,77,.2)] mt-2">
         <div className="flex items-center gap-3">
-          <Globe width={22} height={22} className="text-[var(--accent)]" />
-          <span className="text-[#C7C9D4] text-[14px] font-semibold">Estimated reach</span>
+          <Globe width={22} height={22} className="text-[var(--accent-strong)]" />
+          <span className="text-[var(--ink-2)] text-[14px] font-semibold">Estimated reach</span>
         </div>
-        <span className="font-head text-[22px] font-extrabold text-white">~{reach.toLocaleString()}</span>
+        <span className="font-head text-[22px] font-extrabold text-[var(--ink)]">~{reach.toLocaleString()}</span>
       </div>
 
       <button
@@ -71,7 +71,7 @@ export function Targeting() {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-6">
-      <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-3">{label}</div>
+      <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em] mb-3">{label}</div>
       {children}
     </div>
   )
@@ -82,7 +82,7 @@ function Chips({ options, selected, onToggle }: { options: string[]; selected: s
       {options.map((o) => {
         const on = selected.includes(o)
         return (
-          <button key={o} onClick={() => onToggle(o)} className={`px-4 py-[10px] rounded-full text-[13px] font-bold border ${on ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-white/5 text-[#C2C4CE] border-white/8'}`}>
+          <button key={o} onClick={() => onToggle(o)} className={`px-4 py-[10px] rounded-full text-[13px] font-bold border ${on ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[var(--fill)] text-[var(--ink-2)] border-[var(--line)]'}`}>
             {o}
           </button>
         )
@@ -94,7 +94,7 @@ function Single({ options, value, onChange }: { options: string[]; value: string
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <button key={o} onClick={() => onChange(o)} className={`px-5 py-[11px] rounded-[12px] text-[14px] font-head font-extrabold border ${value === o ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[#15161C] text-[#C2C4CE] border-white/8'}`}>
+        <button key={o} onClick={() => onChange(o)} className={`px-5 py-[11px] rounded-[12px] text-[14px] font-head font-extrabold border ${value === o ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[var(--card)] text-[var(--ink-2)] border-[var(--line)]'}`}>
           {o}
         </button>
       ))}

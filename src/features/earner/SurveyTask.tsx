@@ -22,7 +22,7 @@ export function SurveyTask() {
   const [busy, setBusy] = useState(false)
 
   const t = id ? task(id) : undefined
-  if (!t) return <Page title="Survey" back><div className="text-center text-[#767884] py-16">This survey is no longer available.</div></Page>
+  if (!t) return <Page title="Survey" back><div className="text-center text-[var(--ink-4)] py-16">This survey is no longer available.</div></Page>
 
   const cur = QUESTIONS[step]
   const picked = answers[step]
@@ -44,15 +44,15 @@ export function SurveyTask() {
     <Page back narrow title={t.title} subtitle={`Survey · ${usd(earnerNet(t.reward), { sign: true })}`}>
       {/* progress */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 h-[8px] rounded-full bg-white/8 overflow-hidden">
+        <div className="flex-1 h-[8px] rounded-full bg-[var(--fill)] overflow-hidden">
           <div className="h-full rounded-full bg-[var(--accent)] transition-all" style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }} />
         </div>
-        <span className="text-[#9A9CA8] text-[13px] font-bold font-head">{step + 1}/{QUESTIONS.length}</span>
+        <span className="text-[var(--ink-3)] text-[13px] font-bold font-head">{step + 1}/{QUESTIONS.length}</span>
       </div>
 
-      <div className="rounded-[var(--r)] bg-[#15161C] border border-white/6 p-6">
-        <div className="text-[#8B8D99] text-[12px] font-bold uppercase tracking-[.07em] mb-2">Choose one</div>
-        <h2 className="text-white text-[22px] font-extrabold font-head leading-[1.2] mb-5">{cur.q}</h2>
+      <div className="rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] p-6">
+        <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em] mb-2">Choose one</div>
+        <h2 className="text-[var(--ink)] text-[22px] font-extrabold font-head leading-[1.2] mb-5">{cur.q}</h2>
         <div className="flex flex-col gap-3">
           {cur.opts.map((o, i) => {
             const on = picked === i
@@ -60,12 +60,12 @@ export function SurveyTask() {
               <button
                 key={o}
                 onClick={() => setAnswers((a) => ({ ...a, [step]: i }))}
-                className={`flex items-center gap-3 p-4 rounded-[14px] border text-left transition-colors ${on ? 'bg-[rgba(194,249,77,.1)] border-[var(--accent)]' : 'bg-white/4 border-white/8 hover:bg-white/[.07]'}`}
+                className={`flex items-center gap-3 p-4 rounded-[14px] border text-left transition-colors ${on ? 'bg-[rgba(194,249,77,.1)] border-[var(--accent)]' : 'bg-[var(--fill)] border-[var(--line)] hover:bg-[var(--fill)]'}`}
               >
-                <span className={`w-5 h-5 rounded-full border-2 flex-none flex items-center justify-center ${on ? 'border-[var(--accent)]' : 'border-white/25'}`}>
+                <span className={`w-5 h-5 rounded-full border-2 flex-none flex items-center justify-center ${on ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'}`}>
                   {on && <span className="w-[10px] h-[10px] rounded-full bg-[var(--accent)]" />}
                 </span>
-                <span className={`text-[15px] font-semibold ${on ? 'text-white' : 'text-[#C7C9D4]'}`}>{o}</span>
+                <span className={`text-[15px] font-semibold ${on ? 'text-[var(--ink)]' : 'text-[var(--ink-2)]'}`}>{o}</span>
               </button>
             )
           })}

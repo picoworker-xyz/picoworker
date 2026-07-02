@@ -27,6 +27,14 @@
   --coral: #ff6b5a;
   --usdc: #2775ca;
 
+  /* accent-strong = a readable accent for TEXT/icons (lime is fine on dark) */
+  --accent-strong: #c2f94d;
+  /* subtle surface fills (were white/4, white/6) */
+  --fill: rgba(255, 255, 255, 0.04);
+  --fill-2: rgba(255, 255, 255, 0.06);
+  /* translucent nav bars (sidebar, top bar, mobile tabs) */
+  --bar: rgba(12, 13, 17, 0.8);
+
   --glow: 0 16px 44px -14px rgba(194, 249, 77, 0.55);
   --glow-card: 0 0 0 1px rgba(194, 249, 77, 0.35), 0 18px 50px -18px rgba(194, 249, 77, 0.35);
 
@@ -34,6 +42,41 @@
   --font-body: 'Manrope', system-ui, sans-serif;
 
   color-scheme: dark;
+}
+
+/* ===== Light theme (toggled via html[data-theme='light']) ===== */
+html[data-theme='light'] {
+  --accent-ink: #0b0c10; /* dark text stays on the lime button */
+  --accent-strong: #12924a; /* lime is unreadable on white — use a crisp green for accent text */
+
+  /* Soft off-white palette — pure #fff glares, so the page is a gentle warm grey
+     and cards sit just above it. Text is dark grey, not near-black, to cut harshness. */
+  --bg: #eceee8;
+  --bg-page: #e8eae4;
+  --card: #f7f8f4;
+  --card-2: #eff1eb;
+  --line: rgba(20, 22, 18, 0.10);
+  --line-2: rgba(20, 22, 18, 0.16);
+
+  --ink: #191b21;
+  --ink-2: #383b43;
+  --ink-3: #515560;
+  --ink-4: #696d78;
+  --ink-5: #8b8f9a;
+
+  --fill: rgba(20, 22, 18, 0.04);
+  --fill-2: rgba(20, 22, 18, 0.07);
+  --bar: rgba(236, 238, 232, 0.85);
+
+  /* the neon status colors read as washed-out on light — deepen them for readable text */
+  --green: #1a9e57;
+  --coral: #e04f3c;
+  --violet: #6a4de3;
+
+  --glow: 0 14px 38px -16px rgba(120, 180, 40, 0.45);
+  --glow-card: 0 0 0 1px rgba(28, 158, 70, 0.28), 0 18px 44px -20px rgba(28, 158, 70, 0.28);
+
+  color-scheme: light;
 }
 
 * {
@@ -63,6 +106,12 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+html[data-theme='light'] body {
+  background:
+    radial-gradient(1200px 600px at 18% -10%, rgba(90, 170, 90, 0.06), transparent 60%),
+    var(--bg-page);
 }
 
 button {
@@ -126,6 +175,20 @@ a {
     opacity: 1;
   }
 }
+@keyframes pico-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .float-slow {
+    animation: pico-float 5.5s ease-in-out infinite;
+  }
+}
 @keyframes pico-slide-up {
   from {
     transform: translateY(14px);
@@ -159,4 +222,8 @@ a {
   background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 44px 44px;
+}
+html[data-theme='light'] .hero-grid {
+  background-image: linear-gradient(rgba(17, 19, 24, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 19, 24, 0.04) 1px, transparent 1px);
 }

@@ -6,19 +6,19 @@ const UPDATED = 'June 28, 2026'
 
 function LegalLayout({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="min-h-svh bg-[#0B0C10] text-[#D9DAE2]">
-      <header className="border-b border-white/7">
+    <div className="min-h-svh bg-[var(--bg-page)] text-[var(--ink-2)]">
+      <header className="border-b border-[var(--line)]">
         <div className="app-container py-5 flex items-center justify-between">
           <Link to="/"><BrandMark size={32} /></Link>
-          <Link to="/" className="text-[#9A9CA8] text-[14px] font-bold hover:text-white">Back to home</Link>
+          <Link to="/" className="text-[var(--ink-3)] text-[14px] font-bold hover:text-[var(--ink)]">Back to home</Link>
         </div>
       </header>
       <main className="app-container py-12 max-w-[760px]">
-        <h1 className="font-head font-bold text-[34px] text-white tracking-[-.02em]">{title}</h1>
-        <p className="text-[#767884] text-[13px] font-semibold mt-2 mb-8">Last updated: {UPDATED}</p>
+        <h1 className="font-head font-bold text-[34px] text-[var(--ink)] tracking-[-.02em]">{title}</h1>
+        <p className="text-[var(--ink-4)] text-[13px] font-semibold mt-2 mb-8">Last updated: {UPDATED}</p>
         <div className="flex flex-col gap-6 text-[15px] leading-[1.7]">{children}</div>
-        <div className="mt-12 text-[#767884] text-[13px] font-semibold">
-          Questions? Contact us at <a href="mailto:hello@picoworker.xyz" className="text-[var(--accent)]">hello@picoworker.xyz</a>.
+        <div className="mt-12 text-[var(--ink-4)] text-[13px] font-semibold">
+          Questions? Contact us at <a href="mailto:hello@picoworker.xyz" className="text-[var(--accent-strong)]">hello@picoworker.xyz</a>.
         </div>
       </main>
     </div>
@@ -26,7 +26,7 @@ function LegalLayout({ title, children }: { title: string; children: ReactNode }
 }
 
 const H = ({ children }: { children: ReactNode }) => (
-  <h2 className="font-head font-bold text-[20px] text-white mt-2">{children}</h2>
+  <h2 className="font-head font-bold text-[20px] text-[var(--ink)] mt-2">{children}</h2>
 )
 
 export function Terms() {

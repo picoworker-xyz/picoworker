@@ -27,10 +27,10 @@ export function SubmissionDetail() {
     if (!completion) {
         return (
             <Page title="Submission" back narrow>
-                <div className="rounded-[var(--r)] border border-white/6 bg-[#15161C] py-14 text-center">
+                <div className="rounded-[var(--r)] border border-[var(--line)] bg-[var(--card)] py-14 text-center">
                     <X width={28} height={28} className="text-[var(--coral)] mx-auto" />
-                    <div className="text-white text-[15px] font-bold mt-3">Submission not found</div>
-                    <button onClick={() => nav('/submissions')} className="mt-5 font-head font-extrabold text-[14px] bg-white/6 text-white px-5 py-3 rounded-[13px]">Back to submissions</button>
+                    <div className="text-[var(--ink)] text-[15px] font-bold mt-3">Submission not found</div>
+                    <button onClick={() => nav('/submissions')} className="mt-5 font-head font-extrabold text-[14px] bg-[var(--fill)] text-[var(--ink)] px-5 py-3 rounded-[13px]">Back to submissions</button>
                 </div>
             </Page>
         )
@@ -73,38 +73,38 @@ export function SubmissionDetail() {
             </div>
 
             {/* task info */}
-            <div className="rounded-[16px] p-4 bg-[#15161C] border border-white/6 mb-4">
-                <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Task</div>
-                <div className="text-white text-[16px] font-bold font-head">{tk?.title ?? 'Task'}</div>
-                {tk?.subtitle && <div className="text-[#767884] text-[13px] font-semibold mt-1">{tk.subtitle}</div>}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
-                    <span className="text-[#767884] text-[12px] font-semibold">Reward</span>
-                    <span className="font-head text-[18px] font-extrabold text-[var(--accent)]">{usd(earnerNet(completion.reward))}</span>
+            <div className="rounded-[16px] p-4 bg-[var(--card)] border border-[var(--line)] mb-4">
+                <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Task</div>
+                <div className="text-[var(--ink)] text-[16px] font-bold font-head">{tk?.title ?? 'Task'}</div>
+                {tk?.subtitle && <div className="text-[var(--ink-4)] text-[13px] font-semibold mt-1">{tk.subtitle}</div>}
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--line)]">
+                    <span className="text-[var(--ink-4)] text-[12px] font-semibold">Reward</span>
+                    <span className="font-head text-[18px] font-extrabold text-[var(--accent-strong)]">{usd(earnerNet(completion.reward))}</span>
                 </div>
             </div>
 
             {/* submitted username / handle */}
             {completion.proof_note && (
-                <div className="rounded-[14px] p-4 bg-[#15161C] border border-white/6 mb-4">
-                    <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Submitted username / handle</div>
-                    <div className="text-white text-[16px] font-bold font-head break-all">{completion.proof_note}</div>
+                <div className="rounded-[14px] p-4 bg-[var(--card)] border border-[var(--line)] mb-4">
+                    <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Submitted username / handle</div>
+                    <div className="text-[var(--ink)] text-[16px] font-bold font-head break-all">{completion.proof_note}</div>
                 </div>
             )}
 
             {/* proof screenshots */}
             {proofImages.length > 0 ? (
-                <div className="rounded-[18px] border border-white/8 bg-[#15161C] p-4 mb-4">
-                    <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em] mb-3">Proof screenshot{proofImages.length > 1 ? 's' : ''}</div>
+                <div className="rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4 mb-4">
+                    <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-3">Proof screenshot{proofImages.length > 1 ? 's' : ''}</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {proofImages.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer" className="block rounded-[12px] overflow-hidden border border-white/8">
+                            <a key={i} href={url} target="_blank" rel="noreferrer" className="block rounded-[12px] overflow-hidden border border-[var(--line)]">
                                 <img src={url} alt={`proof ${i + 1}`} className="w-full max-h-[280px] object-contain bg-black/40" />
                             </a>
                         ))}
                     </div>
                 </div>
             ) : (
-                <div className="rounded-[18px] border border-white/8 bg-[#15161C] p-8 mb-4 flex flex-col items-center justify-center gap-2 text-[#767884] text-[13px] font-semibold">
+                <div className="rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-8 mb-4 flex flex-col items-center justify-center gap-2 text-[var(--ink-4)] text-[13px] font-semibold">
                     <Zoom width={24} height={24} />
                     No screenshot provided
                 </div>
@@ -119,16 +119,16 @@ export function SubmissionDetail() {
 
             {/* appeal (rejected only) */}
             {completion.status === 'rejected' && (
-                <div className="rounded-[16px] p-4 bg-[#15161C] border border-white/6 mb-4">
-                    <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Appeal this decision</div>
+                <div className="rounded-[16px] p-4 bg-[var(--card)] border border-[var(--line)] mb-4">
+                    <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-2">Appeal this decision</div>
                     {appealed ? (
                         <div className="text-[var(--green)] text-[13.5px] font-semibold leading-[1.5]">Appeal submitted. Our team will review it and get back to you.</div>
                     ) : denied ? (
-                        <div className="text-[#9A9CA8] text-[13.5px] font-semibold leading-[1.5]">Your appeal was reviewed and the rejection stands.</div>
+                        <div className="text-[var(--ink-3)] text-[13.5px] font-semibold leading-[1.5]">Your appeal was reviewed and the rejection stands.</div>
                     ) : (
                         <>
-                            <div className="text-[#A9ABB6] text-[13px] font-semibold mb-3 leading-[1.5]">If you think this was rejected by mistake, tell us why and our team will review it.</div>
-                            <textarea value={appealNote} onChange={(e) => setAppealNote(e.target.value)} rows={3} placeholder="Explain why your proof meets the task requirements…" className="w-full bg-white/4 border border-white/8 rounded-[12px] px-4 py-3 text-white text-[14px] font-medium placeholder:text-[#6E6F7A] outline-none resize-none" />
+                            <div className="text-[var(--ink-3)] text-[13px] font-semibold mb-3 leading-[1.5]">If you think this was rejected by mistake, tell us why and our team will review it.</div>
+                            <textarea value={appealNote} onChange={(e) => setAppealNote(e.target.value)} rows={3} placeholder="Explain why your proof meets the task requirements…" className="w-full bg-[var(--fill)] border border-[var(--line)] rounded-[12px] px-4 py-3 text-[var(--ink)] text-[14px] font-medium placeholder:text-[var(--ink-5)] outline-none resize-none" />
                             {appealErr && <div className="text-[var(--coral)] text-[12.5px] font-semibold mt-2">{appealErr}</div>}
                             <button onClick={submitAppeal} className="w-full mt-3 font-head font-extrabold text-[14px] bg-[var(--accent)] text-[var(--accent-ink)] py-3 rounded-[12px]">Submit appeal</button>
                         </>
@@ -138,7 +138,7 @@ export function SubmissionDetail() {
 
             {/* action buttons */}
             {tk && (
-                <button onClick={() => nav(`/task/${tk.id}`)} className="w-full font-head font-extrabold text-[15px] bg-white/6 text-white border border-white/10 py-[15px] rounded-[15px] mt-2">
+                <button onClick={() => nav(`/task/${tk.id}`)} className="w-full font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)] py-[15px] rounded-[15px] mt-2">
                     View task
                 </button>
             )}

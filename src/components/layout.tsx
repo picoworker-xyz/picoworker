@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Mode, TaskType } from '../lib/types'
+import { BrandLogo } from './BrandLogo'
 import {
   ChevronLeft,
-  PicoLogo,
   Play,
   Shield,
   XLogo,
@@ -14,7 +14,7 @@ export function FraudNotice({ mode = 'earner' }: { mode?: Mode }) {
   return (
     <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-[rgba(255,107,90,.06)] border border-[rgba(255,107,90,.18)] p-3">
       <Shield width={16} height={16} className="text-[var(--coral)] flex-none mt-[1px]" />
-      <p className="text-[#B6B8C2] text-[11.5px] font-semibold leading-[1.5]">
+      <p className="text-[var(--ink-3)] text-[11.5px] font-semibold leading-[1.5]">
         {mode === 'business' ? (
           <>One account per business. Multiple accounts, fake engagement, or hiding behind a VPN/proxy violate our advertiser policy and can suspend your campaigns.</>
         ) : (
@@ -26,18 +26,13 @@ export function FraudNotice({ mode = 'earner' }: { mode?: Mode }) {
 }
 
 // ---- Brand mark ----
-export function BrandMark({ size = 48, withText = true }: { size?: number; withText?: boolean }) {
+export function BrandMark({ size = 44, withText = true }: { size?: number; withText?: boolean }) {
   return (
-    <div className="flex items-center gap-[14px]">
-      <div
-        className="rounded-[14px] bg-[var(--accent)] flex items-center justify-center text-[var(--accent-ink)]"
-        style={{ width: size, height: size, boxShadow: 'var(--glow)' }}
-      >
-        <PicoLogo width={size * 0.55} height={size * 0.55} />
-      </div>
+    <div className="flex items-center gap-[12px]">
+      <BrandLogo size={size} />
       {withText && (
-        <div className="font-head font-bold text-[21px] tracking-[-.02em] text-white">
-          picoworker<span className="text-[#5E606C]">.xyz</span>
+        <div className="font-head font-bold text-[20px] tracking-[-.02em] text-[var(--ink)]">
+          picoworker<span className="text-[var(--ink-5)]">.xyz</span>
         </div>
       )}
     </div>
@@ -62,14 +57,14 @@ export function ScreenHeader({
       {back ? (
         <button
           onClick={onBack ?? (() => nav(-1))}
-          className="w-10 h-10 rounded-[12px] bg-white/6 flex items-center justify-center text-white"
+          className="w-10 h-10 rounded-[12px] bg-[var(--fill)] flex items-center justify-center text-[var(--ink)]"
         >
           <ChevronLeft width={18} height={18} />
         </button>
       ) : (
         <div className="w-10" />
       )}
-      {title && <div className="font-head text-[17px] font-extrabold text-white">{title}</div>}
+      {title && <div className="font-head text-[17px] font-extrabold text-[var(--ink)]">{title}</div>}
       <div className="min-w-10 flex justify-end">{right}</div>
     </div>
   )
@@ -77,8 +72,8 @@ export function ScreenHeader({
 
 // ---- Task type icon (colored tile) ----
 const TYPE_STYLE: Record<TaskType, { bg: string; icon: ReactNode }> = {
-  follow_x: { bg: '#000', icon: <XLogo width={18} height={18} className="text-white" /> },
-  yt_views: { bg: '#FF0033', icon: <Play width={20} height={20} className="text-white" /> },
+  follow_x: { bg: '#000', icon: <XLogo width={18} height={18} className="text-[#fff]" /> },
+  yt_views: { bg: '#FF0033', icon: <Play width={20} height={20} className="text-[#fff]" /> },
   app_install: {
     bg: '#5B8DEF',
     icon: (

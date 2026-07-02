@@ -50,7 +50,7 @@ export function Dashboard() {
           value={usd(wallet.business_escrow)}
           label="Escrow balance"
           accent
-          action={<button onClick={() => nav('/business/add-funds')} className="text-[var(--accent)] text-[12px] font-extrabold">Add funds</button>}
+          action={<button onClick={() => nav('/business/add-funds')} className="text-[var(--accent-strong)] text-[12px] font-extrabold">Add funds</button>}
         />
         <BigStat value={String(live.length)} label="Active campaigns" />
         <BigStat value={String(doneTotal)} label="Completions" />
@@ -68,18 +68,18 @@ export function Dashboard() {
       )}
 
       {/* campaigns table */}
-      <div className="rounded-[var(--r)] bg-[#15161C] border border-white/6 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/6 flex items-center justify-between">
-          <span className="text-white text-[15px] font-extrabold font-head">Campaigns</span>
-          <span className="text-[#767884] text-[13px] font-semibold">{campaigns.length} total</span>
+      <div className="rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--line)] flex items-center justify-between">
+          <span className="text-[var(--ink)] text-[15px] font-extrabold font-head">Campaigns</span>
+          <span className="text-[var(--ink-4)] text-[13px] font-semibold">{campaigns.length} total</span>
         </div>
 
         {campaigns.length === 0 ? (
-          <div className="text-center text-[#767884] text-[14px] font-semibold py-12">No campaigns yet. Create your first task to start growing.</div>
+          <div className="text-center text-[var(--ink-4)] text-[14px] font-semibold py-12">No campaigns yet. Create your first task to start growing.</div>
         ) : (
           <>
             {/* table header (desktop) */}
-            <div className="hidden md:grid grid-cols-[2fr_1fr_2fr_1fr_auto] gap-4 px-5 py-3 text-[#767884] text-[11px] font-bold uppercase tracking-[.06em] border-b border-white/5">
+            <div className="hidden md:grid grid-cols-[2fr_1fr_2fr_1fr_auto] gap-4 px-5 py-3 text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.06em] border-b border-[var(--line)]">
               <span>Campaign</span>
               <span>Reward</span>
               <span>Progress</span>
@@ -97,14 +97,14 @@ export function Dashboard() {
 function Row({ c, hidden, onClick }: { c: Task; hidden?: boolean; onClick: () => void }) {
   const { pauseCampaign } = useStore()
   return (
-    <div onClick={onClick} role="button" tabIndex={0} className="cursor-pointer w-full text-left px-5 py-4 border-t border-white/5 hover:bg-white/[.04] md:grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_auto_auto] md:gap-4 md:items-center flex flex-col gap-2">
-      <div className="text-white text-[14px] font-bold truncate">{c.title}</div>
-      <div className="text-[var(--accent)] text-[14px] font-extrabold font-head">{usd(c.reward, { sign: true })}</div>
+    <div onClick={onClick} role="button" tabIndex={0} className="cursor-pointer w-full text-left px-5 py-4 border-t border-[var(--line)] hover:bg-[var(--fill)] md:grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_auto_auto] md:gap-4 md:items-center flex flex-col gap-2">
+      <div className="text-[var(--ink)] text-[14px] font-bold truncate">{c.title}</div>
+      <div className="text-[var(--accent-strong)] text-[14px] font-extrabold font-head">{usd(c.reward, { sign: true })}</div>
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-[6px] rounded-full bg-white/8 overflow-hidden min-w-[80px]">
+        <div className="flex-1 h-[6px] rounded-full bg-[var(--fill)] overflow-hidden min-w-[80px]">
           <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct(c.done_count, c.goal_count)}%` }} />
         </div>
-        <span className="text-[#9A9CA8] text-[12px] font-semibold whitespace-nowrap">{c.done_count}/{c.goal_count}</span>
+        <span className="text-[var(--ink-3)] text-[12px] font-semibold whitespace-nowrap">{c.done_count}/{c.goal_count}</span>
       </div>
       <div className="flex items-center gap-2">
         <StatusTag status={c.status} />
@@ -112,13 +112,13 @@ function Row({ c, hidden, onClick }: { c: Task; hidden?: boolean; onClick: () =>
         {c.status !== 'complete' && (
           <button
             onClick={(e) => { e.stopPropagation(); pauseCampaign(c.id) }}
-            className="text-[11px] font-extrabold font-head px-2.5 py-1 rounded-full bg-white/8 text-white hover:bg-white/12"
+            className="text-[11px] font-extrabold font-head px-2.5 py-1 rounded-full bg-[var(--fill)] text-[var(--ink)] hover:bg-[var(--fill-2)]"
           >
             {c.status === 'paused' ? 'Resume' : 'Pause'}
           </button>
         )}
       </div>
-      <span className="hidden md:block text-[#5E606C] text-[18px]">›</span>
+      <span className="hidden md:block text-[var(--ink-5)] text-[18px]">›</span>
     </div>
   )
 }
@@ -127,19 +127,19 @@ function StatusTag({ status }: { status: Task['status'] }) {
   const map = {
     live: 'text-[var(--green)] bg-[rgba(68,209,122,.14)]',
     paused: 'text-[#FFB05A] bg-[rgba(255,176,90,.14)]',
-    complete: 'text-[#9A9CA8] bg-white/8',
+    complete: 'text-[var(--ink-3)] bg-[var(--fill)]',
   }
   return <span className={`w-fit text-[10px] font-extrabold px-2 py-1 rounded-full uppercase ${map[status]}`}>{status}</span>
 }
 
 function BigStat({ value, label, accent, action }: { value: string; label: string; accent?: boolean; action?: React.ReactNode }) {
   return (
-    <div className="rounded-[18px] p-5 bg-[#15161C] border border-white/6">
+    <div className="rounded-[18px] p-5 bg-[var(--card)] border border-[var(--line)]">
       <div className="flex items-center justify-between">
-        <div className="text-[#8B8D99] text-[11px] font-bold uppercase tracking-[.07em]">{label}</div>
+        <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em]">{label}</div>
         {action}
       </div>
-      <div className={`font-head text-[26px] font-extrabold mt-2 ${accent ? 'text-[var(--accent)]' : 'text-white'}`}>{value}</div>
+      <div className={`font-head text-[26px] font-extrabold mt-2 ${accent ? 'text-[var(--accent-strong)]' : 'text-[var(--ink)]'}`}>{value}</div>
     </div>
   )
 }
