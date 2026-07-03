@@ -55,24 +55,24 @@ html[data-theme='light'] {
   --accent-strong: #12924a;
   --logo-bg: #0b1410; /* dark tile so the lime logo mark stays crisp on light */
 
-  /* Soft off-white palette — pure #fff glares, so the page is a gentle warm grey
-     and cards sit just above it. Text is dark grey, not near-black, to cut harshness. */
-  --bg: #eceee8;
-  --bg-page: #e8eae4;
-  --card: #f7f8f4;
-  --card-2: #eff1eb;
-  --line: rgba(20, 22, 18, 0.10);
-  --line-2: rgba(20, 22, 18, 0.16);
+  /* Cool light palette — a gentle blue-grey (never pure white, which glares).
+     The page is soft grey, cards sit a hair brighter, text is a cool dark grey. */
+  --bg: #eef0f4;
+  --bg-page: #e9ebf0;
+  --card: #f8f9fc;
+  --card-2: #eef0f4;
+  --line: rgba(24, 28, 44, 0.09);
+  --line-2: rgba(24, 28, 44, 0.15);
 
-  --ink: #191b21;
-  --ink-2: #383b43;
-  --ink-3: #515560;
-  --ink-4: #696d78;
-  --ink-5: #8b8f9a;
+  --ink: #191c24;
+  --ink-2: #383c47;
+  --ink-3: #515663;
+  --ink-4: #696e7b;
+  --ink-5: #8b909d;
 
-  --fill: rgba(20, 22, 18, 0.04);
-  --fill-2: rgba(20, 22, 18, 0.07);
-  --bar: rgba(236, 238, 232, 0.85);
+  --fill: rgba(24, 28, 44, 0.038);
+  --fill-2: rgba(24, 28, 44, 0.065);
+  --bar: rgba(238, 240, 244, 0.85);
 
   /* the neon status colors read as washed-out on light — deepen them for readable text */
   --green: #1a9e57;
@@ -106,8 +106,8 @@ html {
 body {
   font-family: var(--font-body);
   background:
-    radial-gradient(1200px 600px at 18% -10%, rgba(46,224,110, 0.1), transparent 60%),
-    radial-gradient(1000px 700px at 110% 20%, rgba(139, 108, 255, 0.12), transparent 55%),
+    radial-gradient(1100px 560px at 15% -12%, rgba(46,224,110, 0.055), transparent 62%),
+    radial-gradient(900px 640px at 112% 18%, rgba(139, 108, 255, 0.06), transparent 58%),
     var(--bg-page);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
