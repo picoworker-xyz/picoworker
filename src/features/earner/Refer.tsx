@@ -35,7 +35,7 @@ export function Refer() {
       <div className="flex flex-col gap-4">
         {/* invite */}
         <div
-          className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.16)]"
+          className="rounded-[var(--r)] p-6 border border-[rgba(46,224,110,.16)]"
           style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
         >
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">

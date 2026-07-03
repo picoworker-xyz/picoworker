@@ -356,7 +356,7 @@ function UserDetail({ id, onClose }: { id: string; onClose: () => void }) {
 }
 
 function Tag({ children, tone }: { children: React.ReactNode; tone: 'lime' | 'warn' }) {
-  const cls = tone === 'lime' ? 'bg-[rgba(194,249,77,.14)] text-[var(--accent-strong)]' : 'bg-[rgba(255,176,90,.14)] text-[#FFB05A]'
+  const cls = tone === 'lime' ? 'bg-[rgba(46,224,110,.14)] text-[var(--accent-strong)]' : 'bg-[rgba(255,176,90,.14)] text-[#FFB05A]'
   return <span className={`px-3 py-1 rounded-full text-[12px] font-extrabold font-head ${cls}`}>{children}</span>
 }
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

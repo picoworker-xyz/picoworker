@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
@@ -7,21 +7,29 @@ import { Page, CenteredPage } from '../../components/Page'
 import { ArrowUp, Shield } from '../../components/icons'
 
 const FEE = 0.2 // fixed fee, covers creating the USDC token account (PDA) on Solana
+// Format a balance for the input without ever rounding UP past the real amount.
+const fmtAmt = (v: number) => (Math.floor(v * 10000) / 10000).toString()
 
 export function CashOut() {
   const nav = useNavigate()
   const [params] = useSearchParams()
   const source = params.get('source') === 'business' ? 'business' : 'earner'
   const { wallet, profile, refresh } = useStore()
-  const [amount, setAmount] = useState('10.00')
+  const isBiz = source === 'business'
+  const avail = wallet ? (isBiz ? wallet.business_escrow : wallet.earner_balance) : 0
+  // Default the field to the user's whole balance, not a hardcoded number.
+  const [amount, setAmount] = useState(() => (avail > 0 ? fmtAmt(avail) : ''))
   const address = profile?.payout_wallet ?? '' // email-confirmed payout address only
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<{ net: number; sig?: string; review?: boolean } | null>(null)
   const [err, setErr] = useState('')
 
+  // If the wallet loads after mount, fill the field with the balance (once).
+  useEffect(() => {
+    if (avail > 0) setAmount((a) => (a === '' ? fmtAmt(avail) : a))
+  }, [avail])
+
   if (!wallet) return null
-  const isBiz = source === 'business'
-  const avail = isBiz ? wallet.business_escrow : wallet.earner_balance
   const amt = parseFloat(amount) || 0
   const netReceived = Math.max(0, +(amt - FEE).toFixed(2))
 
@@ -29,7 +37,7 @@ export function CashOut() {
     setErr('')
     if (amt <= 0) return setErr('Enter an amount.')
     if (amt > avail) return setErr('Amount exceeds your balance.')
-    if (amt <= FEE) return setErr('Amount must be more than the $0.20 fee.')
+    if (amt <= FEE) return setErr('To receive USDC, the amount needs to be a little more than the $0.20 fee.')
     if (!address) return setErr('Add a confirmed payout address first.')
     setBusy(true)
     const { data, error } = await supabase!.functions.invoke('solana-withdraw', { body: { amount: amt, address, source } })
@@ -71,7 +79,7 @@ export function CashOut() {
       <div className="rounded-[var(--r)] p-5 bg-[var(--card)] border border-[var(--line)] mb-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em]">Amount to withdraw</div>
-          <button onClick={() => setAmount(avail.toFixed(2))} className="text-[var(--accent-strong)] text-[12px] font-extrabold">MAX</button>
+          <button onClick={() => setAmount(fmtAmt(avail))} className="text-[var(--accent-strong)] text-[12px] font-extrabold">MAX</button>
         </div>
         <div className="flex items-center gap-1">
           <span className="font-head text-[34px] font-bold text-[var(--ink)]">$</span>
@@ -110,7 +118,7 @@ export function CashOut() {
       </div>
       <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1 mb-1">
         <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />
-        A fixed $0.20 fee covers creating your USDC token account (PDA) on Solana. USDC only.
+        No minimum to withdraw. Take out any amount you like. A flat $0.20 network fee is deducted (it covers your USDC token account on Solana), so you receive your amount minus $0.20.
       </div>
       {address && <div className="text-[var(--ink-4)] text-[12px] font-semibold px-1">To {shortAddr(address)} on Solana</div>}
       {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-3 px-1">{err}</div>}

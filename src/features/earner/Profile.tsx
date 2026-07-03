@@ -6,7 +6,7 @@ import { usd, shortAddr } from '../../lib/format'
 import { emailError } from '../../lib/validate'
 import { Page } from '../../components/Page'
 import { Avatar, Pill } from '../../components/ui'
-import { ArrowRight, Bell, Chat, Check, IdCard, Shield, Trophy, Wallet as WalletIcon } from '../../components/icons'
+import { ArrowRight, Bell, Chat, Check, IdCard, Share, Shield, Trophy, Wallet as WalletIcon } from '../../components/icons'
 
 export function Profile() {
   const nav = useNavigate()
@@ -85,15 +85,15 @@ export function Profile() {
 
           <Label>{profile.mode === 'business' ? 'Business name' : 'Display name'}</Label>
           <div className="flex gap-2 mb-1">
-            <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 bg-[var(--fill)] border border-[var(--line-2)] rounded-[12px] px-4 py-[12px] text-[var(--ink)] text-[15px] font-semibold outline-none focus:border-[var(--accent)]/60" />
-            <button onClick={saveName} disabled={savingName} className="px-4 rounded-[12px] bg-[var(--accent)] text-[var(--accent-ink)] text-[13px] font-extrabold font-head disabled:opacity-50">{savingName ? '...' : 'Save'}</button>
+            <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 min-w-0 bg-[var(--fill)] border border-[var(--line-2)] rounded-[12px] px-4 py-[12px] text-[var(--ink)] text-[15px] font-semibold outline-none focus:border-[var(--accent)]/60" />
+            <button onClick={saveName} disabled={savingName} className="flex-none px-4 py-[10px] rounded-[12px] bg-[var(--accent)] text-[var(--accent-ink)] text-[13px] font-extrabold font-head disabled:opacity-50">{savingName ? '...' : 'Save'}</button>
           </div>
           {nameMsg && <div className={`text-[12px] font-semibold mb-3 ${nameMsg === 'Saved.' ? 'text-[var(--green)]' : 'text-[var(--coral)]'}`}>{nameMsg}</div>}
 
           <Label className="mt-4">Email</Label>
           <div className="flex gap-2 mb-1">
-            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoCapitalize="none" className="flex-1 bg-[var(--fill)] border border-[var(--line-2)] rounded-[12px] px-4 py-[12px] text-[var(--ink)] text-[15px] font-semibold outline-none focus:border-[var(--accent)]/60" />
-            <button onClick={saveEmail} disabled={savingEmail} className="px-4 rounded-[12px] bg-[var(--fill)] text-[var(--ink)] text-[13px] font-extrabold font-head border border-[var(--line-2)] disabled:opacity-50">{savingEmail ? '...' : 'Update'}</button>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoCapitalize="none" className="flex-1 min-w-0 bg-[var(--fill)] border border-[var(--line-2)] rounded-[12px] px-4 py-[12px] text-[var(--ink)] text-[15px] font-semibold outline-none focus:border-[var(--accent)]/60" />
+            <button onClick={saveEmail} disabled={savingEmail} className="flex-none px-4 py-[10px] rounded-[12px] bg-[var(--fill)] text-[var(--ink)] text-[13px] font-extrabold font-head border border-[var(--line-2)] disabled:opacity-50">{savingEmail ? '...' : 'Update'}</button>
           </div>
           {emailMsg && <div className={`text-[12px] font-semibold ${emailMsg.startsWith('Confirmation') ? 'text-[var(--green)]' : 'text-[var(--coral)]'}`}>{emailMsg}</div>}
           <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-2">Changing your email sends a confirmation link to the new address.</div>
@@ -115,7 +115,7 @@ export function Profile() {
             onClick={profile.identity_verified ? undefined : () => nav('/verify')}
           />
           <Item icon={<IdCard width={18} height={18} className="text-[var(--ink-2)]" />} label="Proof of income" value="Statement for landlords and lenders" onClick={() => nav('/proof-of-income')} />
-          <Item label="Refer and earn" value="Invite friends" onClick={() => nav('/refer')} />
+          <Item icon={<Share width={18} height={18} className="text-[var(--accent-strong)]" />} label="Refer and earn" value="Invite friends" onClick={() => nav('/refer')} />
           <Item icon={<Chat width={18} height={18} className="text-[var(--ink-2)]" />} label="Help and support" value="Chat with us" onClick={() => nav('/support')} />
         </div>
       </div>

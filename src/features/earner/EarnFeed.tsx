@@ -48,7 +48,7 @@ function AllCaughtUp() {
   const nav = useNavigate()
   return (
     <div className="rounded-[20px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
-      <div className="w-16 h-16 rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center mx-auto">
+      <div className="w-16 h-16 rounded-full bg-[rgba(46,224,110,.12)] border border-[rgba(46,224,110,.3)] flex items-center justify-center mx-auto">
         <Check width={30} height={30} className="text-[var(--accent-strong)]" />
       </div>
       <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">You're all caught up!</div>

@@ -49,7 +49,7 @@ export function Targeting() {
         <Single options={LEVELS} value={level} onChange={setLevel} />
       </Section>
 
-      <div className="flex items-center justify-between rounded-[16px] p-5 bg-[rgba(194,249,77,.06)] border border-[rgba(194,249,77,.2)] mt-2">
+      <div className="flex items-center justify-between rounded-[16px] p-5 bg-[rgba(46,224,110,.06)] border border-[rgba(46,224,110,.2)] mt-2">
         <div className="flex items-center gap-3">
           <Globe width={22} height={22} className="text-[var(--accent-strong)]" />
           <span className="text-[var(--ink-2)] text-[14px] font-semibold">Estimated reach</span>

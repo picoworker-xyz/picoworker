@@ -33,7 +33,7 @@ export function Onboarding() {
             <div
               key={idx}
               className={`flex items-center gap-4 p-4 rounded-[18px] border transition-colors ${
-                idx <= i ? 'bg-[rgba(194,249,77,.08)] border-[rgba(194,249,77,.25)]' : 'bg-[var(--card)] border-[var(--line)]'
+                idx <= i ? 'bg-[rgba(46,224,110,.08)] border-[rgba(46,224,110,.25)]' : 'bg-[var(--card)] border-[var(--line)]'
               }`}
             >
               <div className="w-[52px] h-[52px] flex-none rounded-[15px] bg-[var(--accent)] flex items-center justify-center">{s.icon}</div>
@@ -45,7 +45,7 @@ export function Onboarding() {
           ))}
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-3 px-4 py-[14px] rounded-[16px] bg-[rgba(194,249,77,.1)] border border-[rgba(194,249,77,.25)]">
+        <div className="mt-6 flex items-center justify-center gap-3 px-4 py-[14px] rounded-[16px] bg-[rgba(46,224,110,.1)] border border-[rgba(46,224,110,.25)]">
           <span className="font-head font-extrabold text-[var(--accent-strong)] text-[15px]">$0.05</span>
           <span className="text-[#C7D8CB] text-[13px] font-semibold">welcome bonus on your first task</span>
         </div>

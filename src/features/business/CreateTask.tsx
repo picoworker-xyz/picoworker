@@ -258,7 +258,7 @@ export function CreateTask() {
               <span className={`font-head text-[15px] font-extrabold ${overBudget ? 'text-[#FFB05A]' : 'text-[var(--ink)]'}`}>{usd(balance)}</span>
             </div>
             {maxQty > 0 ? (
-              <button onClick={() => setCount(String(maxQty))} className="w-full mt-2.5 text-[13px] font-extrabold font-head text-[var(--accent-strong)] bg-[rgba(194,249,77,.1)] border border-[rgba(194,249,77,.25)] rounded-[11px] py-2.5">
+              <button onClick={() => setCount(String(maxQty))} className="w-full mt-2.5 text-[13px] font-extrabold font-head text-[var(--accent-strong)] bg-[rgba(46,224,110,.1)] border border-[rgba(46,224,110,.25)] rounded-[11px] py-2.5">
                 Fit to my balance: {maxQty.toLocaleString()} {UNIT[t.type]}
               </button>
             ) : (

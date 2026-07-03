@@ -2,8 +2,8 @@
 
 /* ===== PicoWorker design tokens (from PicoWorker.dc.html) ===== */
 :root {
-  --accent: #c2f94d; /* lime */
-  --accent-ink: #0b0c10;
+  --accent: #2ee06e; /* brand green */
+  --accent-ink: #05130a;
   --r: 22px;
 
   /* surfaces */
@@ -27,16 +27,18 @@
   --coral: #ff6b5a;
   --usdc: #2775ca;
 
-  /* accent-strong = a readable accent for TEXT/icons (lime is fine on dark) */
-  --accent-strong: #c2f94d;
+  /* accent-strong = a readable accent for TEXT/icons on dark */
+  --accent-strong: #3ee87e;
   /* subtle surface fills (were white/4, white/6) */
   --fill: rgba(255, 255, 255, 0.04);
   --fill-2: rgba(255, 255, 255, 0.06);
   /* translucent nav bars (sidebar, top bar, mobile tabs) */
   --bar: rgba(12, 13, 17, 0.8);
+  /* tile behind the logo mark — transparent on dark, a contrast tile on light */
+  --logo-bg: transparent;
 
-  --glow: 0 16px 44px -14px rgba(194, 249, 77, 0.55);
-  --glow-card: 0 0 0 1px rgba(194, 249, 77, 0.35), 0 18px 50px -18px rgba(194, 249, 77, 0.35);
+  --glow: 0 16px 44px -14px rgba(46,224,110, 0.5);
+  --glow-card: 0 0 0 1px rgba(46,224,110, 0.35), 0 18px 50px -18px rgba(46,224,110, 0.35);
 
   --font-head: 'Space Grotesk', system-ui, sans-serif;
   --font-body: 'Manrope', system-ui, sans-serif;
@@ -46,8 +48,12 @@
 
 /* ===== Light theme (toggled via html[data-theme='light']) ===== */
 html[data-theme='light'] {
-  --accent-ink: #0b0c10; /* dark text stays on the lime button */
-  --accent-strong: #12924a; /* lime is unreadable on white — use a crisp green for accent text */
+  /* On light, lime reads as washed-out yellow-green, so buttons use a real green
+     with white text, and accent text/icons use a slightly deeper green. */
+  --accent: #17a34a;
+  --accent-ink: #ffffff;
+  --accent-strong: #12924a;
+  --logo-bg: #0b1410; /* dark tile so the lime logo mark stays crisp on light */
 
   /* Soft off-white palette — pure #fff glares, so the page is a gentle warm grey
      and cards sit just above it. Text is dark grey, not near-black, to cut harshness. */
@@ -73,7 +79,7 @@ html[data-theme='light'] {
   --coral: #e04f3c;
   --violet: #6a4de3;
 
-  --glow: 0 14px 38px -16px rgba(120, 180, 40, 0.45);
+  --glow: 0 14px 38px -16px rgba(23, 163, 74, 0.4);
   --glow-card: 0 0 0 1px rgba(28, 158, 70, 0.28), 0 18px 44px -20px rgba(28, 158, 70, 0.28);
 
   color-scheme: light;
@@ -100,7 +106,7 @@ html {
 body {
   font-family: var(--font-body);
   background:
-    radial-gradient(1200px 600px at 18% -10%, rgba(194, 249, 77, 0.1), transparent 60%),
+    radial-gradient(1200px 600px at 18% -10%, rgba(46,224,110, 0.1), transparent 60%),
     radial-gradient(1000px 700px at 110% 20%, rgba(139, 108, 255, 0.12), transparent 55%),
     var(--bg-page);
   color: var(--ink);
@@ -213,7 +219,7 @@ a {
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(194, 249, 77, 0.3);
+  border-color: rgba(46,224,110, 0.3);
 }
 .reveal {
   animation: pico-slide-up 0.6s ease both;

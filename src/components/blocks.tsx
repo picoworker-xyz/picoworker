@@ -20,7 +20,7 @@ export function BalanceHero({
   const nav = useNavigate()
   return (
     <div
-      className="relative overflow-hidden rounded-[var(--r)] p-5 mb-[18px] border border-[rgba(194,249,77,.14)]"
+      className="relative overflow-hidden rounded-[var(--r)] p-5 mb-[18px] border border-[rgba(46,224,110,.14)]"
       style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
     >
       <div className="absolute -right-[30px] -top-[30px] w-[140px] h-[140px] rounded-full bg-[var(--accent)] opacity-10 blur-lg" />

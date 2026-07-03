@@ -30,19 +30,25 @@ export function MySubmissions() {
 
     return (
         <Page title="My Submissions" subtitle="Track your task completion status and rewards.">
-            {/* tabs */}
-            <div className="inline-flex bg-[var(--fill-2)] rounded-full p-1 mb-5">
-                {STATUS_TABS.map((t) => (
-                    <button
-                        key={t.label}
-                        onClick={() => setTab(t.status)}
-                        className={`px-4 py-2 rounded-full text-[13px] font-head capitalize ${tab === t.status ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[var(--ink-3)] font-bold'
-                            }`}
-                    >
-                        {t.label}
-                        {t.status !== 'all' && ` · ${completions.filter((c) => c.status === t.status).length}`}
-                    </button>
-                ))}
+            {/* tabs — full width so they always fit on mobile; count shows as a small badge only when > 0 */}
+            <div className="flex w-full bg-[var(--fill-2)] rounded-full p-1 mb-5">
+                {STATUS_TABS.map((t) => {
+                    const active = tab === t.status
+                    const count = t.status === 'all' ? 0 : completions.filter((c) => c.status === t.status).length
+                    return (
+                        <button
+                            key={t.label}
+                            onClick={() => setTab(t.status)}
+                            className={`flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-[7px] rounded-full text-[12.5px] font-head ${active ? 'bg-[var(--accent)] text-[var(--accent-ink)] font-extrabold' : 'text-[var(--ink-3)] font-bold'
+                                }`}
+                        >
+                            <span className="truncate">{t.label}</span>
+                            {count > 0 && (
+                                <span className={`text-[10px] font-extrabold leading-none px-1.5 py-[3px] rounded-full flex-none ${active ? 'bg-black/15' : 'bg-[var(--fill-2)] text-[var(--ink-2)]'}`}>{count}</span>
+                            )}
+                        </button>
+                    )
+                })}
             </div>
 
             {filtered.length === 0 ? (

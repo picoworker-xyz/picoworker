@@ -125,7 +125,7 @@ export function Rewards() {
         <div className="flex flex-col gap-[10px]">
           {LEVEL_PERKS.map((p) => (
             <div key={p} className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-[rgba(194,249,77,.14)] flex items-center justify-center flex-none">
+              <div className="w-6 h-6 rounded-full bg-[rgba(46,224,110,.14)] flex items-center justify-center flex-none">
                 <Check width={14} height={14} className="text-[var(--accent-strong)]" />
               </div>
               <span className="text-[var(--ink-2)] text-[14px] font-semibold">{p}</span>

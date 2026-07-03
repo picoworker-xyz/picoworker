@@ -55,7 +55,7 @@ export function Support() {
             msgs.map((m, i) =>
               m.from_admin ? (
                 <div key={i} className="flex items-end gap-2 max-w-[80%]">
-                  <Avatar name="P" size={28} gradient="linear-gradient(135deg,#C2F94D,#7ec900)" />
+                  <Avatar name="P" size={28} gradient="linear-gradient(135deg,#3ee87e,#12924a)" />
                   <div>
                     <div className="rounded-[16px] rounded-bl-[4px] bg-[var(--fill)] px-4 py-3 text-[#E6E7EC] text-[14px] font-medium leading-[1.45]">{m.body}</div>
                     <div className="text-[var(--ink-5)] text-[10px] font-semibold mt-1 ml-1">PicoWorker team · {timeAgo(m.created_at)}</div>

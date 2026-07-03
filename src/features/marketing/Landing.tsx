@@ -91,7 +91,7 @@ export function Landing() {
               <div
                 aria-hidden
                 className="absolute -inset-10 rounded-[48px] blur-3xl opacity-50 pointer-events-none"
-                style={{ background: 'radial-gradient(closest-side, rgba(194,249,77,.22), rgba(139,108,255,.14), transparent)' }}
+                style={{ background: 'radial-gradient(closest-side, rgba(46,224,110,.22), rgba(139,108,255,.14), transparent)' }}
               />
 
               {/* floating side chips, desktop only */}
@@ -123,14 +123,14 @@ export function Landing() {
               </div>
 
             <div
-              className="float-slow relative overflow-hidden rounded-[26px] border border-[rgba(194,249,77,.16)]"
+              className="float-slow relative overflow-hidden rounded-[26px] border border-[rgba(46,224,110,.16)]"
               style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
             >
               {/* soft lime wash behind the balance */}
               <div
                 aria-hidden
                 className="absolute inset-x-0 top-0 h-[190px] pointer-events-none"
-                style={{ background: 'radial-gradient(380px 190px at 82% -30%, rgba(194,249,77,.16), transparent 70%)' }}
+                style={{ background: 'radial-gradient(380px 190px at 82% -30%, rgba(46,224,110,.16), transparent 70%)' }}
               />
 
               <div className="relative p-7 pb-6">
@@ -269,7 +269,7 @@ export function Landing() {
             <div className="flex flex-col gap-3 mt-6">
               {['Every result is verified, never botted', 'Your budget stays in escrow, refundable anytime', 'Live analytics that track every completion'].map((f) => (
                 <div key={f} className="flex items-center gap-3 text-[var(--ink-2)] text-[14.5px] font-semibold">
-                  <div className="w-6 h-6 rounded-full bg-[rgba(194,249,77,.14)] flex items-center justify-center flex-none">
+                  <div className="w-6 h-6 rounded-full bg-[rgba(46,224,110,.14)] flex items-center justify-center flex-none">
                     <Check width={14} height={14} className="text-[var(--accent-strong)]" />
                   </div>
                   {f}
@@ -336,13 +336,13 @@ export function Landing() {
       {/* ===== Trust / CTA ===== */}
       <section className="app-container py-16 lg:py-24">
         <div
-          className="relative overflow-hidden rounded-[28px] border border-[rgba(194,249,77,.18)] px-6 py-16 lg:py-20 text-center"
+          className="relative overflow-hidden rounded-[28px] border border-[rgba(46,224,110,.18)] px-6 py-16 lg:py-20 text-center"
           style={{ background: 'linear-gradient(165deg,var(--card-2),var(--bg))' }}
         >
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(640px 320px at 50% -15%, rgba(194,249,77,.16), transparent 70%)' }}
+            style={{ background: 'radial-gradient(640px 320px at 50% -15%, rgba(46,224,110,.16), transparent 70%)' }}
           />
           <div className="relative">
             <h2 className="font-head font-bold text-[30px] lg:text-[44px] tracking-[-.02em] text-[var(--ink)] max-w-[620px] mx-auto leading-[1.1]">

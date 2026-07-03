@@ -211,7 +211,7 @@ export function Login() {
         <div className="w-full max-w-[400px] reveal">
           <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
           <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7 text-center">
-            <div className="w-14 h-14 rounded-full bg-[rgba(194,249,77,.12)] border border-[rgba(194,249,77,.3)] flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-full bg-[rgba(46,224,110,.12)] border border-[rgba(46,224,110,.3)] flex items-center justify-center mx-auto">
               <Check width={28} height={28} className="text-[var(--accent-strong)]" />
             </div>
             <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Confirm your email</div>
@@ -241,7 +241,7 @@ export function Login() {
       <div className="hidden lg:flex flex-col justify-between p-12 border-r border-[var(--line)] hero-grid relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(600px 400px at 20% 10%, rgba(194,249,77,.12), transparent 60%), radial-gradient(500px 400px at 90% 90%, rgba(139,108,255,.14), transparent 60%)' }}
+          style={{ background: 'radial-gradient(600px 400px at 20% 10%, rgba(46,224,110,.12), transparent 60%), radial-gradient(500px 400px at 90% 90%, rgba(139,108,255,.14), transparent 60%)' }}
         />
         <button onClick={() => nav('/')} className="relative text-left">
           <BrandMark size={40} />
@@ -280,7 +280,7 @@ export function Login() {
           </div>
 
           {invitedBy && isSignup && (
-            <div className="rounded-[14px] bg-[rgba(194,249,77,.1)] border border-[rgba(194,249,77,.3)] p-3 mb-4">
+            <div className="rounded-[14px] bg-[rgba(46,224,110,.1)] border border-[rgba(46,224,110,.3)] p-3 mb-4">
               <span className="text-[var(--ink-2)] text-[13px] font-semibold">
                 You were invited by <span className="text-[var(--accent-strong)] font-extrabold">{invitedBy}</span>. Sign up to start earning.
               </span>

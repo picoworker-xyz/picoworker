@@ -13,7 +13,7 @@ export function SwitchAccount() {
     <Page title="Switch account" subtitle="One login, two ways to use it." back narrow>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* earner */}
-        <div className="rounded-[var(--r)] p-6 bg-[var(--card)] border border-[rgba(194,249,77,.25)] relative">
+        <div className="rounded-[var(--r)] p-6 bg-[var(--card)] border border-[rgba(46,224,110,.25)] relative">
           <span className="absolute top-4 right-4 text-[10px] font-extrabold text-[var(--accent-ink)] bg-[var(--accent)] px-2 py-1 rounded-full">CURRENT</span>
           <div className="w-12 h-12 rounded-[14px] bg-[var(--accent)] flex items-center justify-center mb-4"><Bolt width={24} height={24} className="text-[var(--accent-ink)]" /></div>
           <div className="text-[var(--ink)] text-[18px] font-extrabold font-head">Earner</div>

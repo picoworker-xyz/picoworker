@@ -88,8 +88,8 @@ export function MorePage() {
         {isBiz ? (
           <button
             onClick={toggleMode}
-            className="w-full flex items-center justify-between gap-3 rounded-[16px] p-4 border border-[rgba(194,249,77,.3)]"
-            style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.16),rgba(194,249,77,.04))' }}
+            className="w-full flex items-center justify-between gap-3 rounded-[16px] p-4 border border-[rgba(46,224,110,.3)]"
+            style={{ background: 'linear-gradient(135deg,rgba(46,224,110,.16),rgba(46,224,110,.04))' }}
           >
             <span className="flex items-center gap-3">
               <span className="w-10 h-10 rounded-[12px] bg-[var(--accent)] flex items-center justify-center flex-none"><Bolt width={20} height={20} className="text-[var(--accent-ink)]" /></span>

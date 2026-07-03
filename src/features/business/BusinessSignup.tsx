@@ -70,7 +70,7 @@ export function BusinessSignup() {
           <div className="flex flex-col gap-3 mt-7">
             {['Pay only for verified completions', 'Funds held in escrow — refund anytime', 'Live analytics & targeting'].map((f) => (
               <div key={f} className="flex items-center gap-3 text-[var(--ink-2)] text-[15px] font-semibold">
-                <div className="w-6 h-6 rounded-full bg-[rgba(194,249,77,.14)] flex items-center justify-center flex-none">
+                <div className="w-6 h-6 rounded-full bg-[rgba(46,224,110,.14)] flex items-center justify-center flex-none">
                   <Check width={14} height={14} className="text-[var(--accent-strong)]" />
                 </div>
                 {f}

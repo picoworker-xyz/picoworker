@@ -180,8 +180,8 @@ export function TaskFlow() {
         {/* reward + CTA (sticky on desktop) */}
         <aside className="lg:sticky lg:top-6 flex flex-col gap-4">
           <div
-            className="rounded-[var(--r)] p-6 border border-[rgba(194,249,77,.3)] text-center"
-            style={{ background: 'linear-gradient(135deg,rgba(194,249,77,.16),rgba(194,249,77,.04))' }}
+            className="rounded-[var(--r)] p-6 border border-[rgba(46,224,110,.3)] text-center"
+            style={{ background: 'linear-gradient(135deg,rgba(46,224,110,.16),rgba(46,224,110,.04))' }}
           >
             <div className="text-[#9DAA7E] text-[12px] font-bold uppercase tracking-[.07em]">Reward</div>
             <div className="font-head font-bold text-[48px] text-[var(--accent-strong)] tracking-[-.02em] leading-tight my-1">{usd(earnerNet(t.reward), { sign: true })}</div>

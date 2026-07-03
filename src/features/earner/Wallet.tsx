@@ -21,7 +21,7 @@ export function Wallet() {
     <Page title="Wallet" subtitle="Your USDC balance, earnings and activity.">
       {/* balance on top */}
       <div
-        className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(194,249,77,.14)]"
+        className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(46,224,110,.14)]"
         style={{ background: 'linear-gradient(150deg,var(--card-2),var(--bg))', boxShadow: 'var(--glow)' }}
       >
         <div className="absolute left-1/2 -top-12 -translate-x-1/2 w-[260px] h-[140px] rounded-full bg-[var(--accent)] opacity-10 blur-2xl" />

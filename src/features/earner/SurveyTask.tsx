@@ -60,7 +60,7 @@ export function SurveyTask() {
               <button
                 key={o}
                 onClick={() => setAnswers((a) => ({ ...a, [step]: i }))}
-                className={`flex items-center gap-3 p-4 rounded-[14px] border text-left transition-colors ${on ? 'bg-[rgba(194,249,77,.1)] border-[var(--accent)]' : 'bg-[var(--fill)] border-[var(--line)] hover:bg-[var(--fill)]'}`}
+                className={`flex items-center gap-3 p-4 rounded-[14px] border text-left transition-colors ${on ? 'bg-[rgba(46,224,110,.1)] border-[var(--accent)]' : 'bg-[var(--fill)] border-[var(--line)] hover:bg-[var(--fill)]'}`}
               >
                 <span className={`w-5 h-5 rounded-full border-2 flex-none flex items-center justify-center ${on ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'}`}>
                   {on && <span className="w-[10px] h-[10px] rounded-full bg-[var(--accent)]" />}

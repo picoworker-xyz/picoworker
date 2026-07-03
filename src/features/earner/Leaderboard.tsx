@@ -30,9 +30,9 @@ export function Leaderboard() {
         ) : (
           <div className="rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] overflow-hidden">
             {rows.map((r, i) => (
-              <div key={i} className={`flex items-center gap-3 px-5 py-[14px] ${r.is_me ? 'bg-[rgba(194,249,77,.06)]' : i === 0 ? '' : 'border-t border-[var(--line)]'}`}>
+              <div key={i} className={`flex items-center gap-3 px-5 py-[14px] ${r.is_me ? 'bg-[rgba(46,224,110,.06)]' : i === 0 ? '' : 'border-t border-[var(--line)]'}`}>
                 <span className={`w-7 text-center font-head text-[15px] font-extrabold ${i < 3 ? 'text-[var(--accent-strong)]' : r.is_me ? 'text-[var(--accent-strong)]' : 'text-[var(--ink-4)]'}`}>{i + 1}</span>
-                <Avatar name={r.display_name} size={34} gradient={r.is_me ? 'linear-gradient(135deg,#C2F94D,#7ec900)' : 'linear-gradient(135deg,#5B8DEF,#8B6CFF)'} />
+                <Avatar name={r.display_name} size={34} gradient={r.is_me ? 'linear-gradient(135deg,#3ee87e,#12924a)' : 'linear-gradient(135deg,#5B8DEF,#8B6CFF)'} />
                 <div className={`flex-1 text-[14px] font-bold ${r.is_me ? 'text-[var(--accent-strong)]' : 'text-[var(--ink)]'}`}>
                   {r.display_name}{r.is_me ? ' · You' : ''}
                 </div>
@@ -42,7 +42,7 @@ export function Leaderboard() {
           </div>
         )}
 
-        <div className="mt-4 flex items-center gap-3 px-4 py-4 rounded-[16px] bg-[rgba(194,249,77,.08)] border border-[rgba(194,249,77,.2)]">
+        <div className="mt-4 flex items-center gap-3 px-4 py-4 rounded-[16px] bg-[rgba(46,224,110,.08)] border border-[rgba(46,224,110,.2)]">
           <Trophy width={20} height={20} className="text-[var(--accent-strong)] flex-none" />
           <span className="text-[var(--ink-2)] text-[13.5px] font-semibold">Top earners each week share a <span className="text-[var(--accent-strong)] font-bold">USDC</span> bonus pool.</span>
         </div>
