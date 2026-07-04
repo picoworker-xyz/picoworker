@@ -15,7 +15,9 @@ export interface FraudSignals {
   vpnReason?: string
 }
 
-// Stable-ish browser fingerprint hashed with SHA-256.
+// Stable-ish browser fingerprint hashed with SHA-256. Identical phone models
+// on the same browser/locale/timezone can still collide, so treat a shared
+// hash as a signal to corroborate, never as proof on its own.
 async function deviceFingerprint(): Promise<string> {
   const n = navigator as Navigator & { deviceMemory?: number }
   const parts = [
@@ -27,8 +29,44 @@ async function deviceFingerprint(): Promise<string> {
     `${n.hardwareConcurrency ?? ''}`,
     `${n.deviceMemory ?? ''}`,
     canvasSignal(),
+    webglSignal(),
+    fontSignal(),
   ]
   return sha256(parts.join('|'))
+}
+
+// GPU vendor + renderer: differs across chipsets even when the user agent and
+// screen match, which is exactly where the base fingerprint collides.
+function webglSignal(): string {
+  try {
+    const c = document.createElement('canvas')
+    const gl = (c.getContext('webgl') || c.getContext('experimental-webgl')) as WebGLRenderingContext | null
+    if (!gl) return 'no-webgl'
+    const dbg = gl.getExtension('WEBGL_debug_renderer_info')
+    const vendor = dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR)
+    const renderer = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)
+    return `${vendor}~${renderer}`
+  } catch {
+    return 'webgl-err'
+  }
+}
+
+// Text metrics vary with the installed font set and rendering stack.
+function fontSignal(): string {
+  try {
+    const c = document.createElement('canvas')
+    const ctx = c.getContext('2d')
+    if (!ctx) return 'no-font'
+    const fonts = ['Arial', 'Times New Roman', 'Courier New', 'Noto Sans', 'Roboto', 'Segoe UI']
+    return fonts
+      .map((f) => {
+        ctx.font = `12px '${f}'`
+        return Math.round(ctx.measureText('picoworker wq1Il0O').width * 100)
+      })
+      .join(',')
+  } catch {
+    return 'font-err'
+  }
 }
 
 function canvasSignal(): string {

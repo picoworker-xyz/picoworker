@@ -73,6 +73,9 @@ begin
   ) r);
 end; $$;
 
+-- Fraud signals. Device hashes collide (identical phone models) and IPs
+-- rotate, but people cash out to the wallet they control, so shared payout
+-- wallets are the strongest multi-account signal here.
 create or replace function admin_fraud()
 returns json language plpgsql security definer set search_path = public as $$
 begin
@@ -85,6 +88,16 @@ begin
     select 'ip', p.signup_ip, count(*), string_agg(u.email, ', ')
     from profiles p left join auth.users u on u.id = p.id
     where p.signup_ip is not null group by p.signup_ip having count(*) > 1
+    union all
+    select 'payout address', w.address, count(distinct w.profile_id), string_agg(distinct u.email, ', ')
+    from withdrawals w left join auth.users u on u.id = w.profile_id
+    where nullif(w.address, '') is not null
+    group by w.address having count(distinct w.profile_id) > 1
+    union all
+    select 'saved wallet', p.payout_wallet, count(*), string_agg(u.email, ', ')
+    from profiles p left join auth.users u on u.id = p.id
+    where nullif(p.payout_wallet, '') is not null
+    group by p.payout_wallet having count(*) > 1
   ) r);
 end; $$;
 

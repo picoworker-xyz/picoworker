@@ -114,6 +114,19 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         }
         if (needsFraud) {
           const s = await collectSignals()
+          // Google signups skip the pre-signup duplicate check (the account
+          // exists before we ever see the device). Enforce it here, but only
+          // on accounts created minutes ago: established users just missing a
+          // backfilled hash must never be locked out by a later collision.
+          const freshSignup = Date.now() - +new Date(p.created_at) < 5 * 60 * 1000
+          if (freshSignup) {
+            const { count } = await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('device_hash', s.deviceHash).neq('id', p.id)
+            if ((count ?? 0) > 0) {
+              alert('We detected an existing PicoWorker account on this device. Only one account per person is allowed.')
+              void sb.auth.signOut()
+              return
+            }
+          }
           await sb.rpc('attach_fraud_signals', { p_device: s.deviceHash, p_ip: s.ip, p_vpn: s.vpn })
         }
         await refresh()
