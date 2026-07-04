@@ -33,6 +33,7 @@ const EARNER_SECTIONS: Section[] = [
     items: [
       { label: 'Profile', path: '/profile', icon: User },
       { label: 'Notifications', path: '/notifications', icon: Bell },
+      { label: 'Install app', path: '/app', icon: Plus },
       { label: 'Post a task', path: '/switch', icon: Home },
       { label: 'Support', path: '/support', icon: Chat },
       { label: 'Terms', path: '/terms', icon: Shield },
@@ -54,6 +55,7 @@ const BUSINESS_SECTIONS: Section[] = [
     title: 'Money',
     items: [
       { label: 'Add funds', path: '/business/add-funds', icon: Wallet },
+      { label: 'Agent API', path: '/developers', icon: Bolt },
     ],
   },
   {

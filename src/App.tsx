@@ -38,7 +38,7 @@ import { AdminDashboard } from './features/admin/AdminDashboard'
 import { Targeting } from './features/business/Targeting'
 import { ReviewQueue } from './features/business/ReviewQueue'
 import { ProofDetail } from './features/business/ProofDetail'
-import { BusinessSignup } from './features/business/BusinessSignup'
+import { Developers } from './features/business/Developers'
 import { Terms, Privacy } from './features/marketing/Legal'
 import {
   EarnFollowAccounts,
@@ -49,6 +49,7 @@ import {
   AppPage,
   MicroJobs,
   IsLegit,
+  AiAgents,
 } from './features/marketing/SeoPages'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
@@ -85,7 +86,8 @@ export default function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/r/:code" element={<RefCapture />} />
       <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/business/signup" element={<BusinessSignup />} />
+      {/* Legacy: the dedicated business signup page is retired; signup lives on /login. */}
+      <Route path="/business/signup" element={<Navigate to="/login" replace />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/earn/follow-accounts" element={<EarnFollowAccounts />} />
@@ -96,6 +98,7 @@ export default function App() {
       <Route path="/app" element={<AppPage />} />
       <Route path="/micro-jobs" element={<MicroJobs />} />
       <Route path="/is-picoworker-legit" element={<IsLegit />} />
+      <Route path="/ai-agents" element={<AiAgents />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />
@@ -118,6 +121,7 @@ export default function App() {
       <Route path="/proof-of-income" element={<Shell><ProofOfIncome /></Shell>} />
       <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
+      <Route path="/developers" element={<Shell><Developers /></Shell>} />
 
       {/* Business app */}
       <Route path="/business" element={<Shell><Dashboard /></Shell>} />

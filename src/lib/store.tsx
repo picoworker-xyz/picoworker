@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { LedgerEntry, Mode, Profile, Referral, Task, TaskCompletion, TaskType, Wallet } from './types'
+import type { LedgerEntry, Mode, Profile, Referral, Task, TaskAudience, TaskCompletion, TaskType, Wallet } from './types'
 import type { WithdrawalInput } from './payments'
 import type { FraudSignals } from './fraud'
 
@@ -61,6 +61,7 @@ export interface TaskDraft {
   reference_images?: string[]
   screenshots?: number
   screenshot_specs?: string[]
+  audience?: TaskAudience
 }
 
 export const StoreCtx = createContext<StoreApi | null>(null)

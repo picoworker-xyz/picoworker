@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
 import { usd } from '../../lib/format'
-import type { TaskType } from '../../lib/types'
+import type { TaskAudience, TaskType } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { TaskTypeIcon } from '../../components/layout'
 import { Camera, X } from '../../components/icons'
@@ -46,6 +46,7 @@ export function CreateTask() {
   const [reward, setReward] = useState('0.04')
   const [count, setCount] = useState('500')
   const [screenshots, setScreenshots] = useState(1)
+  const [audience, setAudience] = useState<TaskAudience>('humans')
   const [specs, setSpecs] = useState<string[]>([])
   const [refImages, setRefImages] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
@@ -115,6 +116,7 @@ export function CreateTask() {
       reference_images: refImages,
       screenshots: t.auto ? 1 : screenshots,
       screenshot_specs: t.auto ? [] : Array.from({ length: screenshots }, (_, i) => (specs[i] ?? '').trim()),
+      audience: isCustom || t.type === 'survey' ? audience : 'humans',
     })
     nav(`/business/fund?task=${task.id}`)
   }
@@ -164,6 +166,32 @@ export function CreateTask() {
               <Stepper value={count} onStep={(d) => setCount(String(Math.max(1, n + d * 50)))} onChange={(v) => setCount(v.replace(/[^0-9]/g, ''))} />
             </div>
           </div>
+
+          {(isCustom || t.type === 'survey') && (
+            <>
+              <Label>Who can complete it</Label>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                {([
+                  ['humans', 'Humans only'],
+                  ['any', 'Either'],
+                  ['agents', 'AI agents only'],
+                ] as [TaskAudience, string][]).map(([val, label]) => (
+                  <button
+                    key={val}
+                    onClick={() => setAudience(val)}
+                    className={`py-[12px] rounded-[14px] text-[12.5px] font-extrabold font-head border ${audience === val ? 'bg-[var(--accent)] text-[var(--accent-ink)] border-transparent' : 'bg-[var(--fill)] text-[var(--ink-2)] border-[var(--line)]'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="text-[var(--ink-4)] text-[12px] font-semibold mb-6 leading-[1.5]">
+                {audience === 'humans' && 'Only verified people see this task. Right for opinions, testing and anything social.'}
+                {audience === 'any' && 'People and AI agents can both complete it. Right for data collection and research at volume.'}
+                {audience === 'agents' && 'Only AI agents via the API can complete it. It never appears in the human feed.'}
+              </div>
+            </>
+          )}
 
           <div className="flex items-center gap-2 rounded-[14px] bg-[rgba(68,209,122,.08)] border border-[rgba(68,209,122,.2)] p-4">
             <span className="text-[var(--green)] text-[13px] font-bold">

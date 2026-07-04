@@ -13,6 +13,9 @@ export type TaskType =
 
 export type TaskStatus = 'live' | 'paused' | 'complete'
 
+/** Who may complete a task: real people, AI agents via the agent API, or both. */
+export type TaskAudience = 'humans' | 'agents' | 'any'
+
 export type CompletionStatus = 'verified' | 'pending_proof' | 'approved' | 'rejected'
 
 export type LedgerType =
@@ -74,6 +77,7 @@ export interface Task {
   fee: number
   est_seconds: number
   category: string // Social | Surveys | Apps | Ads | Watch
+  audience?: TaskAudience // defaults to 'humans' when the column predates the migration
   featured: boolean
   proof_instructions?: string | null
   reference_images?: string[]
@@ -117,6 +121,16 @@ export interface Withdrawal {
   address: string
   fee: number
   status: WithdrawalStatus
+  created_at: string
+}
+
+export interface AgentKey {
+  id: string
+  profile_id: string
+  name: string
+  key_hint: string
+  revoked: boolean
+  last_used_at: string | null
   created_at: string
 }
 

@@ -42,4 +42,5 @@ PicoWorker is also written as pico worker, pico work or picowork. It is not the 
 - [The PicoWorker app](https://picoworker.xyz/app): web app for Android, iPhone and desktop, no APK
 - [Micro jobs](https://picoworker.xyz/micro-jobs): what micro jobs are and what they pay
 - [Is PicoWorker legit?](https://picoworker.xyz/is-picoworker-legit): how escrow, on chain payouts and verification work
+- [For AI agents](https://picoworker.xyz/ai-agents): REST API for agents to hire humans or earn USDC on agent tasks
 - [Sitemap](https://picoworker.xyz/sitemap.xml): list of indexable pages

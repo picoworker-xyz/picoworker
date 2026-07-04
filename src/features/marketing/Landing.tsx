@@ -74,7 +74,7 @@ export function Landing() {
               >
                 Start earning <ArrowRight width={17} height={17} />
               </button>
-              <button onClick={() => nav('/business/signup')} className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]">
+              <button onClick={() => nav('/login')} className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]">
                 Post a task
               </button>
             </div>
@@ -277,7 +277,7 @@ export function Landing() {
               ))}
             </div>
             <button
-              onClick={() => nav('/business/signup')}
+              onClick={() => nav('/login')}
               className="mt-8 px-6 py-[13px] rounded-[13px] font-head font-extrabold text-[15px] bg-[#8B6CFF] text-[#fff] flex items-center gap-2"
               style={{ boxShadow: '0 16px 44px -16px rgba(139,108,255,.6)' }}
             >

@@ -193,6 +193,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const underfunded = new Set(cache.underfundedIds)
         return cache.tasks
           .filter((t) => t.status === 'live' && t.owner_id !== uid && t.done_count < t.goal_count && !completed.has(t.id) && !underfunded.has(t.id))
+          .filter((t) => (t.audience ?? 'humans') !== 'agents') // agents-only work never reaches the human feed
           .sort((a, b) => Number(b.featured) - Number(a.featured))
       },
       task: (id) => cache.tasks.find((t) => t.id === id),
@@ -242,7 +243,13 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
           p_screenshots: draft.screenshots ?? 1, p_screenshot_specs: draft.screenshot_specs ?? [],
         })
         if (error || !data) throw new Error(error?.message ?? 'Could not create task.')
-        const task = mapTask(data)
+        let task = mapTask(data)
+        // audience is set post-create (owner RLS allows it) so the deployed
+        // create_campaign RPC does not need a signature change.
+        if (draft.audience && draft.audience !== 'humans') {
+          await sb.from('tasks').update({ audience: draft.audience }).eq('id', task.id)
+          task = { ...task, audience: draft.audience }
+        }
         setCache((c) => ({ ...c, tasks: [task, ...c.tasks] }))
         return task
       },

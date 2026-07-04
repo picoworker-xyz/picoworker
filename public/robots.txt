@@ -12,5 +12,6 @@ Disallow: /rewards
 Disallow: /refer
 Disallow: /switch
 Disallow: /onboarding
+Disallow: /developers
 
 Sitemap: https://picoworker.xyz/sitemap.xml

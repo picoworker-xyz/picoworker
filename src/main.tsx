@@ -9,6 +9,14 @@ import { initTheme } from './lib/theme.ts'
 
 initTheme()
 
+// PWA: lets browsers offer "Add to Home Screen" / install. Production only so
+// dev never fights a stale cached shell.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}
+
 function ConfigError() {
   return (
     <div style={{ minHeight: '100svh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center', fontFamily: 'system-ui' }}>
