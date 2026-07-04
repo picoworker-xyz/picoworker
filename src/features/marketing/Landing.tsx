@@ -1,6 +1,6 @@
-import { useNavigate, Link } from 'react-router-dom'
-import { BrandMark } from '../../components/layout'
+import { useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../../components/BrandLogo'
+import { MarketingFooter } from './SeoPages'
 import {
   ArrowRight,
   Bolt,
@@ -63,7 +63,7 @@ export function Landing() {
             </h1>
 
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[540px] mx-auto leading-[1.6]">
-              Follow an account, watch a clip, try an app or share your opinion. Every task pays instantly in <span className="text-[var(--ink)] font-semibold">USDC</span>, straight to your wallet.
+              PicoWorker is a micro-task marketplace. Follow an account, watch a clip, try an app or share your opinion, and every task pays instant <span className="text-[var(--ink)] font-semibold">USDC</span>, straight to your wallet.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 mt-9">
@@ -364,22 +364,7 @@ export function Landing() {
       </main>
 
       {/* ===== Footer ===== */}
-      <footer className="border-t border-[var(--line)]">
-        <div className="app-container py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <BrandMark size={32} />
-          <div className="text-[var(--ink-4)] text-[13px] font-semibold">
-            © 2026 PicoWorker · <Link to="/terms" className="hover:text-[var(--ink)]">Terms</Link> · <Link to="/privacy" className="hover:text-[var(--ink)]">Privacy</Link>
-          </div>
-          <div className="flex items-center gap-3 text-[var(--ink-3)]">
-            <a href="#" className="w-9 h-9 rounded-full bg-[var(--fill)] flex items-center justify-center hover:text-[var(--ink)]">
-              <XLogo width={15} height={15} />
-            </a>
-            <a href="#" className="w-9 h-9 rounded-full bg-[var(--fill)] flex items-center justify-center hover:text-[var(--ink)]">
-              <WalletIcon width={16} height={16} />
-            </a>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }
@@ -409,6 +394,10 @@ const FAQS: { q: string; a: string }[] = [
   {
     q: 'Can businesses post tasks on PicoWorker?',
     a: 'Absolutely. Fund a campaign in USDC, set your reward and quantity, and reach real people for followers, views, installs and survey responses. Your budget sits safely in escrow and you only pay per verified completion.',
+  },
+  {
+    q: 'Is PicoWorker the same as Picoworkers or SproutGigs?',
+    a: 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker (picoworker.xyz) is an independent micro-task marketplace that pays instantly in USDC. People sometimes type pico worker, pico work or picowork, but if you want small online tasks with instant crypto payouts, you are in the right place.',
   },
 ]
 

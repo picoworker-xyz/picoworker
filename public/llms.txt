@@ -28,7 +28,15 @@ PicoWorker is a micro-task platform. Earners complete tiny online tasks and get 
 - Is PicoWorker free? Yes, joining and earning is free.
 - How do I get paid? In USDC, withdrawn to a Solana wallet.
 
+## Name
+PicoWorker is also written as pico worker, pico work or picowork. It is not the same company as Picoworkers, which rebranded to SproutGigs. PicoWorker (picoworker.xyz) is independent and pays instantly in USDC.
+
 ## Links
 - [Home](https://picoworker.xyz/): the PicoWorker home page
 - [Sign up or log in](https://picoworker.xyz/login): create an account or sign in
+- [Get paid to follow accounts](https://picoworker.xyz/earn/follow-accounts): follow tasks from $0.04
+- [Get paid to watch videos](https://picoworker.xyz/earn/watch-videos): watch tasks from $0.02
+- [Get paid to test apps](https://picoworker.xyz/earn/app-testing): app tests up to $0.35
+- [Paid surveys in USDC](https://picoworker.xyz/earn/paid-surveys): surveys up to $0.20
+- [Picoworkers alternative](https://picoworker.xyz/picoworkers-alternative): how PicoWorker compares to classic micro job sites
 - [Sitemap](https://picoworker.xyz/sitemap.xml): list of indexable pages

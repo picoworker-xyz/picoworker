@@ -3,6 +3,29 @@
   command = "npm run build"
   publish = "dist"
 
+# Junk left in search indexes by the domain's previous owner. Must return
+# 410 Gone (not the SPA's 200) or Google keeps the URLs indexed.
+# Order matters: these must sit above the /* catch-all, first match wins.
+[[redirects]]
+  from = "/maintenance-mode"
+  to = "/index.html"
+  status = 410
+
+[[redirects]]
+  from = "/html/*"
+  to = "/index.html"
+  status = 410
+
+[[redirects]]
+  from = "/slots/*"
+  to = "/index.html"
+  status = 410
+
+[[redirects]]
+  from = "/privacidade"
+  to = "/index.html"
+  status = 410
+
 # Client-side routing: serve index.html for any path so React Router can handle
 # deep links like /login, /wallet, /business/create.
 [[redirects]]

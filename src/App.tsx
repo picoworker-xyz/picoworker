@@ -40,6 +40,13 @@ import { ReviewQueue } from './features/business/ReviewQueue'
 import { ProofDetail } from './features/business/ProofDetail'
 import { BusinessSignup } from './features/business/BusinessSignup'
 import { Terms, Privacy } from './features/marketing/Legal'
+import {
+  EarnFollowAccounts,
+  EarnWatchVideos,
+  EarnAppTesting,
+  EarnPaidSurveys,
+  PicoworkersAlternative,
+} from './features/marketing/SeoPages'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
 function Shell({ children }: { children: ReactNode }) {
@@ -78,6 +85,11 @@ export default function App() {
       <Route path="/business/signup" element={<BusinessSignup />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/earn/follow-accounts" element={<EarnFollowAccounts />} />
+      <Route path="/earn/watch-videos" element={<EarnWatchVideos />} />
+      <Route path="/earn/app-testing" element={<EarnAppTesting />} />
+      <Route path="/earn/paid-surveys" element={<EarnPaidSurveys />} />
+      <Route path="/picoworkers-alternative" element={<PicoworkersAlternative />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />

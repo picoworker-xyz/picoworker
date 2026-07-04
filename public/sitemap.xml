@@ -13,6 +13,36 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://picoworker.xyz/earn/follow-accounts</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://picoworker.xyz/earn/watch-videos</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://picoworker.xyz/earn/app-testing</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://picoworker.xyz/earn/paid-surveys</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://picoworker.xyz/picoworkers-alternative</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://picoworker.xyz/terms</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>yearly</changefreq>
