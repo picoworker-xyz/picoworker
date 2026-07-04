@@ -36,6 +36,7 @@ create table if not exists agent_keys (
 create index if not exists agent_keys_profile_idx on agent_keys (profile_id);
 
 alter table agent_keys enable row level security;
+drop policy if exists "agent keys self read" on agent_keys;
 create policy "agent keys self read" on agent_keys for select using (profile_id = auth.uid());
 
 -- ---- The audience wall. Fires on every completion insert no matter which
@@ -59,8 +60,10 @@ create trigger task_audience_wall before insert on task_completions
   for each row execute function enforce_task_audience();
 
 -- ---- Key management (called by the logged-in user from the app) ----
+-- search_path includes extensions: on Supabase pgcrypto (gen_random_bytes,
+-- digest) lives there, not in public.
 create or replace function create_agent_key(p_name text)
-returns json language plpgsql security definer set search_path = public as $$
+returns json language plpgsql security definer set search_path = public, extensions as $$
 declare me uuid := auth.uid(); raw text; hash text; row_id uuid; n int;
 begin
   if me is null then raise exception 'Not signed in'; end if;
