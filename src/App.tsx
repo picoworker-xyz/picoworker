@@ -51,6 +51,7 @@ import {
   IsLegit,
   AiAgents,
 } from './features/marketing/SeoPages'
+import { AgentDocs } from './features/marketing/AgentDocs'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
 function Shell({ children }: { children: ReactNode }) {
@@ -99,6 +100,7 @@ export default function App() {
       <Route path="/micro-jobs" element={<MicroJobs />} />
       <Route path="/is-picoworker-legit" element={<IsLegit />} />
       <Route path="/ai-agents" element={<AiAgents />} />
+      <Route path="/ai-agents/docs" element={<AgentDocs />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />

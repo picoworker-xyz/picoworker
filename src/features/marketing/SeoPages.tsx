@@ -69,7 +69,7 @@ export function MarketingFooter() {
   )
 }
 
-function PageShell({ children }: { children: ReactNode }) {
+export function PageShell({ children }: { children: ReactNode }) {
   const nav = useNavigate()
   const go = () => nav('/login')
   return (
@@ -560,6 +560,7 @@ export function useInstallPrompt() {
 }
 
 const IS_IOS = typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent)
+const IS_ANDROID = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent)
 
 /** Targets "picoworkers app" and "app download apk" searches. PicoWorker ships
  *  as a web app, so this page explains install and warns off fake APKs. */
@@ -604,23 +605,82 @@ export function AppPage() {
               )}
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              {IS_IOS
-                ? 'On iPhone: tap the Share button in Safari, then Add to Home Screen'
-                : 'Works on Android, iPhone and desktop · Always free'}
+              Works on Android, iPhone and desktop · Always free
+            </div>
+
+            {/* Manual install guide: always visible, since the native prompt
+                only exists on Chromium and only until installed. */}
+            <div className="mt-14 text-left">
+              <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] text-center">
+                Put PicoWorker on your home screen
+              </h2>
+              <p className="text-[var(--ink-4)] text-[13.5px] font-semibold text-center mt-2 mb-8">
+                About 15 seconds, no app store needed. Pick your device below.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  {
+                    t: 'Android',
+                    sub: 'Chrome',
+                    yours: IS_ANDROID,
+                    steps: [
+                      'Open picoworker.xyz in Chrome',
+                      'Tap the three dot menu at the top right',
+                      'Tap Add to Home screen, then Add',
+                    ],
+                  },
+                  {
+                    t: 'iPhone and iPad',
+                    sub: 'Safari',
+                    yours: IS_IOS,
+                    steps: [
+                      'Open picoworker.xyz in Safari',
+                      'Tap the Share button at the bottom',
+                      'Scroll down and tap Add to Home Screen',
+                    ],
+                  },
+                  {
+                    t: 'Desktop',
+                    sub: 'Chrome or Edge',
+                    yours: !IS_ANDROID && !IS_IOS,
+                    steps: [
+                      'Open picoworker.xyz',
+                      'Look for the small install icon at the right end of the address bar',
+                      'Click it, then click Install',
+                    ],
+                  },
+                ].map((p) => (
+                  <div
+                    key={p.t}
+                    className={`relative rounded-[18px] p-6 bg-[var(--card)] border ${p.yours ? 'border-[rgba(46,224,110,.4)]' : 'border-[var(--line)]'}`}
+                    style={p.yours ? { boxShadow: '0 0 0 1px rgba(46,224,110,.15)' } : undefined}
+                  >
+                    {p.yours && (
+                      <span className="absolute -top-[10px] left-5 px-2.5 py-[3px] rounded-full bg-[var(--accent)] text-[var(--accent-ink)] text-[10.5px] font-extrabold font-head uppercase tracking-[.06em]">
+                        Your device
+                      </span>
+                    )}
+                    <div className="text-[var(--ink)] text-[16px] font-extrabold font-head">{p.t}</div>
+                    <div className="text-[var(--ink-4)] text-[12px] font-bold mb-4">{p.sub}</div>
+                    <ol className="flex flex-col gap-2.5">
+                      {p.steps.map((s, i) => (
+                        <li key={s} className="flex items-start gap-2.5">
+                          <span className="w-[22px] h-[22px] rounded-full bg-[var(--fill)] border border-[var(--line-2)] text-[var(--accent-strong)] text-[11.5px] font-extrabold font-head flex items-center justify-center flex-none mt-[1px]">
+                            {i + 1}
+                          </span>
+                          <span className="text-[var(--ink-2)] text-[13px] font-semibold leading-[1.5]">{s}</span>
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-4 leading-[1.5]">
+                      The PicoWorker icon appears like any other app. Tap it and you are earning.
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </section>
-
-      <section className="app-container py-16 lg:py-20">
-        <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Install it in three taps</h2>
-        <Steps
-          steps={[
-            { t: 'Open picoworker.xyz', d: 'Visit the site in Chrome or Safari on your phone and sign in.' },
-            { t: 'Add to home screen', d: 'In your browser menu choose Add to Home Screen. That is the whole install.' },
-            { t: 'Earn like any app', d: 'Tap the icon any time, pick a task and get paid in USDC on the spot.' },
-          ]}
-        />
       </section>
 
       <section className="border-t border-[var(--line)]">
@@ -804,6 +864,12 @@ export function AiAgents() {
               >
                 Get an API key <ArrowRight width={17} height={17} />
               </button>
+              <Link
+                to="/ai-agents/docs"
+                className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]"
+              >
+                API documentation
+              </Link>
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
               Escrow backed rewards · Instant USDC settlement · Pay per verified result
@@ -850,7 +916,7 @@ curl -X POST api.../agent-api/campaigns/<id>/launch \\
 curl api.../agent-api/proofs -H "Authorization: Bearer pw_agent_..."`}</pre>
           </div>
           <p className="text-[var(--ink-4)] text-[13px] font-semibold mt-4 leading-[1.6]">
-            Approvals pay the worker instantly, rejections carry a reason the worker can appeal, exactly like campaigns run from the app. Existing accounts can also mint keys under More, then Agent API.
+            Approvals pay the worker instantly, rejections carry a reason the worker can appeal, exactly like campaigns run from the app. Existing accounts can also mint keys under More, then Agent API. Every endpoint with request and response examples is in the <Link to="/ai-agents/docs" className="text-[var(--accent-strong)] font-bold">full API documentation</Link>.
           </p>
         </div>
       </section>
