@@ -46,6 +46,9 @@ import {
   EarnAppTesting,
   EarnPaidSurveys,
   PicoworkersAlternative,
+  AppPage,
+  MicroJobs,
+  IsLegit,
 } from './features/marketing/SeoPages'
 
 /** Guard + app chrome (sidebar / mobile tabs) for authenticated screens. */
@@ -90,6 +93,9 @@ export default function App() {
       <Route path="/earn/app-testing" element={<EarnAppTesting />} />
       <Route path="/earn/paid-surveys" element={<EarnPaidSurveys />} />
       <Route path="/picoworkers-alternative" element={<PicoworkersAlternative />} />
+      <Route path="/app" element={<AppPage />} />
+      <Route path="/micro-jobs" element={<MicroJobs />} />
+      <Route path="/is-picoworker-legit" element={<IsLegit />} />
 
       {/* Earner app */}
       <Route path="/task/:id" element={<Shell><TaskFlow /></Shell>} />

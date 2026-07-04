@@ -7,7 +7,7 @@ import { ArrowRight, Bolt, Check, ListIcon, Play, XLogo } from '../../components
 
 /** Swaps the document title, meta description and canonical URL for this route,
  *  restoring the landing page defaults from index.html on unmount. */
-function Seo({ title, description, path }: { title: string; description: string; path: string }) {
+export function useSeo({ title, description, path }: { title: string; description: string; path: string }) {
   useEffect(() => {
     const prevTitle = document.title
     document.title = title
@@ -26,6 +26,10 @@ function Seo({ title, description, path }: { title: string; description: string;
       canonical?.setAttribute('href', prevCanonical)
     }
   }, [title, description, path])
+}
+
+function Seo(props: { title: string; description: string; path: string }) {
+  useSeo(props)
   return null
 }
 
@@ -37,6 +41,9 @@ export function MarketingFooter() {
     ['/earn/watch-videos', 'Watch videos'],
     ['/earn/app-testing', 'App testing'],
     ['/earn/paid-surveys', 'Paid surveys'],
+    ['/micro-jobs', 'Micro jobs'],
+    ['/app', 'Get the app'],
+    ['/is-picoworker-legit', 'Is PicoWorker legit?'],
     ['/picoworkers-alternative', 'Picoworkers alternative'],
   ]
   return (
@@ -519,6 +526,206 @@ export function PicoworkersAlternative() {
       />
 
       <CtaBanner title="Skip the payout thresholds." sub="Join free, finish your first task in seconds and get paid in USDC on the spot." />
+    </PageShell>
+  )
+}
+
+/** Targets "picoworkers app" and "app download apk" searches. PicoWorker ships
+ *  as a web app, so this page explains install and warns off fake APKs. */
+export function AppPage() {
+  const nav = useNavigate()
+  return (
+    <PageShell>
+      <Seo
+        title="PicoWorker App: Earn USDC on Your Phone, No APK Needed"
+        description="The PicoWorker app runs right in your browser on Android, iPhone and desktop. Add it to your home screen and earn instant USDC for micro-tasks. No APK download, nothing to install from third party sites."
+        path="/app"
+      />
+
+      <section className="hero-grid border-b border-[var(--line)]">
+        <div className="app-container py-16 lg:py-24">
+          <div className="max-w-[720px] mx-auto text-center reveal">
+            <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">The PicoWorker app</div>
+            <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
+              The app is already on your phone
+            </h1>
+            <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[560px] mx-auto leading-[1.6]">
+              PicoWorker runs right in your browser on Android, iPhone and desktop. Add it to your home screen and it works like any other app: full screen, fast, and always up to date. No store, no APK, no waiting for downloads.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+              <button
+                onClick={() => nav('/login')}
+                className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] flex items-center gap-2"
+                style={{ boxShadow: 'var(--glow)' }}
+              >
+                Open PicoWorker <ArrowRight width={17} height={17} />
+              </button>
+            </div>
+            <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
+              Works on Android, iPhone and desktop · Always free
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="app-container py-16 lg:py-20">
+        <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Install it in three taps</h2>
+        <Steps
+          steps={[
+            { t: 'Open picoworker.xyz', d: 'Visit the site in Chrome or Safari on your phone and sign in.' },
+            { t: 'Add to home screen', d: 'In your browser menu choose Add to Home Screen. That is the whole install.' },
+            { t: 'Earn like any app', d: 'Tap the icon any time, pick a task and get paid in USDC on the spot.' },
+          ]}
+        />
+      </section>
+
+      <section className="border-t border-[var(--line)]">
+        <div className="app-container py-16 lg:py-20 max-w-[760px]">
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">A warning about APK downloads</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
+            There is no official PicoWorker APK. If a third party site offers a PicoWorker or Picoworkers APK download, do not install it: sideloaded APKs from unknown sites are a common way to steal accounts and wallets. The only place to use PicoWorker is picoworker.xyz, and your browser keeps it updated automatically.
+          </p>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Why a web app is better for payouts</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
+            PicoWorker pays in USDC the moment a task is verified, and you withdraw to a wallet only you control. Running on the open web means you can check your balance and cash out from any device you sign in on, and nothing stands between you and your money.
+          </p>
+        </div>
+      </section>
+
+      <MiniFaq
+        faqs={[
+          { q: 'Is there a PicoWorker app for Android or iPhone?', a: 'PicoWorker is a web app that installs from your browser. Open picoworker.xyz, choose Add to Home Screen, and it behaves like a native app on both Android and iPhone.' },
+          { q: 'Is there a PicoWorker APK download?', a: 'No. There is no official APK, and you should not install one from third party sites. Use picoworker.xyz in your browser instead.' },
+          { q: 'Does PicoWorker work on desktop?', a: 'Yes. The same account works in any modern browser on phone, tablet and desktop.' },
+        ]}
+      />
+      <OtherWays current="/app" />
+      <CtaBanner title="No download. Just earnings." sub="Open the site, pick a task and your first USDC arrives in minutes." />
+    </PageShell>
+  )
+}
+
+/** Targets "micro jobs", "picoworkers jobs" and "online jobs" style searches. */
+export function MicroJobs() {
+  const nav = useNavigate()
+  return (
+    <PageShell>
+      <Seo
+        title="Micro Jobs Online: Small Tasks, Instant USDC Pay | PicoWorker"
+        description="Find micro jobs online that pay instantly in USDC. Follow accounts, watch videos, test apps and take surveys on PicoWorker. No experience needed, free to join, cash out in seconds."
+        path="/micro-jobs"
+      />
+
+      <section className="hero-grid border-b border-[var(--line)]">
+        <div className="app-container py-16 lg:py-24">
+          <div className="max-w-[720px] mx-auto text-center reveal">
+            <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">Micro jobs</div>
+            <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
+              Micro jobs that pay the second you finish
+            </h1>
+            <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[560px] mx-auto leading-[1.6]">
+              A micro job is a small online task that takes seconds to a few minutes: follow an account, watch a video, test an app, answer a survey. On PicoWorker every one of them pays in USDC, instantly, with no minimum payout to reach.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+              <button
+                onClick={() => nav('/login')}
+                className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] flex items-center gap-2"
+                style={{ boxShadow: 'var(--glow)' }}
+              >
+                Browse live tasks <ArrowRight width={17} height={17} />
+              </button>
+            </div>
+            <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
+              No experience needed · No interviews · Paid per task
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <OtherWays current="/micro-jobs" />
+
+      <section className="border-t border-[var(--line)]">
+        <div className="app-container py-16 lg:py-20 max-w-[760px]">
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">How micro jobs work on PicoWorker</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
+            Businesses fund campaigns in USDC and the budget sits in escrow before any task goes live, so the reward you see is guaranteed. You pick a task from the live feed, finish it in seconds, and most verify automatically in about 10 seconds. The moment verification passes, the USDC is yours.
+          </p>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">What micro jobs pay</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
+            Quick social tasks start at a few cents, watch tasks at $0.02, and app tests and surveys reach $0.35 or more. Levels and streaks unlock up to 2x higher payouts, referrals add 10 percent of everything your invitees earn, and there is a daily check in bonus on top. It will not replace a salary, but it turns dead time into real, withdrawable money.
+          </p>
+        </div>
+      </section>
+
+      <MiniFaq
+        faqs={[
+          { q: 'Do I need experience or a resume for micro jobs?', a: 'No. Micro jobs on PicoWorker are designed for anyone. There are no interviews and no applications; sign up free and start with any task in the feed.' },
+          { q: 'How do micro jobs pay out?', a: 'In USDC, the moment a task is verified. Cash out to any Solana wallet, or to Base and other networks, in seconds for a fraction of a cent.' },
+          { q: 'How is this different from Picoworkers or SproutGigs?', a: 'PicoWorker (picoworker.xyz) is an independent platform, not related to Picoworkers or SproutGigs. The big difference is payout speed: PicoWorker pays instantly in USDC with no minimum threshold.' },
+        ]}
+      />
+      <CtaBanner title="The feed is live right now." sub="Join free, grab any task and get your first payout today." />
+    </PageShell>
+  )
+}
+
+/** Targets "is picoworker legit", "picoworkers real or fake" searches with a
+ *  transparency page about how payouts and escrow actually work. */
+export function IsLegit() {
+  return (
+    <PageShell>
+      <Seo
+        title="Is PicoWorker Legit? How Payouts, Escrow and Verification Work"
+        description="Wondering if PicoWorker is real or fake? Every task reward is funded in escrow before it goes live, payouts are instant USDC on chain, and the platform is non-custodial. Here is exactly how it works."
+        path="/is-picoworker-legit"
+      />
+
+      <section className="hero-grid border-b border-[var(--line)]">
+        <div className="app-container py-16 lg:py-24">
+          <div className="max-w-[720px] mx-auto text-center reveal">
+            <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">Real or fake?</div>
+            <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
+              Is PicoWorker legit? Here is how to check for yourself.
+            </h1>
+            <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[560px] mx-auto leading-[1.6]">
+              You should be skeptical of any site that promises money online. So do not take our word for it: this page explains exactly how PicoWorker pays, where the money sits, and how you can verify every payout on a public blockchain.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="app-container py-16 lg:py-20">
+        <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Three reasons the money is real</h2>
+        <Steps
+          steps={[
+            { t: 'Rewards sit in escrow', d: 'A business must fund its campaign in USDC before a task appears in your feed. The reward you see is already paid for.' },
+            { t: 'Payouts are on chain', d: 'USDC withdrawals settle on Solana, a public blockchain. Every payout is a transaction anyone can look up.' },
+            { t: 'You hold the keys', d: 'PicoWorker is non-custodial. You cash out to a wallet only you control, so your earnings never depend on us holding them.' },
+          ]}
+        />
+      </section>
+
+      <section className="border-t border-[var(--line)]">
+        <div className="app-container py-16 lg:py-20 max-w-[760px]">
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">What PicoWorker is not</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
+            PicoWorker is not a get rich scheme, and we will not pretend otherwise. Tasks pay cents, not fortunes: quick social tasks from $0.04, app tests and surveys up to $0.35 or more. It is honest pocket money for spare minutes, paid the instant you earn it. We are also not Picoworkers or SproutGigs; if you searched picoworkers real or fake, that is a different, older platform. PicoWorker (picoworker.xyz) is independent.
+          </p>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The rules that keep it fair</h2>
+          <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
+            One account per person, real completions only. Fraud checks run on tasks and withdrawals, and larger withdrawals can require manual review. These rules exist because businesses only keep funding tasks when results are genuine, and that funding is what pays you. The full detail is in our <Link to="/terms" className="text-[var(--accent-strong)] font-semibold">terms</Link>.
+          </p>
+        </div>
+      </section>
+
+      <MiniFaq
+        faqs={[
+          { q: 'Is PicoWorker free, or is there a catch?', a: 'Joining and earning are completely free, and new earners get a $0.05 welcome bonus on their first task. PicoWorker makes money from the businesses that fund campaigns, not from earners.' },
+          { q: 'Is there a minimum withdrawal?', a: 'You are paid per task in USDC and can cash out to your own wallet in seconds for a fraction of a cent, without saving up toward a big threshold first.' },
+          { q: 'How fast do I actually get paid?', a: 'Most tasks verify automatically in about 10 seconds and the USDC is credited instantly. Withdrawals to your wallet arrive in seconds.' },
+        ]}
+      />
+      <CtaBanner title="Test it with ten minutes." sub="Join free, do one task and withdraw. The blockchain receipt is your proof." />
     </PageShell>
   )
 }

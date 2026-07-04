@@ -39,4 +39,7 @@ PicoWorker is also written as pico worker, pico work or picowork. It is not the 
 - [Get paid to test apps](https://picoworker.xyz/earn/app-testing): app tests up to $0.35
 - [Paid surveys in USDC](https://picoworker.xyz/earn/paid-surveys): surveys up to $0.20
 - [Picoworkers alternative](https://picoworker.xyz/picoworkers-alternative): how PicoWorker compares to classic micro job sites
+- [The PicoWorker app](https://picoworker.xyz/app): web app for Android, iPhone and desktop, no APK
+- [Micro jobs](https://picoworker.xyz/micro-jobs): what micro jobs are and what they pay
+- [Is PicoWorker legit?](https://picoworker.xyz/is-picoworker-legit): how escrow, on chain payouts and verification work
 - [Sitemap](https://picoworker.xyz/sitemap.xml): list of indexable pages

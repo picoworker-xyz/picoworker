@@ -8,10 +8,16 @@ import { supabase, supabaseEnabled } from '../../lib/supabase'
 import { BrandMark, FraudNotice } from '../../components/layout'
 import { Apple, ArrowRight, Check, Google, Phone, Eye, EyeOff } from '../../components/icons'
 import { Avatar } from '../../components/ui'
+import { useSeo } from '../marketing/SeoPages'
 
 export function Login() {
   const { signIn, signUp } = useStore()
   const nav = useNavigate()
+  useSeo({
+    title: 'PicoWorker Login: Sign In or Create a Free Account',
+    description: 'Log in to PicoWorker or sign up free in under a minute. Earn instant USDC for micro-tasks, or post tasks for your business. New earners get a $0.05 welcome bonus.',
+    path: '/login',
+  })
 
   async function googleSignIn() {
     const { error } = await supabase!.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/` } })
