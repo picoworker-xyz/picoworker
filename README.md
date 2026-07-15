@@ -59,6 +59,37 @@ a Supabase call.
      `pending_proof` until approved.
 4. **Earner** cashes out via **Withdraw** → simulated USDC payout (`submitWithdrawal`).
 
+## AdGem postbacks
+
+AdGem rewarded conversions are received by the public `adgem-postback` Edge Function. The
+function verifies AdGem's v2 HMAC, validates the player/reward, and calls a service-role-only
+database function that atomically records the conversion and credits the earner wallet.
+
+1. Run `supabase/adgem.sql` in the Supabase SQL editor.
+2. Copy the one-time **Postback Key** from AdGem, then configure the function secrets:
+
+   ```bash
+   supabase secrets set ADGEM_POSTBACK_KEY='your-postback-key' \
+     ADGEM_PUBLIC_URL='https://picoworker.xyz/api/adgem/postback' \
+     ADGEM_MAX_REWARD='1000'
+   ```
+
+3. Deploy without Supabase JWT verification (AdGem authenticates with its HMAC instead):
+
+   ```bash
+   supabase functions deploy adgem-postback --no-verify-jwt
+   ```
+
+4. Enable AdGem v2 Server Postback hashing and enter this alphabetized GET URL:
+
+   ```text
+   https://picoworker.xyz/api/adgem/postback?amount={amount}&campaign_id={campaign_id}&goal_id={goal_id}&goal_name={goal_name}&offer_name={offer_name}&payout={payout}&player_id={player_id}&transaction_id={transaction_id}
+   ```
+
+The `player_id` sent when opening AdGem must be the signed-in user's Supabase Auth UUID. AdGem
+v2 appends `request_id` and `verifier`; both are required by the receiver. Keep
+`ADGEM_MAX_REWARD` at or just above the largest reward configured in the AdGem dashboard.
+
 ## Project structure
 
 ```

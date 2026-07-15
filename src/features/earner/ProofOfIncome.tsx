@@ -7,8 +7,8 @@ import { ArrowDown } from '../../components/icons'
 import { Chip } from '../../components/ui'
 import type { LedgerEntry } from '../../lib/types'
 
-// Earnings that count toward income: task rewards, referral and welcome/check-in bonuses.
-const EARNING_TYPES = new Set(['task_reward', 'referral_bonus', 'welcome_bonus'])
+// Earnings that count toward income: task/offer rewards, referral and welcome/check-in bonuses.
+const EARNING_TYPES = new Set(['task_reward', 'offer_reward', 'referral_bonus', 'welcome_bonus'])
 
 type Period = 'this_month' | 'last_month' | 'last_3_months' | 'all'
 const PERIODS: { key: Period; label: string }[] = [

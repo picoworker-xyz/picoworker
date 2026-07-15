@@ -3,6 +3,15 @@
   command = "npm run build"
   publish = "dist"
 
+# Public AdGem callback on our own domain. This is a reverse proxy (not a
+# redirect), so AdGem receives the Edge Function's real HTTP status and retry
+# behavior. The function reconstructs this public URL for HMAC verification.
+[[redirects]]
+  from = "/api/adgem/postback"
+  to = "https://cgkccigqhecuxgklnqel.supabase.co/functions/v1/adgem-postback"
+  status = 200
+  force = true
+
 # Junk left in search indexes by the domain's previous owner. Must return
 # 410 Gone (not the SPA's 200) or Google keeps the URLs indexed.
 # Order matters: these must sit above the /* catch-all, first match wins.

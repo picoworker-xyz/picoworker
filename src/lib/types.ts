@@ -20,6 +20,7 @@ export type CompletionStatus = 'verified' | 'pending_proof' | 'approved' | 'reje
 
 export type LedgerType =
   | 'task_reward'
+  | 'offer_reward'
   | 'withdrawal'
   | 'deposit'
   | 'escrow_hold'

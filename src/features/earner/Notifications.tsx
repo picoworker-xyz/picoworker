@@ -91,6 +91,7 @@ function ledgerToNote(l: LedgerEntry): Note {
   const positive = l.amount > 0
   const map: Record<string, { title: string }> = {
     task_reward: { title: `Payment received · ${usd(l.amount, { sign: true })}` },
+    offer_reward: { title: `Offer reward · ${usd(l.amount, { sign: true })}` },
     withdrawal: { title: `Withdrawal sent · ${usd(l.amount, { sign: true })}` },
     deposit: { title: `Deposit · ${usd(l.amount, { sign: true })}` },
     welcome_bonus: { title: `Bonus · ${usd(l.amount, { sign: true })}` },

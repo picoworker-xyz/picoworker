@@ -73,7 +73,7 @@ create table if not exists ledger_entries (
   profile_id    uuid not null references profiles(id) on delete cascade,
   amount        numeric(12,4) not null,
   type          text not null check (type in
-                  ('task_reward','withdrawal','deposit','escrow_hold','escrow_release','referral_bonus','welcome_bonus')),
+                  ('task_reward','offer_reward','withdrawal','deposit','escrow_hold','escrow_release','referral_bonus','welcome_bonus')),
   title         text not null,
   ref_id        text,
   balance_after numeric(12,2) not null,
