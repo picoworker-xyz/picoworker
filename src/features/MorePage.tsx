@@ -3,7 +3,7 @@ import { useStore } from '../lib/store'
 import { Page } from '../components/Page'
 import { WhatsAppJoin } from '../components/WhatsAppJoin'
 import {
-  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight,
+  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight, Globe,
 } from '../components/icons'
 
 type Item = { label: string; path: string; icon: typeof Bell }
@@ -13,6 +13,7 @@ const EARNER_SECTIONS: Section[] = [
   {
     title: 'Earning',
     items: [
+      { label: 'Paymentwall offers', path: '/offers/paymentwall', icon: Globe },
       { label: 'My submissions', path: '/submissions', icon: ListIcon },
       { label: 'Streak & rewards', path: '/rewards', icon: Flame },
       { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },

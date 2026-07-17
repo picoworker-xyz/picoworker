@@ -90,6 +90,55 @@ The `player_id` sent when opening AdGem must be the signed-in user's Supabase Au
 v2 appends `request_id` and `verifier`; both are required by the receiver. Keep
 `ADGEM_MAX_REWARD` at or just above the largest reward configured in the AdGem dashboard.
 
+## Paymentwall Offerwall
+
+The authenticated `/offers/paymentwall` page requests a per-user, signature-v3 Offerwall URL
+from `paymentwall-widget`. Paymentwall completions call the public `paymentwall-pingback`
+function, which verifies the signature and atomically credits or reverses the wallet through
+`supabase/paymentwall.sql`. Repeated references are idempotent. Sandbox events are recorded but
+never create withdrawable balance.
+
+1. Run `supabase/paymentwall.sql` in the Supabase SQL editor.
+2. Configure the Project Key, Secret Key, Offerwall widget code, and the USD value of one
+   Paymentwall virtual-currency unit:
+
+   ```bash
+   supabase secrets set \
+     PAYMENTWALL_PROJECT_KEY='your-project-key' \
+     PAYMENTWALL_SECRET_KEY='your-secret-key' \
+     PAYMENTWALL_WIDGET_CODE='mw1_or_dashboard_widget_code' \
+     PAYMENTWALL_USD_PER_CREDIT='0.01' \
+     PAYMENTWALL_MAX_REWARD='1000' \
+     PAYMENTWALL_EVALUATION='true'
+   ```
+
+   `PAYMENTWALL_USD_PER_CREDIT` is an accounting decision, not a default. It must match the
+   virtual-currency conversion configured in Paymentwall. Set `PAYMENTWALL_EVALUATION=false`
+   when the project becomes live.
+
+3. Deploy the authenticated widget generator and public pingback receiver:
+
+   ```bash
+   supabase functions deploy paymentwall-widget
+   supabase functions deploy paymentwall-pingback --no-verify-jwt
+   ```
+
+4. In Paymentwall Project Settings, select **Virtual Currency API**, set Pingback Signature
+   Version to **3**, and use:
+
+   ```text
+   https://picoworker.xyz/api/paymentwall/pingback
+   ```
+
+5. For Paymentwall's technical-review checklist, use:
+
+   ```text
+   https://picoworker.xyz/offers/paymentwall
+   ```
+
+   Supply a dedicated earner test account. The site deployment must include the
+   `/api/paymentwall/pingback` Netlify proxy before running Paymentwall's test pingbacks.
+
 ## Project structure
 
 ```
