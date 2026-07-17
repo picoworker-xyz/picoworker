@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 import { usd } from '../lib/format'
 import { BrandMark } from './layout'
 import { Avatar } from './ui'
-import { Bolt, Check, Flame, Grid, Home, ListIcon, Plus, Shield, Share, Trophy, Wallet as WalletIcon } from './icons'
+import { Bolt, Check, Flame, Globe, Grid, Home, ListIcon, Plus, Shield, Share, Trophy, Wallet as WalletIcon } from './icons'
 import { ThemeToggle } from './ThemeToggle'
 import { NotificationBell } from './NotificationBell'
 
@@ -16,6 +16,7 @@ interface NavItem {
 
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
+  { label: 'Offerwall', path: '/offers/paymentwall', icon: Globe },
   { label: 'Wallet', path: '/wallet', icon: WalletIcon },
   { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
