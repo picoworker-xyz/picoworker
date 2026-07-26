@@ -20,6 +20,13 @@
   status = 200
   force = true
 
+# TaskWall authenticates this public GET callback with its postback password.
+[[redirects]]
+  from = "/api/taskwall/postback"
+  to = "https://cgkccigqhecuxgklnqel.supabase.co/functions/v1/taskwall-postback"
+  status = 200
+  force = true
+
 # Junk left in search indexes by the domain's previous owner. Must return
 # 410 Gone (not the SPA's 200) or Google keeps the URLs indexed.
 # Order matters: these must sit above the /* catch-all, first match wins.

@@ -1,11 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { Page } from '../../components/Page'
 import { TaskRow } from '../../components/blocks'
-import { Chip } from '../../components/ui'
+import { Button, Chip } from '../../components/ui'
 import { WhatsAppJoin } from '../../components/WhatsAppJoin'
-import { Bell, Check } from '../../components/icons'
+import { ArrowRight, Bell, Check, ExternalLink, Globe } from '../../components/icons'
+import { usd } from '../../lib/format'
+import {
+  detectTaskwallDevice,
+  requestTaskwallOffers,
+  type TaskwallOffersState,
+} from '../../lib/taskwall'
 
 const CATS = ['All', 'Social', 'Surveys', 'Apps', 'Ads', 'Watch']
 
@@ -33,14 +39,101 @@ export function EarnFeed() {
         <div className="text-[var(--ink-4)] text-[13px] font-semibold">{filtered.length} tasks</div>
       </div>
 
-      {filtered.length === 0 ? (
+      {filtered.length === 0 && cat !== 'All' ? (
         <AllCaughtUp />
-      ) : (
+      ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((t) => <TaskRow key={t.id} task={t} />)}
         </div>
+      ) : (
+        <div className="rounded-[16px] border border-[var(--line)] bg-[var(--card)] px-4 py-3 text-[13px] font-semibold text-[var(--ink-3)]">
+          New PicoWorker tasks are coming soon. You can start a TaskWall offer below right now.
+        </div>
       )}
+
+      {cat === 'All' && <TaskwallEarnSection />}
     </Page>
+  )
+}
+
+function TaskwallEarnSection() {
+  const nav = useNavigate()
+  const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
+  const device = useMemo(() => detectTaskwallDevice(), [])
+
+  const load = useCallback(async () => {
+    setState({ status: 'loading' })
+    setState(await requestTaskwallOffers(device))
+  }, [device])
+
+  useEffect(() => {
+    let active = true
+    void requestTaskwallOffers(device).then((result) => {
+      if (active) setState(result)
+    })
+    return () => {
+      active = false
+    }
+  }, [device])
+
+  if (state.status === 'ready' && state.offers.length === 0) return null
+
+  return (
+    <section className="mt-7">
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
+            <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> TaskWall offers
+          </div>
+          <div className="mt-1 text-[12px] font-semibold text-[var(--ink-4)]">
+            {state.status === 'ready' && state.country ? `${state.country} · ` : ''}{device} compatible
+          </div>
+        </div>
+        <button onClick={() => nav('/offers/taskwall')} className="flex items-center gap-1 text-[12px] font-extrabold text-[var(--accent-strong)]">
+          View all <ArrowRight width={14} height={14} />
+        </button>
+      </div>
+
+      {state.status === 'loading' && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((item) => (
+            <div key={item} className="h-[155px] animate-pulse rounded-[18px] border border-[var(--line)] bg-[var(--card)]" />
+          ))}
+        </div>
+      )}
+
+      {state.status === 'error' && (
+        <div className="rounded-[16px] border border-[rgba(255,107,90,.2)] bg-[rgba(255,107,90,.06)] p-4">
+          <div className="text-[13px] font-bold text-[var(--ink-2)]">TaskWall offers could not be loaded.</div>
+          <button onClick={() => void load()} className="mt-2 text-[12px] font-extrabold text-[var(--accent-strong)]">Try again</button>
+        </div>
+      )}
+
+      {state.status === 'ready' && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {state.offers.slice(0, 6).map((offer) => (
+            <article key={offer.offerId} className="flex min-h-[155px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
+                  {offer.icon ? (
+                    <img src={offer.icon} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                  ) : (
+                    <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h3>
+                  <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{offer.reward > 0 ? usd(offer.reward) : 'Variable reward'}</div>
+                </div>
+              </div>
+              <Button block className="mt-auto h-[38px] text-[12px]" onClick={() => window.open(offer.link, '_blank', 'noopener,noreferrer')}>
+                Start offer <ExternalLink width={14} height={14} />
+              </Button>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
   )
 }
 
