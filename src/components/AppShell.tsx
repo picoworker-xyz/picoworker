@@ -16,7 +16,7 @@ interface NavItem {
 
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
-  { label: 'Offerwall', path: '/offers/paymentwall', icon: Globe },
+  { label: 'Offerwall', path: '/offers/taskwall', icon: Globe },
   { label: 'Wallet', path: '/wallet', icon: WalletIcon },
   { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },

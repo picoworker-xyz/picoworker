@@ -139,6 +139,47 @@ never create withdrawable balance.
    Supply a dedicated earner test account. The site deployment must include the
    `/api/paymentwall/pingback` Netlify proxy before running Paymentwall's test pingbacks.
 
+## TaskWall Offers API
+
+The authenticated `/offers/taskwall` page fetches device-appropriate offers through the
+`taskwall-offers` Edge Function. The TaskWall app ID is never exposed in the frontend, and
+TaskWall receives the signed-in user's Supabase Auth UUID as `userid`. Confirmed completions
+call a password-protected public postback which atomically records and credits the reward.
+
+1. Run `supabase/taskwall.sql` in the Supabase SQL editor.
+2. Create a strong, unique postback password and configure the approved TaskWall app:
+
+   ```bash
+   supabase secrets set \
+     TASKWALL_APP_ID='your-approved-app-id' \
+     TASKWALL_POSTBACK_PASSWORD='your-strong-postback-password' \
+     TASKWALL_USD_PER_CREDIT='0.001' \
+     TASKWALL_MAX_REWARD='1000'
+   ```
+
+   `TASKWALL_USD_PER_CREDIT` must exactly match the currency conversion configured in the
+   TaskWall publisher dashboard. `0.001` means one TaskWall `user_amount` unit credits
+   0.001 USDC; do not use it unless the dashboard is configured to the same rate.
+
+3. Deploy the authenticated offers proxy and public callback:
+
+   ```bash
+   supabase functions deploy taskwall-offers
+   supabase functions deploy taskwall-postback --no-verify-jwt
+   ```
+
+4. In TaskWall, save the same postback password and this GET postback URL:
+
+   ```text
+   https://picoworker.xyz/api/taskwall/postback?app_name={app_name}&userid={userid}&password={password}&user_amount={user_amount}&offer_name={offer_name}&offer_id={offer_id}&payout={payout}&ip_address={ip_address}&currency_name={currency_name}&date={date}
+   ```
+
+5. The user-facing offers page is:
+
+   ```text
+   https://picoworker.xyz/offers/taskwall
+   ```
+
 ## Project structure
 
 ```
