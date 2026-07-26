@@ -71,6 +71,13 @@ Deno.serve(async (req) => {
   providerUrl.searchParams.set('app_id', APP_ID)
   providerUrl.searchParams.set('userid', user.id)
   providerUrl.searchParams.set('os', requestedOs)
+  // Supabase's edge proxy supplies Cloudflare's trusted two-letter visitor
+  // country. Forward it so users never see offers that cannot accept their IP
+  // (for example, a US-only offer shown to a visitor in Pakistan).
+  const visitorCountry = (req.headers.get('cf-ipcountry') ?? '').trim().toUpperCase()
+  if (/^[A-Z]{2}$/.test(visitorCountry) && visitorCountry !== 'XX') {
+    providerUrl.searchParams.set('country', visitorCountry)
+  }
 
   let payload: Record<string, unknown>
   try {
@@ -132,6 +139,8 @@ Deno.serve(async (req) => {
   return json({
     status: 'success',
     count: offers.length,
+    country: visitorCountry || null,
+    os: requestedOs,
     offers,
   })
 })

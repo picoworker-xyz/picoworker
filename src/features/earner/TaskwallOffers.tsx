@@ -3,66 +3,32 @@ import { Page } from '../../components/Page'
 import { ExternalLink, Globe, Shield } from '../../components/icons'
 import { Button } from '../../components/ui'
 import { usd } from '../../lib/format'
-import { supabase } from '../../lib/supabase'
-
-type Offer = {
-  offerId: string
-  title: string
-  description: string
-  conversion: string
-  icon: string
-  link: string
-  reward: number
-  devices: string[]
-  countries: string[]
-}
-
-type OffersState =
-  | { status: 'loading' }
-  | { status: 'ready'; offers: Offer[] }
-  | { status: 'error'; message: string }
-
-function detectOs(): 'android' | 'ios' | 'desktop' {
-  const agent = navigator.userAgent.toLowerCase()
-  if (agent.includes('android')) return 'android'
-  if (/iphone|ipad|ipod/.test(agent)) return 'ios'
-  return 'desktop'
-}
-
-async function requestOffers(): Promise<OffersState> {
-  if (!supabase) {
-    return { status: 'error', message: 'TaskWall requires the production account service.' }
-  }
-
-  const { data, error } = await supabase.functions.invoke('taskwall-offers', {
-    body: { os: detectOs() },
-  })
-  if (error || data?.status !== 'success' || !Array.isArray(data?.offers)) {
-    return {
-      status: 'error',
-      message: data?.error ?? error?.message ?? 'Could not load TaskWall offers.',
-    }
-  }
-  return { status: 'ready', offers: data.offers as Offer[] }
-}
+import {
+  detectTaskwallDevice,
+  requestTaskwallOffers,
+  TASKWALL_DEVICE_OPTIONS,
+  type TaskwallDevice,
+  type TaskwallOffersState,
+} from '../../lib/taskwall'
 
 export function TaskwallOffers() {
-  const [state, setState] = useState<OffersState>({ status: 'loading' })
+  const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
+  const [selectedOs, setSelectedOs] = useState<TaskwallDevice>(() => detectTaskwallDevice())
 
   const load = useCallback(async () => {
     setState({ status: 'loading' })
-    setState(await requestOffers())
-  }, [])
+    setState(await requestTaskwallOffers(selectedOs))
+  }, [selectedOs])
 
   useEffect(() => {
     let active = true
-    void requestOffers().then((result) => {
+    void requestTaskwallOffers(selectedOs).then((result) => {
       if (active) setState(result)
     })
     return () => {
       active = false
     }
-  }, [])
+  }, [selectedOs])
 
   return (
     <Page
@@ -76,6 +42,40 @@ export function TaskwallOffers() {
         <span className="text-[var(--ink-5)]">•</span>
         <Globe width={16} height={16} className="text-[var(--accent-strong)]" />
         Offers matched to this device
+      </div>
+
+      <div className="mb-4 rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">Country</div>
+            <div className="mt-1 flex items-center gap-2 font-head text-[14px] font-extrabold text-[var(--ink)]">
+              <Globe width={17} height={17} className="text-[var(--accent-strong)]" />
+              {state.status === 'ready' && state.country ? state.country : 'Auto-detected'}
+              <span className="rounded-full bg-[rgba(68,209,122,.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--green)]">Secure</span>
+            </div>
+            <div className="mt-1 text-[11px] font-semibold text-[var(--ink-5)]">Only offers allowed in your current country are shown.</div>
+          </div>
+
+          <div className="sm:text-right">
+            <div className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">Device</div>
+            <div className="mt-2 flex flex-wrap gap-1.5 sm:justify-end">
+              {TASKWALL_DEVICE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setSelectedOs(option.value)}
+                  className={`rounded-full px-3 py-2 text-[11.5px] font-extrabold transition ${
+                    selectedOs === option.value
+                      ? 'bg-[var(--accent)] text-[var(--accent-ink)]'
+                      : 'border border-[var(--line-2)] bg-[var(--fill)] text-[var(--ink-3)]'
+                  }`}
+                >
+                  {option.label}{option.value === detectTaskwallDevice() ? ' · This device' : ''}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {state.status === 'loading' && (

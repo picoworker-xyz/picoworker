@@ -6,7 +6,7 @@ import {
   Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight, Globe,
 } from '../components/icons'
 
-type Item = { label: string; path: string; icon: typeof Bell }
+type Item = { label: string; path: string; icon: typeof Bell; disabled?: boolean }
 type Section = { title: string; items: Item[] }
 
 const EARNER_SECTIONS: Section[] = [
@@ -14,7 +14,7 @@ const EARNER_SECTIONS: Section[] = [
     title: 'Earning',
     items: [
       { label: 'TaskWall offers', path: '/offers/taskwall', icon: Globe },
-      { label: 'Paymentwall offers', path: '/offers/paymentwall', icon: Globe },
+      { label: 'Paymentwall · Soon', path: '/offers/paymentwall', icon: Globe, disabled: true },
       { label: 'My submissions', path: '/submissions', icon: ListIcon },
       { label: 'Streak & rewards', path: '/rewards', icon: Flame },
       { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
@@ -131,8 +131,10 @@ export function MorePage() {
             return (
               <button
                 key={item.label}
+                type="button"
+                disabled={item.disabled}
                 onClick={() => nav(item.path)}
-                className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-[12px] hover:bg-[var(--fill)] active:scale-[.97] transition"
+                className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-[12px] hover:bg-[var(--fill)] active:scale-[.97] transition disabled:cursor-not-allowed disabled:opacity-45 disabled:active:scale-100"
               >
                 <span className="w-10 h-10 rounded-[12px] bg-[var(--card)] border border-[var(--line)] flex items-center justify-center text-[var(--accent-strong)]">
                   <Icon width={19} height={19} />
