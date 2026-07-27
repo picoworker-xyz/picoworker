@@ -5,11 +5,14 @@ import { Page } from '../../components/Page'
 import { TaskRow } from '../../components/blocks'
 import { Button, Chip } from '../../components/ui'
 import { WhatsAppJoin } from '../../components/WhatsAppJoin'
-import { ArrowRight, Bell, Check, ExternalLink, Globe } from '../../components/icons'
-import { usd } from '../../lib/format'
+import { ArrowRight, Bell, Check, Globe } from '../../components/icons'
+import { TaskwallOfferDetails } from '../../components/TaskwallOfferDetails'
 import {
   detectTaskwallDevice,
+  isTaskwallProviderWall,
   requestTaskwallOffers,
+  taskwallRewardLabel,
+  type TaskwallOffer,
   type TaskwallOffersState,
 } from '../../lib/taskwall'
 
@@ -59,6 +62,7 @@ export function EarnFeed() {
 function TaskwallEarnSection() {
   const nav = useNavigate()
   const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
+  const [selectedOffer, setSelectedOffer] = useState<TaskwallOffer | null>(null)
   const device = useMemo(() => detectTaskwallDevice(), [])
 
   const load = useCallback(async () => {
@@ -123,16 +127,18 @@ function TaskwallEarnSection() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h3>
-                  <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{offer.reward > 0 ? usd(offer.reward) : 'Variable reward'}</div>
+                  {isTaskwallProviderWall(offer) && <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-[.04em] text-[var(--accent-strong)]">Offerwall · requirements inside</div>}
+                  <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{taskwallRewardLabel(offer)}</div>
                 </div>
               </div>
-              <Button block className="mt-auto h-[38px] text-[12px]" onClick={() => window.open(offer.link, '_blank', 'noopener,noreferrer')}>
-                Start offer <ExternalLink width={14} height={14} />
+              <Button block className="mt-auto h-[38px] text-[12px]" onClick={() => setSelectedOffer(offer)}>
+                View details
               </Button>
             </article>
           ))}
         </div>
       )}
+      {selectedOffer && <TaskwallOfferDetails offer={selectedOffer} onClose={() => setSelectedOffer(null)} />}
     </section>
   )
 }

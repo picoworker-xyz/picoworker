@@ -133,3 +133,18 @@ revoke execute on function credit_taskwall_reward(
 grant execute on function credit_taskwall_reward(
   text, uuid, text, text, text, numeric, numeric, numeric, text, text, text, jsonb
 ) to service_role;
+
+-- Provider offer catalog cache. Tracking links stored here contain a neutral
+-- placeholder; taskwall-offers inserts the authenticated user's UUID only when
+-- responding. Browser clients cannot read or write this table directly.
+create table if not exists taskwall_offer_cache (
+  country       text not null check (country ~ '^[A-Z]{2}$'),
+  os            text not null check (os in ('android', 'ios', 'desktop')),
+  offers        jsonb not null default '[]'::jsonb check (jsonb_typeof(offers) = 'array'),
+  fetched_at    timestamptz not null default now(),
+  primary key (country, os)
+);
+
+alter table taskwall_offer_cache enable row level security;
+revoke all on table taskwall_offer_cache from public, anon, authenticated;
+grant all on table taskwall_offer_cache to service_role;

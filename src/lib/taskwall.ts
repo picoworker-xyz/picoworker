@@ -10,8 +10,26 @@ export type TaskwallOffer = {
   icon: string
   link: string
   reward: number
+  providerWall: boolean
+  multiEvent: boolean
+  isUpTo: boolean
+  events: Array<{ eventId: string; instructions: string; reward: number }>
   devices: string[]
   countries: string[]
+}
+
+export function isTaskwallProviderWall(offer: TaskwallOffer): boolean {
+  return offer.providerWall === true
+    || /\b(tapjoy|lootably)\b/i.test(offer.title)
+    || (offer.reward <= 0 && (!Array.isArray(offer.events) || offer.events.length === 0))
+}
+
+export function taskwallRewardLabel(offer: TaskwallOffer): string {
+  if (isTaskwallProviderWall(offer) || offer.reward <= 0) return 'Rewards vary by task'
+  const value = `$${offer.reward > 0 && offer.reward < 1
+    ? offer.reward.toFixed(4).replace(/(\.\d{2}\d*?)0+$/, '$1')
+    : offer.reward.toFixed(2)}`
+  return offer.isUpTo || offer.multiEvent ? `Up to ${value}` : value
 }
 
 export type TaskwallOffersState =
@@ -26,7 +44,7 @@ export const TASKWALL_DEVICE_OPTIONS: { value: TaskwallDevice; label: string }[]
 ]
 
 const CACHE_TTL_MS = 15 * 60 * 1000
-const CACHE_PREFIX = 'picoworker:taskwall:v1'
+const CACHE_PREFIX = 'picoworker:taskwall:v2'
 type ReadyState = Extract<TaskwallOffersState, { status: 'ready' }>
 type CachedOffers = { savedAt: number; state: ReadyState }
 const memoryCache = new Map<string, CachedOffers>()
@@ -90,7 +108,7 @@ export async function requestTaskwallOffers(
 
   const request = (async (): Promise<TaskwallOffersState> => {
     const { data, error } = await supabase.functions.invoke('taskwall-offers', {
-      body: { os },
+      body: { os, force: options.force === true },
     })
     if (error || data?.status !== 'success' || !Array.isArray(data?.offers)) {
       return {
@@ -98,9 +116,14 @@ export async function requestTaskwallOffers(
         message: data?.error ?? error?.message ?? 'Could not load TaskWall offers.',
       }
     }
+    const offers = (data.offers as TaskwallOffer[]).map((offer) => ({
+      ...offer,
+      // Keep the UI honest even while an older Edge Function version is live.
+      providerWall: isTaskwallProviderWall(offer),
+    }))
     const ready: ReadyState = {
       status: 'ready',
-      offers: data.offers as TaskwallOffer[],
+      offers,
       country: typeof data.country === 'string' ? data.country : null,
       os,
     }
