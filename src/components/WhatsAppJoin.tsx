@@ -1,6 +1,6 @@
 import { WhatsApp, ArrowRight } from './icons'
 
-export const WHATSAPP_URL = 'https://chat.whatsapp.com/I9cuPpq7VdN1eiyaDPtQHu?mode=gi_t'
+export const WHATSAPP_URL = 'https://whatsapp.com/channel/0029Vb83K7C3WHTNsVZmkn2k'
 
 // Community join card, styled in WhatsApp green. Works in light and dark.
 export function WhatsAppJoin() {
@@ -19,7 +19,7 @@ export function WhatsAppJoin() {
         <WhatsApp width={24} height={24} className="text-[#fff]" />
       </span>
       <span className="flex-1 min-w-0">
-        <span className="block text-[var(--ink)] text-[15px] font-extrabold font-head">Join our WhatsApp community</span>
+        <span className="block text-[var(--ink)] text-[15px] font-extrabold font-head">Follow our WhatsApp channel</span>
         <span className="block text-[var(--ink-3)] text-[12.5px] font-semibold">New tasks, payout news and tips</span>
       </span>
       <ArrowRight width={18} height={18} className="text-[#25D366] flex-none" />

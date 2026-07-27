@@ -17,18 +17,19 @@ import { submitWithdrawal, type WithdrawalInput } from './payments'
 // Postgres `numeric` comes back from supabase-js as a string (to keep precision);
 // coerce the money fields back to numbers so the UI math works.
 const num = (v: unknown) => (v == null ? 0 : Number(v))
-const mapProfile = (r: any): Profile => ({ ...r, streak_days: num(r.streak_days), tasks_done: num(r.tasks_done) })
-const mapWallet = (r: any): Wallet => ({
-  profile_id: r.profile_id,
+type DbRow = Record<string, unknown>
+const mapProfile = (r: DbRow): Profile => ({ ...(r as unknown as Profile), streak_days: num(r.streak_days), tasks_done: num(r.tasks_done) })
+const mapWallet = (r: DbRow): Wallet => ({
+  profile_id: String(r.profile_id),
   earner_balance: num(r.earner_balance),
   business_escrow: num(r.business_escrow),
   lifetime_earned: num(r.lifetime_earned),
 })
-const mapTask = (r: any): Task => ({ ...r, reward: num(r.reward), fee: num(r.fee), goal_count: num(r.goal_count), done_count: num(r.done_count), est_seconds: num(r.est_seconds) })
-const mapCompletion = (r: any): TaskCompletion => ({ ...r, reward: num(r.reward) })
-const mapLedger = (r: any): LedgerEntry => ({ ...r, amount: num(r.amount), balance_after: num(r.balance_after) })
-const mapWithdrawal = (r: any): Withdrawal => ({ ...r, amount: num(r.amount), fee: num(r.fee) })
-const mapReferral = (r: any): Referral => ({ ...r, tasks: num(r.tasks), earnings: num(r.earnings) })
+const mapTask = (r: DbRow): Task => ({ ...(r as unknown as Task), reward: num(r.reward), fee: num(r.fee), goal_count: num(r.goal_count), done_count: num(r.done_count), est_seconds: num(r.est_seconds) })
+const mapCompletion = (r: DbRow): TaskCompletion => ({ ...(r as unknown as TaskCompletion), reward: num(r.reward) })
+const mapLedger = (r: DbRow): LedgerEntry => ({ ...(r as unknown as LedgerEntry), amount: num(r.amount), balance_after: num(r.balance_after) })
+const mapWithdrawal = (r: DbRow): Withdrawal => ({ ...(r as unknown as Withdrawal), amount: num(r.amount), fee: num(r.fee) })
+const mapReferral = (r: DbRow): Referral => ({ ...(r as unknown as Referral), tasks: num(r.tasks), earnings: num(r.earnings) })
 
 interface Cache {
   profile: Profile | null
@@ -77,17 +78,57 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       const uid = session?.user?.id ?? null
       uidRef.current = uid
       setUserId(uid)
-      if (uid) await loadAll(uid)
-      else setCache(EMPTY)
-      setReady(true)
+      try {
+        if (uid) await loadAll(uid)
+        else setCache(EMPTY)
+      } finally {
+        // A transient profile/data request must never leave the whole app as a
+        // blank page. Authenticated screens can show their own recovery state.
+        setReady(true)
+      }
     },
     [loadAll],
   )
 
   useEffect(() => {
-    sb.auth.getSession().then(({ data }) => onSession(data.session))
-    const { data } = sb.auth.onAuthStateChange((_e, session) => onSession(session))
-    return () => data.subscription.unsubscribe()
+    let active = true
+
+    const applySession = (session: Session | null) => {
+      // Supabase emits auth changes while holding its internal auth lock.
+      // Defer database reads until the callback has returned so first load and
+      // sign-in cannot wait on that same lock.
+      window.setTimeout(() => {
+        if (!active) return
+        void onSession(session).catch(() => {
+          if (active) setReady(true)
+        })
+      }, 0)
+    }
+
+    void sb.auth.getSession()
+      .then(({ data, error }) => {
+        if (!active) return
+        if (error) applySession(null)
+        else applySession(data.session)
+      })
+      .catch(() => applySession(null))
+
+    const { data } = sb.auth.onAuthStateChange((event, session) => {
+      // getSession above owns the initial bootstrap. Subsequent events update
+      // the store without returning an async callback to Supabase Auth.
+      if (event !== 'INITIAL_SESSION') applySession(session)
+    })
+
+    // Last-resort visible recovery for blocked storage/network environments.
+    const fallback = window.setTimeout(() => {
+      if (active) setReady(true)
+    }, 8_000)
+
+    return () => {
+      active = false
+      window.clearTimeout(fallback)
+      data.subscription.unsubscribe()
+    }
   }, [sb, onSession])
 
   const refresh = useCallback(async () => {

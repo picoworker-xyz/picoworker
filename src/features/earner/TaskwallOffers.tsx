@@ -1,23 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Page } from '../../components/Page'
-import { ExternalLink, Globe, Shield } from '../../components/icons'
+import { Globe } from '../../components/icons'
 import { Button } from '../../components/ui'
-import { usd } from '../../lib/format'
+import { TaskwallOfferDetails } from '../../components/TaskwallOfferDetails'
 import {
   detectTaskwallDevice,
   requestTaskwallOffers,
   TASKWALL_DEVICE_OPTIONS,
+  isTaskwallProviderWall,
   type TaskwallDevice,
+  type TaskwallOffer,
   type TaskwallOffersState,
+  taskwallRewardLabel,
 } from '../../lib/taskwall'
 
 export function TaskwallOffers() {
   const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
   const [selectedOs, setSelectedOs] = useState<TaskwallDevice>(() => detectTaskwallDevice())
+  const [selectedOffer, setSelectedOffer] = useState<TaskwallOffer | null>(null)
 
   const load = useCallback(async () => {
     setState({ status: 'loading' })
-    setState(await requestTaskwallOffers(selectedOs))
+    setState(await requestTaskwallOffers(selectedOs, { force: true }))
   }, [selectedOs])
 
   useEffect(() => {
@@ -36,14 +40,6 @@ export function TaskwallOffers() {
       subtitle="Complete an offer and receive its confirmed reward in your PicoWorker wallet."
       back
     >
-      <div className="mb-4 flex flex-wrap items-center gap-2 rounded-[16px] border border-[var(--line)] bg-[var(--card)] px-4 py-3 text-[12px] font-bold text-[var(--ink-3)]">
-        <Shield width={16} height={16} className="text-[var(--accent-strong)]" />
-        Signed-in tracking
-        <span className="text-[var(--ink-5)]">•</span>
-        <Globe width={16} height={16} className="text-[var(--accent-strong)]" />
-        Offers matched to this device
-      </div>
-
       <div className="mb-4 rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -137,15 +133,16 @@ export function TaskwallOffers() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h2 className="font-head text-[15px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h2>
+                    {isTaskwallProviderWall(offer) && <div className="mt-1 text-[10.5px] font-extrabold uppercase tracking-[.05em] text-[var(--accent-strong)]">Provider offerwall · requirements inside</div>}
                     <div className="mt-1 font-head text-[15px] font-extrabold text-[var(--green)]">
-                      {offer.reward > 0 ? usd(offer.reward) : 'Variable reward'}
+                      {taskwallRewardLabel(offer)}
                     </div>
                   </div>
                 </div>
 
                 {(offer.conversion || offer.description) && (
                   <p className="mt-3 line-clamp-3 text-[12.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
-                    {offer.conversion || offer.description}
+                    {isTaskwallProviderWall(offer) ? `Choose a task inside ${offer.title} to see its exact steps and reward.` : offer.conversion || offer.description}
                   </p>
                 )}
 
@@ -165,9 +162,9 @@ export function TaskwallOffers() {
                 <Button
                   block
                   className="mt-4 h-[43px] text-[13px]"
-                  onClick={() => window.open(offer.link, '_blank', 'noopener,noreferrer')}
+                  onClick={() => setSelectedOffer(offer)}
                 >
-                  Start offer <ExternalLink width={16} height={16} />
+                  View details
                 </Button>
               </article>
             ))}
@@ -178,6 +175,7 @@ export function TaskwallOffers() {
       <p className="mt-5 text-center text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-5)]">
         TaskWall verifies eligibility and completion. Rewards appear after its server confirmation; VPNs, duplicate accounts, and automated traffic are not allowed.
       </p>
+      {selectedOffer && <TaskwallOfferDetails offer={selectedOffer} onClose={() => setSelectedOffer(null)} />}
     </Page>
   )
 }

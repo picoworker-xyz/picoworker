@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useStore } from './lib/store'
 import { AppShell } from './components/AppShell'
+import { BrandMark } from './components/layout'
 
 import { Landing } from './features/marketing/Landing'
 import { Login } from './features/auth/Login'
@@ -59,7 +60,7 @@ import { AgentDocs } from './features/marketing/AgentDocs'
 function Shell({ children }: { children: ReactNode }) {
   const { userId, ready } = useStore()
   const loc = useLocation()
-  if (!ready) return null
+  if (!ready) return <AppLoading />
   if (!userId) return <Navigate to="/login" replace state={{ from: loc.pathname }} />
   return <AppShell>{children}</AppShell>
 }
@@ -67,7 +68,7 @@ function Shell({ children }: { children: ReactNode }) {
 /** Root: marketing site when logged out, app home when logged in. */
 function Home() {
   const { userId, profile, ready } = useStore()
-  if (!ready) return null
+  if (!ready) return <AppLoading />
   if (!userId) return <Landing />
   if (profile?.mode === 'business') return <Navigate to="/business" replace />
   return (
@@ -78,9 +79,6 @@ function Home() {
 }
 
 export default function App() {
-  const { ready } = useStore()
-  if (!ready) return null
-
   return (
     <Routes>
       {/* Public */}
@@ -144,5 +142,17 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  )
+}
+
+function AppLoading() {
+  return (
+    <div className="flex min-h-svh items-center justify-center bg-[var(--bg-page)] p-6">
+      <div className="text-center" role="status" aria-live="polite">
+        <div className="flex justify-center"><BrandMark size={42} /></div>
+        <div className="mx-auto mt-5 h-7 w-7 animate-spin rounded-full border-2 border-[var(--line-2)] border-t-[var(--accent)]" />
+        <div className="mt-3 font-head text-[13px] font-bold text-[var(--ink-3)]">Loading PicoWorker…</div>
+      </div>
+    </div>
   )
 }
