@@ -63,7 +63,7 @@ function TaskwallEarnSection() {
 
   const load = useCallback(async () => {
     setState({ status: 'loading' })
-    setState(await requestTaskwallOffers(device))
+    setState(await requestTaskwallOffers(device, { force: true }))
   }, [device])
 
   useEffect(() => {

@@ -24,6 +24,31 @@ function list(value: unknown): string[] {
   return text ? text.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 30) : []
 }
 
+function fullList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => clean(item, 80).toUpperCase()).filter(Boolean).slice(0, 300)
+  }
+  const text = clean(value, 3000)
+  return text ? text.split(',').map((item) => item.trim().toUpperCase()).filter(Boolean).slice(0, 300) : []
+}
+
+function countryAliases(country: string): Set<string> {
+  if (country === 'GB' || country === 'UK') return new Set(['GB', 'UK'])
+  return new Set([country])
+}
+
+function matchesCountry(countries: string[], aliases: Set<string>): boolean {
+  return countries.some((country) => aliases.has(country) || country === 'ALL' || country === 'WORLDWIDE')
+}
+
+function matchesDevice(devices: string[], requestedOs: string): boolean {
+  const values = new Set(devices.map((device) => device.toLowerCase()))
+  if (requestedOs === 'desktop') {
+    return ['desktop', 'web', 'mac', 'windows'].some((device) => values.has(device))
+  }
+  return values.has(requestedOs)
+}
+
 function safeUrl(value: unknown): string {
   const text = clean(value, 3000)
   try {
@@ -75,9 +100,14 @@ Deno.serve(async (req) => {
   // country. Forward it so users never see offers that cannot accept their IP
   // (for example, a US-only offer shown to a visitor in Pakistan).
   const visitorCountry = (req.headers.get('cf-ipcountry') ?? '').trim().toUpperCase()
-  if (/^[A-Z]{2}$/.test(visitorCountry) && visitorCountry !== 'XX') {
-    providerUrl.searchParams.set('country', visitorCountry)
+  if (!/^[A-Z]{2}$/.test(visitorCountry) || visitorCountry === 'XX') {
+    // Failing closed is safer than showing offers that will not redirect or
+    // pay because their targeting does not match the visitor.
+    return json({ error: 'We could not verify your country. Please disable VPN and refresh.' }, 422)
   }
+  const providerCountry = visitorCountry === 'GB' ? 'UK' : visitorCountry
+  const allowedCountries = countryAliases(providerCountry)
+  providerUrl.searchParams.set('country', providerCountry)
 
   let payload: Record<string, unknown>
   try {
@@ -111,7 +141,13 @@ Deno.serve(async (req) => {
     const title = clean(offer.title, 240)
     const payout = Number(offer.payout)
     const suppliedUserAmount = Number(offer.user_amount)
-    if (!link || !offerId || !title) return []
+    const offerCountries = fullList(offer.countries ?? offer.available_in)
+    const offerDevices = fullList(offer.devices)
+    if (
+      !link || !offerId || !title
+      || !matchesCountry(offerCountries, allowedCountries)
+      || !matchesDevice(offerDevices, requestedOs)
+    ) return []
 
     // The live API omits user_amount even though the docs include it. With the
     // dashboard's 1000-units-per-USD rate, derive it from publisher payout so
@@ -132,14 +168,16 @@ Deno.serve(async (req) => {
       reward: Number(reward.toFixed(6)),
       payout: safePayout,
       devices: list(offer.devices),
-      countries: list(offer.countries ?? offer.available_in),
+      // Every returned offer has already passed the strict country check. A
+      // compact single-country value keeps the frontend response/cache small.
+      countries: [providerCountry],
     }]
   })
 
   return json({
     status: 'success',
     count: offers.length,
-    country: visitorCountry || null,
+    country: providerCountry,
     os: requestedOs,
     offers,
   })

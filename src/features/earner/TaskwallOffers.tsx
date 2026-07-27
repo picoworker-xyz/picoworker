@@ -17,7 +17,7 @@ export function TaskwallOffers() {
 
   const load = useCallback(async () => {
     setState({ status: 'loading' })
-    setState(await requestTaskwallOffers(selectedOs))
+    setState(await requestTaskwallOffers(selectedOs, { force: true }))
   }, [selectedOs])
 
   useEffect(() => {
