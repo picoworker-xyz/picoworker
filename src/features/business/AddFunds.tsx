@@ -59,7 +59,7 @@ export function AddFunds() {
   }
 
   return (
-    <Page title="Add funds" subtitle="Send USDC on Solana to your deposit address." back narrow>
+    <Page title="Add funds" narrow>
       <div className="rounded-[var(--r)] p-5 bg-[var(--card)] border border-[var(--line)] mb-4 text-center">
         <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em]">Available to spend & withdraw</div>
         <div className="font-head text-[36px] font-extrabold text-[var(--ink)] mt-1">{usd(bal?.available ?? wallet?.business_escrow ?? 0)}</div>

@@ -44,7 +44,7 @@ export function Support() {
   }
 
   return (
-    <Page title="Pico Support" subtitle="Send us a message. The team replies here." back>
+    <Page>
       <div className="max-w-[680px] rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] flex flex-col h-[min(64vh,600px)]">
         <div className="flex-1 overflow-y-auto no-scrollbar p-5 flex flex-col gap-3">
           {msgs.length === 0 ? (

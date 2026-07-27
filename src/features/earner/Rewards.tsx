@@ -50,7 +50,7 @@ export function Rewards() {
   }
 
   return (
-    <Page title="Daily check-in" subtitle="Claim every day. The longer your streak runs, the more you earn, up to $1 a day at day 100.">
+    <Page>
       <div className="rounded-[var(--r)] p-5 sm:p-6 bg-[var(--card)] border border-[var(--line)] mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>

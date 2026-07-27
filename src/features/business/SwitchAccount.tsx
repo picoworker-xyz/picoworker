@@ -10,7 +10,7 @@ export function SwitchAccount() {
   if (!profile || !wallet) return null
 
   return (
-    <Page title="Switch account" subtitle="One login, two ways to use it." back narrow>
+    <Page title="Switch account" narrow>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* earner */}
         <div className="rounded-[var(--r)] p-6 bg-[var(--card)] border border-[rgba(46,224,110,.25)] relative">

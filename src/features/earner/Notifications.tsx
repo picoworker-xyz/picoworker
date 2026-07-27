@@ -49,8 +49,6 @@ export function Notifications() {
 
   return (
     <Page
-      title="Notifications"
-      subtitle="Payments, tasks and rewards."
       actions={<button className="text-[var(--accent-strong)] text-[13px] font-extrabold">Mark all read</button>}
     >
       {notes.length === 0 ? (

@@ -29,7 +29,7 @@ export function MySubmissions() {
     const filtered = tab === 'all' ? completions : completions.filter((c) => c.status === tab)
 
     return (
-        <Page title="My Submissions" subtitle="Track your task completion status and rewards.">
+        <Page title="My Submissions">
             {/* tabs — full width so they always fit on mobile; count shows as a small badge only when > 0 */}
             <div className="flex w-full bg-[var(--fill-2)] rounded-full p-1 mb-5">
                 {STATUS_TABS.map((t) => {

@@ -35,11 +35,7 @@ export function TaskwallOffers() {
   }, [selectedOs])
 
   return (
-    <Page
-      title="TaskWall Offers"
-      subtitle="Complete an offer and receive its confirmed reward in your PicoWorker wallet."
-      back
-    >
+    <Page>
       <div className="mb-4 rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -116,7 +112,7 @@ export function TaskwallOffers() {
               Refresh
             </button>
           </div>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {state.offers.map((offer) => (
               <article
                 key={offer.offerId}

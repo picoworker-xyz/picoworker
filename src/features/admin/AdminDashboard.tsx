@@ -70,7 +70,7 @@ export function AdminDashboard() {
   const isTable = tab !== 'Overview' && tab !== 'Support' && tab !== 'Appeals' && tab !== 'Withdrawals'
 
   return (
-    <Page title="Team dashboard" subtitle="Everything across the platform: users, tasks, money, support, fraud.">
+    <Page>
       <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
         {TABS.map((t) => (
           <button

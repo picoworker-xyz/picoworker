@@ -36,11 +36,9 @@ export function Dashboard() {
 
   return (
     <Page
-      title={profile.business_name ?? profile.display_name}
-      subtitle="Your campaigns and results."
       actions={
         <button onClick={() => nav('/business/create')} className="font-head font-extrabold text-[14px] bg-[var(--accent)] text-[var(--accent-ink)] px-4 py-[11px] rounded-[12px] flex items-center gap-2">
-          <Plus width={15} height={15} /> New task
+          <Plus width={15} height={15} /> Create task
         </button>
       }
     >

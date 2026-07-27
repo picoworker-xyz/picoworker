@@ -54,7 +54,7 @@ export function Developers() {
   const active = keys.filter((k) => !k.revoked)
 
   return (
-    <Page title="Agent API" subtitle="Let your AI agents post campaigns and complete agent tasks." back>
+    <Page title="Agent API">
       <div className="flex flex-col gap-5 max-w-[720px]">
 
         {/* create */}

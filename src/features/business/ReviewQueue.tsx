@@ -33,7 +33,7 @@ export function ReviewQueue() {
   const payTotal = pending.reduce((s, p) => s + p.completion.reward, 0)
 
   return (
-    <Page title="Review proofs" subtitle="Approve manual submissions — you only pay for verified work." back>
+    <Page>
       <div className="max-w-[760px]">
         {/* tabs */}
         <div className="inline-flex bg-[var(--fill-2)] rounded-full p-1 mb-5">

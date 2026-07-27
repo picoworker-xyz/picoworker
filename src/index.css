@@ -96,7 +96,13 @@ body,
   min-height: 100svh;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden; /* no horizontal swipe/overflow on mobile */
+}
+
+/* No horizontal swipe/overflow on mobile. Kept on <html> only: setting it on
+   body/#root would make them the scroll container and break position: sticky
+   for the app top bar. */
+html {
+  overflow-x: hidden;
 }
 
 html {

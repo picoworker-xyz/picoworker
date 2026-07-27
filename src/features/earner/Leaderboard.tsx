@@ -17,7 +17,7 @@ export function Leaderboard() {
   }, [])
 
   return (
-    <Page title="Leaderboard" subtitle="Top earners — climb the ranks for bonus rewards.">
+    <Page>
       <div className="max-w-[760px]">
         {rows === null ? (
           <div className="rounded-[var(--r)] border border-[var(--line)] bg-[var(--card)] py-14 text-center text-[var(--ink-4)] text-[14px] font-semibold">Loading…</div>
