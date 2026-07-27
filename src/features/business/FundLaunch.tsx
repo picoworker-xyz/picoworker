@@ -54,7 +54,7 @@ export function FundLaunch() {
   }
 
   return (
-    <Page title="Review & fund" subtitle="Step 2 of 2 · Confirm and launch" back narrow>
+    <Page title="Review & fund" back narrow>
       <div className="rounded-[var(--r)] p-5 bg-[var(--card)] border border-[var(--line)] mb-4">
         <div className="text-[var(--ink)] text-[17px] font-bold">{t.title}</div>
         <div className="text-[var(--ink-4)] text-[13px] font-semibold mt-1">

@@ -48,7 +48,7 @@ const BUSINESS_SECTIONS: Section[] = [
   {
     title: 'Campaigns',
     items: [
-      { label: 'New task', path: '/business/create', icon: Plus },
+      { label: 'Create task', path: '/business/create', icon: Plus },
       { label: 'Review proofs', path: '/business/review', icon: Check },
       { label: 'Dashboard', path: '/business', icon: Home },
     ],
@@ -85,7 +85,7 @@ export function MorePage() {
   }
 
   return (
-    <Page title="More" subtitle="Everything else, in one place.">
+    <Page>
       <div className="flex flex-col gap-4">
         {/* mode switch + community, side by side on desktop to save space */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

@@ -21,8 +21,8 @@ export function Page({
   const nav = useNavigate()
   return (
     <div className={`app-container py-7 lg:py-12 ${narrow ? 'max-w-[640px]' : ''}`}>
-      {(title || back) && (
-        <div className="mb-7 lg:mb-8">
+      {(title || back || actions) && (
+        <div className={title || back ? 'mb-7 lg:mb-8' : 'mb-5 flex justify-end'}>
           {/* Back sits on its own line so it never floats next to a wrapping title */}
           {back && (
             <button

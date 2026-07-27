@@ -28,7 +28,7 @@ export function EarnFeed() {
   if (!profile) return null
 
   return (
-    <Page title={`Welcome back, ${profile.display_name}`} subtitle="Pick a task and get paid in USDC.">
+    <Page>
       <div className="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
         {CATS.map((c) => (
           <Chip key={c} active={cat === c} onClick={() => setCat(c)}>{c}</Chip>

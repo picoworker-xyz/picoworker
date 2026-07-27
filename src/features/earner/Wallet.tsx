@@ -18,7 +18,7 @@ export function Wallet() {
     .reduce((s, l) => s + l.amount, 0)
 
   return (
-    <Page title="Wallet" subtitle="Your USDC balance, earnings and activity.">
+    <Page>
       {/* balance on top */}
       <div
         className="relative overflow-hidden rounded-[var(--r)] p-6 lg:p-8 text-center border border-[rgba(46,224,110,.14)]"

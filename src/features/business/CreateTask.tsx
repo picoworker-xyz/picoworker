@@ -122,7 +122,7 @@ export function CreateTask() {
   }
 
   return (
-    <Page title="New task" subtitle="Step 1 of 2 · Set up your campaign" back>
+    <Page>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* form */}
         <div className="lg:col-span-2 rounded-[var(--r)] bg-[var(--card)] border border-[var(--line)] p-6">

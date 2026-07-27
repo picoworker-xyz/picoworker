@@ -31,7 +31,7 @@ export function Refer() {
   }
 
   return (
-    <Page title="Refer & earn" subtitle="Invite friends and earn together, forever.">
+    <Page>
       <div className="flex flex-col gap-4">
         {/* invite */}
         <div

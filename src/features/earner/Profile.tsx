@@ -50,7 +50,7 @@ export function Profile() {
   }
 
   return (
-    <Page title="Profile & settings">
+    <Page>
       {/* profile header on top */}
       <div className="rounded-[var(--r)] p-6 bg-[var(--card)] border border-[var(--line)]">
         <div className="flex flex-col md:flex-row md:items-center gap-5">
