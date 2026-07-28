@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
+import { REFERRAL_SHARE_PCT } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { TaskRow } from '../../components/blocks'
 import { Button, Chip } from '../../components/ui'
@@ -163,7 +164,7 @@ function AllCaughtUp() {
           <Bell width={16} height={16} /> Notify me when live
         </button>
         <button onClick={() => nav('/refer')} className="font-head font-extrabold text-[14px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)] px-5 py-3 rounded-[13px]">
-          Invite a friend, earn 10%
+          Invite a friend, earn {REFERRAL_SHARE_PCT}%
         </button>
       </div>
     </div>

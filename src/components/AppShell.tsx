@@ -17,11 +17,11 @@ interface NavItem {
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
   { label: 'Offers', path: '/offers/taskwall', icon: Globe },
-  { label: 'Wallet', path: '/wallet', icon: WalletIcon },
-  // Referral sits in the top bar: invites grow the platform, daily check-in
-  // rewards are a cost, so check-in lives in the overflow menu.
+  // Wallet is not here on purpose: the balance pill in the header already
+  // links to it on both breakpoints, so a nav entry would be the same
+  // destination twice. Check-in takes the slot since it needs a daily visit.
+  { label: 'Check in', path: '/rewards', icon: Flame },
   { label: 'Referral', path: '/refer', icon: Share },
-  { label: 'Rewards', path: '/rewards', icon: Flame },
   { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
   { label: 'My Submissions', path: '/submissions', icon: ListIcon },
   { label: 'More', path: '/more', icon: Grid },
@@ -212,8 +212,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
 
             <button
-              onClick={() => nav(isBiz ? '/business/add-funds' : '/wallet/withdraw')}
-              title={isBiz ? 'Add funds' : 'Withdraw'}
+              onClick={() => nav(isBiz ? '/business/add-funds' : '/wallet')}
+              title={isBiz ? 'Add funds' : 'Wallet'}
               className="flex items-center gap-2 pl-2.5 pr-3 h-[38px] rounded-full bg-[var(--card)] border border-[var(--line-2)] hover:border-[var(--accent)] transition-colors"
             >
               <span className="w-[18px] h-[18px] rounded-full bg-[var(--usdc)] flex items-center justify-center text-[10px] text-[#fff] font-extrabold">$</span>

@@ -62,7 +62,10 @@ export function Notifications() {
       {notes.length === 0 ? (
         <Empty />
       ) : (
-        <div className="max-w-[680px] flex flex-col gap-6">
+        // mx-auto is load-bearing: Page's `narrow` prop cannot centre this
+        // because .app-container is unlayered CSS and outranks Tailwind's
+        // layered max-w utility, so its 1180px max-width always wins.
+        <div className="max-w-[680px] mx-auto flex flex-col gap-6">
           {today.length > 0 && <Group label="Today" notes={today} />}
           {earlier.length > 0 && <Group label="Earlier" notes={earlier} />}
         </div>
@@ -119,7 +122,7 @@ function ledgerToNote(l: LedgerEntry): Note {
 
 function Empty() {
   return (
-    <div className="max-w-[680px] text-center py-16 rounded-[var(--r)] border border-[var(--line)] bg-[var(--card)]">
+    <div className="max-w-[680px] mx-auto text-center py-16 rounded-[var(--r)] border border-[var(--line)] bg-[var(--card)]">
       <Bell width={28} height={28} className="text-[var(--ink-5)] mx-auto" />
       <div className="text-[var(--ink)] text-[15px] font-bold mt-3">You're all caught up</div>
       <div className="text-[var(--ink-4)] text-[13px] font-semibold mt-1">Notifications about payments and tasks show up here.</div>

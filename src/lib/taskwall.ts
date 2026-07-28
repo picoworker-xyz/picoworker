@@ -44,6 +44,39 @@ export const TASKWALL_DEVICE_OPTIONS: { value: TaskwallDevice; label: string }[]
   { value: 'desktop', label: 'Desktop' },
 ]
 
+// The feed returns raw tokens like "android" / "ios" / "desktop". Uppercasing
+// them in CSS produced "IOS", so map to real product names instead.
+const DEVICE_LABELS: Record<string, string> = {
+  android: 'Android',
+  ios: 'iPhone & iPad',
+  iphone: 'iPhone',
+  ipad: 'iPad',
+  desktop: 'Desktop',
+  web: 'Desktop',
+  windows: 'Windows',
+  mac: 'Mac',
+  macos: 'Mac',
+}
+
+export function deviceLabel(raw: string): string {
+  const key = raw.trim().toLowerCase()
+  return DEVICE_LABELS[key] ?? (key.charAt(0).toUpperCase() + key.slice(1))
+}
+
+// Two-letter codes like "PK" mean nothing to most people. Intl resolves them to
+// real country names and already ships with the browser, so no lookup table.
+let regionNames: Intl.DisplayNames | null = null
+export function countryLabel(code: string): string {
+  const raw = code.trim()
+  if (raw.length !== 2) return raw
+  try {
+    regionNames ??= new Intl.DisplayNames(['en'], { type: 'region' })
+    return regionNames.of(raw.toUpperCase()) ?? raw.toUpperCase()
+  } catch {
+    return raw.toUpperCase()
+  }
+}
+
 const CACHE_TTL_MS = 15 * 60 * 1000
 const CACHE_PREFIX = 'picoworker:taskwall:v2'
 type ReadyState = Extract<TaskwallOffersState, { status: 'ready' }>

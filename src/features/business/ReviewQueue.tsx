@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd, timeAgo } from '../../lib/format'
+import { usd, timeAgo, autoApproveAt, timeUntil, AUTO_APPROVE_DAYS } from '../../lib/format'
 import { DEMO_EARNER_NAMES } from '../../data/seed'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
@@ -64,7 +64,7 @@ export function ReviewQueue() {
           <>
             {tab === 'pending' && (
               <div className="flex items-center gap-2 mb-3 text-[var(--ink-4)] text-[12.5px] font-semibold">
-                Unreviewed proofs auto-approve in 24h so earners aren't left waiting.
+                Unreviewed proofs auto-approve after {AUTO_APPROVE_DAYS} days so earners aren't left waiting. The reward comes out of your balance either way.
               </div>
             )}
             <div className="rounded-[var(--r)] border border-[var(--line)] bg-[var(--card)] overflow-hidden">
@@ -78,6 +78,11 @@ export function ReviewQueue() {
                     <div className="flex-1 min-w-0">
                       <div className="text-[var(--ink)] text-[14px] font-bold truncate">{name}</div>
                       <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-[1px] truncate">{p.task.title} · {timeAgo(p.completion.created_at)}</div>
+                      {p.completion.status === 'pending_proof' && (
+                        <div className="text-[11px] font-bold text-[#FFB05A] mt-[1px] truncate">
+                          Auto approves in {timeUntil(autoApproveAt(p.completion.created_at))}
+                        </div>
+                      )}
                     </div>
                     <div className={`w-[28px] h-[28px] flex-none rounded-[8px] flex items-center justify-center ${config.bgColor}`}>
                       <Icon width={14} height={14} className={config.color} />

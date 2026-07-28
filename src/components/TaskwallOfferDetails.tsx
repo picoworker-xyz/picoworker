@@ -1,6 +1,6 @@
 import { ExternalLink, Globe, Shield } from './icons'
 import { Button } from './ui'
-import { isTaskwallProviderWall, taskwallRewardLabel, type TaskwallOffer } from '../lib/taskwall'
+import { isTaskwallProviderWall, taskwallRewardLabel, deviceLabel, countryLabel, type TaskwallOffer } from '../lib/taskwall'
 
 export function TaskwallOfferDetails({
   offer,
@@ -65,8 +65,8 @@ export function TaskwallOfferDetails({
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {offer.devices.map((device) => <span key={device} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold uppercase text-[var(--ink-3)]">{device}</span>)}
-          {offer.countries.map((country) => <span key={country} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold text-[var(--ink-3)]">{country}</span>)}
+          {offer.devices.map((device) => <span key={device} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold text-[var(--ink-3)]">{deviceLabel(device)}</span>)}
+          {offer.countries.map((country) => <span key={country} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold text-[var(--ink-3)]">{countryLabel(country)}</span>)}
         </div>
 
         <div className="mt-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">

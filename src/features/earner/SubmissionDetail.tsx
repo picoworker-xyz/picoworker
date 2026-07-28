@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
-import { usd, timeAgo, earnerNet } from '../../lib/format'
+import { usd, timeAgo, earnerNet, autoApproveAt, timeUntil } from '../../lib/format'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { Check, Clock, X, Zoom } from '../../components/icons'
 
 const STATUS_CONFIG: Record<CompletionStatus, { icon: typeof Check; color: string; bgColor: string; label: string; description: string }> = {
     verified: { icon: Check, color: 'text-[var(--green)]', bgColor: 'bg-[rgba(68,209,122,.14)]', label: 'Verified', description: 'Your task was automatically verified and you received your reward.' },
-    pending_proof: { icon: Clock, color: 'text-[#FFB05A]', bgColor: 'bg-[rgba(255,176,90,.14)]', label: 'Pending Review', description: 'Your submission is being reviewed by the business owner. This usually takes 24 hours or less.' },
+    pending_proof: { icon: Clock, color: 'text-[#FFB05A]', bgColor: 'bg-[rgba(255,176,90,.14)]', label: 'Pending Review', description: 'Your submission is being reviewed by the business owner. You get paid either way, so this cannot stall forever.' },
     approved: { icon: Check, color: 'text-[var(--green)]', bgColor: 'bg-[rgba(68,209,122,.14)]', label: 'Approved', description: 'Your submission was approved and you received your reward!' },
     rejected: { icon: X, color: 'text-[var(--coral)]', bgColor: 'bg-[rgba(255,107,90,.14)]', label: 'Rejected', description: 'Your submission was rejected. Please check the task requirements and try again.' },
 }
@@ -67,6 +67,16 @@ export function SubmissionDetail() {
                     </div>
                 </div>
                 <p className="text-[13px] font-semibold leading-[1.5] opacity-90">{config.description}</p>
+                {completion.status === 'pending_proof' && (
+                    <div className="mt-3 rounded-[12px] bg-[rgba(255,255,255,.06)] px-3 py-2.5">
+                        <div className="text-[12.5px] font-bold leading-[1.5]">
+                            Paid automatically in {timeUntil(autoApproveAt(completion.created_at))}
+                        </div>
+                        <div className="text-[11.5px] font-semibold opacity-75 leading-[1.45] mt-0.5">
+                            If the business does not review it by then, {usd(earnerNet(completion.reward))} is released to you automatically.
+                        </div>
+                    </div>
+                )}
                 {completion.status === 'rejected' && completion.reject_reason && (
                     <div className="mt-2 text-[13px] font-semibold leading-[1.5]"><span className="opacity-70">Reason: </span>{completion.reject_reason}</div>
                 )}

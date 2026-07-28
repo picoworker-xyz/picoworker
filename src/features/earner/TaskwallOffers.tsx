@@ -8,6 +8,8 @@ import {
   requestTaskwallOffers,
   TASKWALL_DEVICE_OPTIONS,
   isTaskwallProviderWall,
+  deviceLabel,
+  countryLabel,
   type TaskwallDevice,
   type TaskwallOffer,
   type TaskwallOffersState,
@@ -42,7 +44,7 @@ export function TaskwallOffers() {
             <div className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">Country</div>
             <div className="mt-1 flex items-center gap-2 font-head text-[14px] font-extrabold text-[var(--ink)]">
               <Globe width={17} height={17} className="text-[var(--accent-strong)]" />
-              {state.status === 'ready' && state.country ? state.country : 'Auto-detected'}
+              {state.status === 'ready' && state.country ? countryLabel(state.country) : 'Auto-detected'}
               <span className="rounded-full bg-[rgba(68,209,122,.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--green)]">Secure</span>
             </div>
             <div className="mt-1 text-[11px] font-semibold text-[var(--ink-5)]">Only offers allowed in your current country are shown.</div>
@@ -145,12 +147,12 @@ export function TaskwallOffers() {
                 <div className="mt-auto flex flex-wrap gap-1.5 pt-3">
                   {offer.devices.slice(0, 3).map((device) => (
                     <span key={device} className="rounded-full bg-[var(--fill)] px-2.5 py-1 text-[10.5px] font-bold text-[var(--ink-3)]">
-                      {device}
+                      {deviceLabel(device)}
                     </span>
                   ))}
                   {offer.countries.length > 0 && (
                     <span className="rounded-full bg-[var(--fill)] px-2.5 py-1 text-[10.5px] font-bold text-[var(--ink-3)]">
-                      {offer.countries.length === 1 ? offer.countries[0] : `${offer.countries.length} countries`}
+                      {offer.countries.length === 1 ? countryLabel(offer.countries[0]) : `${offer.countries.length} countries`}
                     </span>
                   )}
                 </div>

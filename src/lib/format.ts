@@ -10,6 +10,11 @@ export const WORKER_SHARE = 0.80
 // Signup bonuses. Mirrors supabase/bonuses.sql; change both together.
 export const WELCOME_BONUS = 0.05
 export const REFERRAL_JOIN_BONUS = 0.01
+
+// Ongoing cut a referrer earns from everything their invitee earns. Mirrors
+// distribute_platform_cut in supabase/revenue_split.sql. Marketing copy reads
+// this rather than hardcoding a number, which is how it drifted to 10% before.
+export const REFERRAL_SHARE_PCT = 5
 export const earnerNet = (reward: number): number => +(reward * WORKER_SHARE).toFixed(6)
 
 export function usd(amount: number, opts: { sign?: boolean } = {}): string {
@@ -44,6 +49,34 @@ export function timeAgo(iso: string): string {
   if (h < 24) return `${h}h ago`
   const d = Math.floor(h / 24)
   return `${d}d ago`
+}
+
+// Unreviewed proofs auto-approve in favour of the worker. Mirrors
+// auto_approve_old_proofs() in supabase/task_features.sql.
+export const AUTO_APPROVE_DAYS = 7
+
+// The 7-day mark is when a submission becomes *eligible*, but the cron only
+// runs at 02:00 UTC daily, so approval lands at the first 02:00 UTC after that.
+// Counting down to the bare 7-day mark would leave the timer stuck at zero for
+// up to 24 hours, so we count down to the run that will actually approve it.
+export function autoApproveAt(createdAt: string): Date {
+  const eligible = new Date(new Date(createdAt).getTime() + AUTO_APPROVE_DAYS * 86_400_000)
+  const run = new Date(eligible)
+  run.setUTCHours(2, 0, 0, 0)
+  if (run.getTime() <= eligible.getTime()) run.setUTCDate(run.getUTCDate() + 1)
+  return run
+}
+
+// Coarse "time remaining" label. Deliberately not second-by-second: this is a
+// reassurance, not a stopwatch, and a ticking clock would need a re-render loop.
+export function timeUntil(target: Date, now: number = Date.now()): string {
+  const ms = target.getTime() - now
+  if (ms <= 0) return 'any moment now'
+  const mins = Math.floor(ms / 60_000)
+  if (mins < 60) return `${Math.max(1, mins)} minute${mins === 1 ? '' : 's'}`
+  const hours = Math.floor(mins / 60)
+  if (hours < 48) return `${hours} hour${hours === 1 ? '' : 's'}`
+  return `${Math.floor(hours / 24)} days`
 }
 
 export function pct(done: number, goal: number): number {

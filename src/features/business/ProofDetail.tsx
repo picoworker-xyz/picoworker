@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd, timeAgo } from '../../lib/format'
+import { usd, timeAgo, autoApproveAt, timeUntil } from '../../lib/format'
 import { DEMO_EARNER_NAMES } from '../../data/seed'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
@@ -69,6 +69,16 @@ export function ProofDetail() {
             <div className="text-[11px] font-semibold opacity-80">{timeAgo(completion.created_at)}</div>
           </div>
         </div>
+        {isPending && (
+          <div className="mt-1 rounded-[12px] bg-[rgba(255,255,255,.06)] px-3 py-2.5">
+            <div className="text-[12.5px] font-bold leading-[1.5]">
+              Auto approves in {timeUntil(autoApproveAt(completion.created_at))}
+            </div>
+            <div className="text-[11.5px] font-semibold opacity-75 leading-[1.45] mt-0.5">
+              If you do not review it by then, {usd(completion.reward)} is released to the earner and taken from your balance.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* earner */}

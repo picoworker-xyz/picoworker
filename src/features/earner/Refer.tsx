@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../../lib/store'
-import { usd } from '../../lib/format'
+import { usd, REFERRAL_SHARE_PCT } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Avatar } from '../../components/ui'
 
@@ -40,9 +40,9 @@ export function Refer() {
         >
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <div className="text-[var(--ink)] text-[20px] font-extrabold font-head">Earn 10% forever</div>
+              <div className="text-[var(--ink)] text-[20px] font-extrabold font-head">Earn {REFERRAL_SHARE_PCT}% forever</div>
               <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5] max-w-[460px]">
-                Get <span className="text-[var(--accent-strong)] font-bold">10%</span> of everything your friends earn,
+                Get <span className="text-[var(--accent-strong)] font-bold">{REFERRAL_SHARE_PCT}%</span> of everything your friends earn,
                 forever. The more they earn, the more you do.
               </div>
             </div>

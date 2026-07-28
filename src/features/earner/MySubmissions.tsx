@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
-import { usd, timeAgo } from '../../lib/format'
+import { usd, timeAgo, earnerNet, autoApproveAt, timeUntil } from '../../lib/format'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { ArrowRight, Check, Clock, X } from '../../components/icons'
@@ -80,12 +80,16 @@ export function MySubmissions() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-[var(--ink)] text-[14px] font-bold truncate">{tk?.title ?? 'Task'}</div>
-                                    <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-[1px]">{timeAgo(c.created_at)}</div>
+                                    <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-[1px]">
+                                        {c.status === 'pending_proof'
+                                            ? `Paid automatically in ${timeUntil(autoApproveAt(c.created_at))}`
+                                            : timeAgo(c.created_at)}
+                                    </div>
                                 </div>
                                 <span className={`w-fit text-[10px] font-extrabold px-2 py-1 rounded-full uppercase ${config.bgColor} ${config.color}`}>
                                     {config.label}
                                 </span>
-                                <span className="font-head text-[14px] font-extrabold text-[var(--accent-strong)]">{usd(c.reward, { sign: true })}</span>
+                                <span className="font-head text-[14px] font-extrabold text-[var(--accent-strong)]">{usd(earnerNet(c.reward), { sign: true })}</span>
                                 <ArrowRight width={16} height={16} className="text-[var(--ink-5)]" />
                             </button>
                         )
