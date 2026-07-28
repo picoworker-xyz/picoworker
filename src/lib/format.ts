@@ -1,18 +1,26 @@
 // Money / display helpers. All amounts are stored as numbers (USD/USDC, simulated).
 
-// Workers keep 85% of a task's reward (10% goes to their referrer, 5% to the
-// platform). The business is not charged a fee, so task.reward is the gross
-// amount the business pays; earners see and receive this net share.
-export const WORKER_SHARE = 0.85
+// Workers keep 80% of a task's reward. The other 20% splits into 5% referrer
+// (or development when the worker has no referrer), 10% across the team, and
+// 5% development. The business is not charged a fee, so task.reward is the
+// gross amount the business pays; earners see and receive this net share.
+// Mirrors distribute_platform_cut in supabase/revenue_split.sql.
+export const WORKER_SHARE = 0.80
+
+// Signup bonuses. Mirrors supabase/bonuses.sql; change both together.
+export const WELCOME_BONUS = 0.05
+export const REFERRAL_JOIN_BONUS = 0.01
 export const earnerNet = (reward: number): number => +(reward * WORKER_SHARE).toFixed(6)
 
 export function usd(amount: number, opts: { sign?: boolean } = {}): string {
   const sign = opts.sign && amount > 0 ? '+' : ''
   const neg = amount < 0 ? '-' : ''
   const v = Math.abs(amount)
-  // Sub-dollar amounts show up to 4 decimals so sub-cent rewards ($0.001,
-  // $0.005) are visible; trailing zeros past 2 places are trimmed. $1+ uses 2dp.
-  const s = v > 0 && v < 1 ? v.toFixed(4).replace(/(\.\d{2}\d*?)0+$/, '$1') : v.toFixed(2)
+  // Sub-dollar amounts show up to 6 decimals, matching the 6dp the database
+  // stores, so revenue-share amounts ($0.000125 per team member on a $0.01
+  // offer) are shown exactly rather than rounded to a misleading $0.0001.
+  // Trailing zeros past 2 places are trimmed. $1+ uses 2dp.
+  const s = v > 0 && v < 1 ? v.toFixed(6).replace(/(\.\d{2}\d*?)0+$/, '$1') : v.toFixed(2)
   return `${neg}${sign}$${s}`
 }
 

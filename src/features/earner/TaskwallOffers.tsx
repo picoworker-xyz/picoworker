@@ -81,7 +81,7 @@ export function TaskwallOffers() {
 
       {state.status === 'error' && (
         <div className="rounded-[18px] border border-[rgba(255,107,90,.28)] bg-[rgba(255,107,90,.08)] p-5">
-          <div className="font-head text-[16px] font-extrabold text-[var(--ink)]">TaskWall unavailable</div>
+          <div className="font-head text-[16px] font-extrabold text-[var(--ink)]">Offers unavailable</div>
           <div className="mt-1 text-[13px] font-semibold leading-[1.5] text-[var(--ink-3)]">{state.message}</div>
           <button onClick={() => void load()} className="mt-3 text-[13px] font-extrabold text-[var(--accent-strong)]">
             Try again
@@ -129,7 +129,7 @@ export function TaskwallOffers() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h2 className="font-head text-[15px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h2>
-                    {isTaskwallProviderWall(offer) && <div className="mt-1 text-[10.5px] font-extrabold uppercase tracking-[.05em] text-[var(--accent-strong)]">Provider offerwall · requirements inside</div>}
+                    {isTaskwallProviderWall(offer) && <div className="mt-1 text-[10.5px] font-extrabold uppercase tracking-[.05em] text-[var(--accent-strong)]">Offerwall · requirements inside</div>}
                     <div className="mt-1 font-head text-[15px] font-extrabold text-[var(--green)]">
                       {taskwallRewardLabel(offer)}
                     </div>
@@ -138,7 +138,7 @@ export function TaskwallOffers() {
 
                 {(offer.conversion || offer.description) && (
                   <p className="mt-3 line-clamp-3 text-[12.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
-                    {isTaskwallProviderWall(offer) ? `Choose a task inside ${offer.title} to see its exact steps and reward.` : offer.conversion || offer.description}
+                    {isTaskwallProviderWall(offer) ? 'Choose a task inside to see its exact steps and reward.' : offer.conversion || offer.description}
                   </p>
                 )}
 
@@ -169,7 +169,7 @@ export function TaskwallOffers() {
       )}
 
       <p className="mt-5 text-center text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-5)]">
-        TaskWall verifies eligibility and completion. Rewards appear after its server confirmation; VPNs, duplicate accounts, and automated traffic are not allowed.
+        The offer provider verifies eligibility and completion. Rewards appear after its server confirmation; VPNs, duplicate accounts, and automated traffic are not allowed.
       </p>
       {selectedOffer && <TaskwallOfferDetails offer={selectedOffer} onClose={() => setSelectedOffer(null)} />}
     </Page>

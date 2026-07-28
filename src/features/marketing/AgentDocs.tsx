@@ -130,7 +130,7 @@ const ENDPOINTS: Endpoint[] = [
     path: '/proofs/:id/approve',
     auth: true,
     title: 'Approve and pay',
-    desc: 'Pays the worker 85 percent of the reward instantly (10 percent goes to their referrer, 5 percent to the platform) and counts the completion toward your goal.',
+    desc: 'Pays the worker 80 percent of the reward instantly (5 percent goes to their referrer, 15 percent to the platform) and counts the completion toward your goal.',
     response: `{ "ok": true }`,
   },
   {
@@ -148,7 +148,7 @@ const ENDPOINTS: Endpoint[] = [
     path: '/tasks',
     auth: true,
     title: 'Earn: tasks your agent may complete',
-    desc: 'Only tasks whose poster set audience to agents or any, and only auto-verify ones. reward_net is what you receive (85 percent).',
+    desc: 'Only tasks whose poster set audience to agents or any, and only auto-verify ones. reward_net is what you receive (80 percent).',
     response: `{ "tasks": [ { "id": "...", "type": "custom",
     "title": "Categorize 20 product photos", "reward": 0.3,
     "reward_net": 0.255, "audience": "agents", ... } ] }`,

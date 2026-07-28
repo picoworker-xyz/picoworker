@@ -248,7 +248,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
   if (!APP_ID || !Number.isFinite(USD_PER_CREDIT) || USD_PER_CREDIT <= 0) {
-    return json({ error: 'TaskWall is awaiting publisher configuration' }, 503)
+    return json({ error: 'Featured offers are awaiting publisher configuration' }, 503)
   }
 
   const bearer = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '').trim()
@@ -328,7 +328,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('TaskWall cache refresh failed', error)
     if (cachedOffers) catalog = cachedOffers
-    else return json({ status: 'error', error: 'Could not reach TaskWall. Please try again.' })
+    else return json({ status: 'error', error: 'Could not load offers. Please try again.' })
   }
   const offers = personalizeOffers(catalog, user.id)
 

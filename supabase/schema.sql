@@ -377,19 +377,11 @@ begin
   from auth.users u where u.id = c.earner_id;
 end; $$;
 
--- Earner: claim daily streak bonus
-create or replace function claim_daily_bonus()
-returns json language plpgsql security definer as $$
-declare me uuid := auth.uid(); bal numeric;
-begin
-  update wallets set earner_balance = earner_balance + 0.05,
-                     lifetime_earned = lifetime_earned + 0.05
-   where profile_id = me returning earner_balance into bal;
-  update profiles set streak_days = streak_days + 1, last_active = now() where id = me;
-  insert into ledger_entries(profile_id, amount, type, title, balance_after)
-  values (me, 0.05, 'welcome_bonus', 'Daily streak bonus', bal);
-  return json_build_object('amount', 0.05, 'balance', bal);
-end; $$;
+-- Earner: claim daily streak bonus.
+-- Owned by checkin.sql, which pays the Day 1..100 scaling reward. The flat
+-- $0.05 version that used to live here was removed: re-applying this file
+-- would have silently reverted production to the flat bonus and reset every
+-- earner's streak economics. Apply checkin.sql to define it.
 
 -- Earner: mark identity verified (KYC mock)
 create or replace function verify_identity_now()

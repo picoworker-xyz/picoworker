@@ -16,7 +16,7 @@ interface NavItem {
 
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
-  { label: 'Offerwall', path: '/offers/taskwall', icon: Globe },
+  { label: 'Offers', path: '/offers/taskwall', icon: Globe },
   { label: 'Wallet', path: '/wallet', icon: WalletIcon },
   // Referral sits in the top bar: invites grow the platform, daily check-in
   // rewards are a cost, so check-in lives in the overflow menu.

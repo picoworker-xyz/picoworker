@@ -7,10 +7,14 @@ const TIERS = ['Rookie', 'Hustler', 'Earner', 'Grinder', 'Veteran', 'Elite', 'Ma
 const LEVEL_PERKS = ['Up to 2× higher task payouts', 'Instant withdraws, no minimum', 'Access to exclusive high-pay tasks']
 
 // reward for a check-in day (1..100): linear $0.001..$0.010 for days 1-10,
-// then exponential growth up to $1.00 on day 100.
+// then exponential growth up to $0.16 on day 100, costing $5.00 for a full
+// streak. Must match checkin_reward() in supabase/checkin.sql, including the
+// 4dp rounding, or the grid advertises amounts the server will not pay.
+const CHECKIN_CAP_RATIO = 16
 function dayReward(day: number) {
   const d = Math.min(Math.max(day, 1), 100)
-  return d <= 10 ? 0.001 * d : 0.01 * Math.pow(100, (d - 10) / 90)
+  const raw = d <= 10 ? 0.001 * d : 0.01 * Math.pow(CHECKIN_CAP_RATIO, (d - 10) / 90)
+  return Math.round(raw * 1e4) / 1e4
 }
 function fmt(n: number) {
   return n >= 0.1 ? `$${n.toFixed(2)}` : `$${n.toFixed(3)}`

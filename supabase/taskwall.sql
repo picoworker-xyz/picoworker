@@ -32,9 +32,11 @@ revoke all on table taskwall_postbacks from public, anon, authenticated;
 -- Keep the ledger constraint compatible even when this file is installed
 -- without the AdGem migration.
 alter table ledger_entries drop constraint if exists ledger_entries_type_check;
+-- Keep in sync with revenue_split.sql; this file is re-runnable and would
+-- otherwise drop the revenue-share types back out of the constraint.
 alter table ledger_entries add constraint ledger_entries_type_check check (type in
   ('task_reward','offer_reward','withdrawal','deposit','escrow_hold','escrow_release',
-   'referral_bonus','welcome_bonus'));
+   'referral_bonus','welcome_bonus','team_share','development_share'));
 
 create or replace function credit_taskwall_reward(
   p_event_key text,
@@ -58,6 +60,8 @@ as $$
 declare
   postback_id uuid;
   new_balance numeric;
+  gross numeric;
+  net numeric;
 begin
   if p_event_key is null or btrim(p_event_key) = '' then
     raise exception 'Missing TaskWall event key';
@@ -96,33 +100,45 @@ begin
     );
   end if;
 
+  -- Offer rewards take the same 80/5/10/5 split as tasks. This stacks on top
+  -- of the TASKWALL_USD_PER_CREDIT margin, so the worker sees 80% of what the
+  -- conversion rate already produced.
+  gross := round(p_credited_amount, 6);
+  net := round(gross * 0.80, 6);
+
   update wallets
-     set earner_balance = earner_balance + round(p_credited_amount, 6),
-         lifetime_earned = lifetime_earned + round(p_credited_amount, 6)
+     set earner_balance = earner_balance + net,
+         lifetime_earned = lifetime_earned + net
    where profile_id = p_player
    returning earner_balance into new_balance;
 
   if new_balance is null then
     -- Raising rolls back the postback insert so a provider retry can succeed
     -- after the user's wallet has been repaired.
-    raise exception 'TaskWall user does not have a PicoWorker wallet';
+    raise exception 'Offer user does not have a PicoWorker wallet';
   end if;
 
   insert into ledger_entries(profile_id, amount, type, title, ref_id, balance_after)
   values (
     p_player,
-    round(p_credited_amount, 6),
+    net,
     'offer_reward',
-    'TaskWall · ' || coalesce(nullif(btrim(p_offer_name), ''), 'Offer completed'),
+    'Offer · ' || coalesce(nullif(btrim(replace(p_offer_name, '_', ' ')), ''), 'Offer completed'),
     btrim(p_event_key),
     new_balance
+  );
+
+  perform distribute_platform_cut(
+    p_player, gross, net,
+    coalesce(nullif(btrim(replace(p_offer_name, '_', ' ')), ''), 'Offer'),
+    btrim(p_event_key)
   );
 
   update profiles set last_active = now() where id = p_player;
 
   return json_build_object(
     'credited', true, 'duplicate', false,
-    'amount', round(p_credited_amount, 6), 'balance', new_balance
+    'amount', net, 'balance', new_balance
   );
 end;
 $$;

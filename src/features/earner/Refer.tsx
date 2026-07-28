@@ -81,7 +81,7 @@ export function Refer() {
             </div>
             {crew.length === 0 ? (
               <div className="px-5 py-10 text-center text-[var(--ink-4)] text-[13.5px] font-semibold">
-                No friends yet. Share your link and you'll earn 10% of whatever they make.
+                No friends yet. Share your link and you'll earn 5% of whatever they make.
               </div>
             ) : (
               crew.map((r, i) => (

@@ -35,7 +35,7 @@ export function PaymentwallOffers() {
           <div className="rounded-[15px] border border-[var(--line)] bg-[var(--fill)] p-4">
             <div className="flex items-start gap-3 text-[12.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
               <Check width={17} height={17} className="mt-0.5 flex-none text-[var(--accent-strong)]" />
-              TaskWall offers remain available on the Earn page while Paymentwall is being prepared.
+              Featured offers remain available on the Earn page while Paymentwall is being prepared.
             </div>
           </div>
         </div>

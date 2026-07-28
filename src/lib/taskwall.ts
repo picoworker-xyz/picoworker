@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { usd } from './format'
 
 export type TaskwallDevice = 'android' | 'ios' | 'desktop'
 
@@ -26,9 +27,9 @@ export function isTaskwallProviderWall(offer: TaskwallOffer): boolean {
 
 export function taskwallRewardLabel(offer: TaskwallOffer): string {
   if (isTaskwallProviderWall(offer) || offer.reward <= 0) return 'Rewards vary by task'
-  const value = `$${offer.reward > 0 && offer.reward < 1
-    ? offer.reward.toFixed(4).replace(/(\.\d{2}\d*?)0+$/, '$1')
-    : offer.reward.toFixed(2)}`
+  // Use the shared formatter so offer rewards and every other amount in the
+  // app round identically at 6dp.
+  const value = usd(offer.reward)
   return offer.isUpTo || offer.multiEvent ? `Up to ${value}` : value
 }
 
@@ -91,12 +92,12 @@ export async function requestTaskwallOffers(
   options: { force?: boolean } = {},
 ): Promise<TaskwallOffersState> {
   if (!supabase) {
-    return { status: 'error', message: 'TaskWall requires the production account service.' }
+    return { status: 'error', message: 'Featured offers require the production account service.' }
   }
 
   const { data: { session } } = await supabase.auth.getSession()
   const userId = session?.user.id
-  if (!userId) return { status: 'error', message: 'Please sign in to load TaskWall offers.' }
+  if (!userId) return { status: 'error', message: 'Please sign in to load featured offers.' }
 
   const cacheKey = `${CACHE_PREFIX}:${userId}:${os}`
   if (!options.force) {
@@ -113,7 +114,7 @@ export async function requestTaskwallOffers(
     if (error || data?.status !== 'success' || !Array.isArray(data?.offers)) {
       return {
         status: 'error',
-        message: data?.error ?? error?.message ?? 'Could not load TaskWall offers.',
+        message: data?.error ?? error?.message ?? 'Could not load featured offers.',
       }
     }
     const offers = (data.offers as TaskwallOffer[]).map((offer) => ({

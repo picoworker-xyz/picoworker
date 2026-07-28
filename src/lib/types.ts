@@ -27,6 +27,8 @@ export type LedgerType =
   | 'escrow_release'
   | 'referral_bonus'
   | 'welcome_bonus'
+  | 'team_share'
+  | 'development_share'
 
 export type WithdrawalStatus = 'pending' | 'sent' | 'failed'
 

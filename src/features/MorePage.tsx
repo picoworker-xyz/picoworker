@@ -13,7 +13,7 @@ const EARNER_SECTIONS: Section[] = [
   {
     title: 'Earning',
     items: [
-      { label: 'TaskWall offers', path: '/offers/taskwall', icon: Globe },
+      { label: 'Featured offers', path: '/offers/taskwall', icon: Globe },
       { label: 'Paymentwall · Soon', path: '/offers/paymentwall', icon: Globe, disabled: true },
       { label: 'My submissions', path: '/submissions', icon: ListIcon },
       { label: 'Streak & rewards', path: '/rewards', icon: Flame },

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useStore } from '../../lib/store'
-import { usd, timeAgo } from '../../lib/format'
+import { usd, timeAgo, REFERRAL_JOIN_BONUS } from '../../lib/format'
 import type { LedgerEntry } from '../../lib/types'
 import { Page } from '../../components/Page'
 import { ArrowDown, ArrowUp, Bell, Flame, User } from '../../components/icons'
@@ -13,7 +13,13 @@ export function useNotifications(): Note[] {
   return useMemo(() => {
     if (!profile) return []
     const notes: Note[] = []
-    for (const l of ledgerFor(profile.id)) notes.push(ledgerToNote(l))
+    // Revenue-share rows land once per platform-wide completion, so for the six
+    // team members they would bury every real notification. They stay in the
+    // ledger for accounting and are reported in aggregate instead.
+    for (const l of ledgerFor(profile.id)) {
+      if (l.type === 'team_share' || l.type === 'development_share') continue
+      notes.push(ledgerToNote(l))
+    }
     for (const r of referralsFor(profile.id)) {
       if (r.status !== 'joined' && r.status !== 'active') continue
       notes.push({
@@ -21,7 +27,9 @@ export function useNotifications(): Note[] {
         icon: <User width={18} height={18} className="text-[var(--violet)]" />,
         tint: 'rgba(139,108,255,.14)',
         title: `${r.display_name} joined with your code`,
-        sub: `You earned +$0.50`,
+        // Mirrors the join_bonus in supabase/bonuses.sql. The referral_bonus
+        // ledger row carries the real amount; this line is the summary.
+        sub: `You earned ${usd(REFERRAL_JOIN_BONUS, { sign: true })}`,
         at: +new Date(r.created_at),
       })
     }
@@ -94,6 +102,8 @@ function ledgerToNote(l: LedgerEntry): Note {
     deposit: { title: `Deposit · ${usd(l.amount, { sign: true })}` },
     welcome_bonus: { title: `Bonus · ${usd(l.amount, { sign: true })}` },
     referral_bonus: { title: `Referral bonus · ${usd(l.amount, { sign: true })}` },
+    team_share: { title: `Team share · ${usd(l.amount, { sign: true })}` },
+    development_share: { title: `Development share · ${usd(l.amount, { sign: true })}` },
     escrow_hold: { title: l.title },
     escrow_release: { title: l.title },
   }

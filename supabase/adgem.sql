@@ -27,10 +27,13 @@ alter table adgem_postbacks enable row level security;
 revoke all on table adgem_postbacks from public, anon, authenticated;
 
 -- Keep the existing ledger constraint in sync for both existing and fresh DBs.
+-- Keep in sync with revenue_split.sql and taskwall.sql; this file is re-runnable
+-- and would otherwise drop the revenue-share types back out of the constraint,
+-- which breaks every task payout.
 alter table ledger_entries drop constraint if exists ledger_entries_type_check;
 alter table ledger_entries add constraint ledger_entries_type_check check (type in
   ('task_reward','offer_reward','withdrawal','deposit','escrow_hold','escrow_release',
-   'referral_bonus','welcome_bonus'));
+   'referral_bonus','welcome_bonus','team_share','development_share'));
 
 create or replace function credit_adgem_reward(
   p_request_id text,

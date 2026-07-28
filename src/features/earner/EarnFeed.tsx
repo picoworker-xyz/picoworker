@@ -50,7 +50,7 @@ export function EarnFeed() {
         </div>
       ) : (
         <div className="rounded-[16px] border border-[var(--line)] bg-[var(--card)] px-4 py-3 text-[13px] font-semibold text-[var(--ink-3)]">
-          New PicoWorker tasks are coming soon. You can start a TaskWall offer below right now.
+          New PicoWorker tasks are coming soon. You can start a featured offer below right now.
         </div>
       )}
 
@@ -87,7 +87,7 @@ function TaskwallEarnSection() {
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
-            <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> TaskWall offers
+            <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> Featured offers
           </div>
           <div className="mt-1 text-[12px] font-semibold text-[var(--ink-4)]">
             {state.status === 'ready' && state.country ? `${state.country} · ` : ''}{device} compatible
@@ -108,7 +108,7 @@ function TaskwallEarnSection() {
 
       {state.status === 'error' && (
         <div className="rounded-[16px] border border-[rgba(255,107,90,.2)] bg-[rgba(255,107,90,.06)] p-4">
-          <div className="text-[13px] font-bold text-[var(--ink-2)]">TaskWall offers could not be loaded.</div>
+          <div className="text-[13px] font-bold text-[var(--ink-2)]">Featured offers could not be loaded.</div>
           <button onClick={() => void load()} className="mt-2 text-[12px] font-extrabold text-[var(--accent-strong)]">Try again</button>
         </div>
       )}

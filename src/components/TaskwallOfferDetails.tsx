@@ -11,7 +11,7 @@ export function TaskwallOfferDetails({
 }) {
   const providerWall = isTaskwallProviderWall(offer)
   const instructions = providerWall
-    ? `${offer.title} is an offerwall containing multiple tasks. Open it, choose one task, then read that task’s exact requirements, eligibility, deadline, and reward before you start.`
+    ? 'This is an offerwall containing multiple tasks. Open it, choose one task, then read that task’s exact requirements, eligibility, deadline, and reward before you start.'
     : offer.conversion || offer.description || 'Complete the provider requirements shown after opening the offer.'
 
   function continueToProvider() {
@@ -45,7 +45,7 @@ export function TaskwallOfferDetails({
           <p className="mt-2 whitespace-pre-line text-[13.5px] font-semibold leading-[1.6] text-[var(--ink-2)]">{instructions}</p>
           {providerWall && (
             <p className="mt-2 text-[12px] font-bold leading-[1.5] text-[var(--accent-strong)]">
-              TaskWall does not send PicoWorker the child-task requirements in advance. They are shown inside {offer.title} after you select a task.
+              Each task inside this offerwall has its own requirements and reward. They are shown once you select a task.
             </p>
           )}
         </div>
@@ -73,15 +73,15 @@ export function TaskwallOfferDetails({
           <Shield width={17} height={17} className="mt-0.5 flex-none text-[#D99832]" />
           <p className="text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
             {providerWall
-              ? `Opening ${offer.title} or clicking a task does not earn a reward by itself. Complete the selected task exactly as shown, using the same device and without VPN. The provider confirms eligibility and the final reward.`
-              : 'Opening the offer does not earn a reward by itself. Complete every listed requirement using the same device, without VPN. “Up to” rewards are maximums; TaskWall confirms the final amount before your wallet is credited.'}
+              ? 'Opening this offerwall or clicking a task does not earn a reward by itself. Complete the selected task exactly as shown, using the same device and without VPN. The provider confirms eligibility and the final reward.'
+              : 'Opening the offer does not earn a reward by itself. Complete every listed requirement using the same device, without VPN. “Up to” rewards are maximums; the provider confirms the final amount before your wallet is credited.'}
           </p>
         </div>
 
         <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <Button variant="ghost" block className="h-[46px]" onClick={onClose}>Cancel</Button>
           <Button block className="h-[46px]" onClick={continueToProvider}>
-            {providerWall ? `Open ${offer.title} tasks` : 'Continue to provider'} <ExternalLink width={16} height={16} />
+            {providerWall ? 'Open tasks' : 'Continue to provider'} <ExternalLink width={16} height={16} />
           </Button>
         </div>
       </div>
