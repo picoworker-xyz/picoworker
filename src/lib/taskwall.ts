@@ -27,11 +27,13 @@ export function isTaskwallProviderWall(offer: TaskwallOffer): boolean {
 }
 
 // Older TaskWall campaigns advertise a full milestone ladder but only ever pay
-// the opening milestone. The server sets `legacy`; the title check is a
-// fallback so the warning still shows if an older Edge Function is live, since
-// every legacy offer we have seen is titled with a leading dash.
+// the opening milestone. The server sets `legacy`; the title and conversion
+// checks are fallbacks so the warning still shows if an older Edge Function is
+// live. Both markers agree exactly across the feed.
 export function isTaskwallLegacy(offer: TaskwallOffer): boolean {
-  return offer.legacy === true || /^-\s/.test(offer.title ?? '')
+  return offer.legacy === true
+    || /^-\s/.test(offer.title ?? '')
+    || /rewards?\s+along\s+the\s+way/i.test(offer.conversion ?? '')
 }
 
 export function taskwallRewardLabel(offer: TaskwallOffer): string {
