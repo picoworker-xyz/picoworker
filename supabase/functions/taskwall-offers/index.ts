@@ -24,6 +24,7 @@ type PublicOffer = {
   reward: number
   payout: number
   providerWall: boolean
+  legacy: boolean
   multiEvent: boolean
   isUpTo: boolean
   events: Array<{ eventId: string; instructions: string; reward: number }>
@@ -84,6 +85,30 @@ function offerEvents(value: unknown): Array<{ eventId: string; instructions: str
       reward: Number(reward.toFixed(6)),
     }]
   }).filter((event) => event.instructions).slice(0, 20)
+}
+
+// TaskWall serves two generations of campaign under one feed, distinguishable
+// by offer id: legacy ids are numeric and below 1000, modern ids are 5 digits.
+//
+// Legacy campaigns advertise milestone ladders worth up to $275 but only ever
+// convert their first milestone. Observed across every legacy offer our users
+// touched (Magnet Miner, Wishing Well, Ghost Tower): each paid the opening
+// $0.01 and never emitted another conversion, while modern campaigns (Dragon
+// Down, Swap Rush) correctly send one postback per milestone with the
+// milestone encoded in offer_name. Confirmed by a controlled test where a user
+// reached the 300m milestone on legacy Magnet Miner and no postback arrived,
+// and the conversion never appeared in TaskWall's own dashboard either.
+//
+// These stay visible so users keep the inventory, but they are flagged so the
+// UI can warn that only the opening milestone is known to pay. 18 of the 21
+// legacy games are also published as modern campaigns, so a user who wants the
+// full ladder can pick the unprefixed version of the same game.
+// Remove this once TaskWall confirms a fix.
+const LEGACY_OFFER_ID_MAX = 1000
+
+function isLegacyOffer(offerId: string): boolean {
+  const numeric = Number(offerId)
+  return Number.isInteger(numeric) && numeric > 0 && numeric < LEGACY_OFFER_ID_MAX
 }
 
 function isProviderOfferwall(title: string, description: string, conversion: string, reward: number, eventCount: number): boolean {
@@ -208,6 +233,7 @@ async function loadProviderOffers(userId: string, requestedOs: string, providerC
       reward: Number(reward.toFixed(6)),
       payout: safePayout,
       providerWall: isProviderOfferwall(title, description, conversion, reward, events.length),
+      legacy: isLegacyOffer(offerId),
       multiEvent: offer.multi_event === true || events.length > 0,
       isUpTo: /\bup\s+to\b/i.test(`${title} ${description} ${conversion}`) || events.length > 1,
       events,

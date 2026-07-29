@@ -11,6 +11,7 @@ import { TaskwallOfferDetails } from '../../components/TaskwallOfferDetails'
 import {
   detectTaskwallDevice,
   isTaskwallProviderWall,
+  isTaskwallLegacy,
   requestTaskwallOffers,
   taskwallRewardLabel,
   type TaskwallOffer,
@@ -81,7 +82,12 @@ function TaskwallEarnSection() {
     }
   }, [device])
 
-  if (state.status === 'ready' && state.offers.length === 0) return null
+  // This preview has no toggle, so the older campaigns never surface here.
+  // They stay reachable behind "Show older offers" on the full offers page.
+  const preview = state.status === 'ready'
+    ? state.offers.filter((o) => !(isTaskwallLegacy(o) && !isTaskwallProviderWall(o) && o.events.length > 0))
+    : []
+  if (state.status === 'ready' && preview.length === 0) return null
 
   return (
     <section className="mt-7">
@@ -116,7 +122,7 @@ function TaskwallEarnSection() {
 
       {state.status === 'ready' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {state.offers.slice(0, 6).map((offer) => (
+          {preview.slice(0, 6).map((offer) => (
             <article key={offer.offerId} className="flex min-h-[155px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
               <div className="flex items-start gap-3">
                 <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">

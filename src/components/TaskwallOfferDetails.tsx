@@ -1,6 +1,6 @@
 import { ExternalLink, Globe, Shield } from './icons'
 import { Button } from './ui'
-import { isTaskwallProviderWall, taskwallRewardLabel, deviceLabel, countryLabel, type TaskwallOffer } from '../lib/taskwall'
+import { isTaskwallProviderWall, isTaskwallLegacy, taskwallRewardLabel, deviceLabel, countryLabel, type TaskwallOffer } from '../lib/taskwall'
 
 export function TaskwallOfferDetails({
   offer,
@@ -10,6 +10,7 @@ export function TaskwallOfferDetails({
   onClose: () => void
 }) {
   const providerWall = isTaskwallProviderWall(offer)
+  const legacy = isTaskwallLegacy(offer)
   const instructions = providerWall
     ? 'This is an offerwall containing multiple tasks. Open it, choose one task, then read that task’s exact requirements, eligibility, deadline, and reward before you start.'
     : offer.conversion || offer.description || 'Complete the provider requirements shown after opening the offer.'
@@ -68,6 +69,18 @@ export function TaskwallOfferDetails({
           {offer.devices.map((device) => <span key={device} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold text-[var(--ink-3)]">{deviceLabel(device)}</span>)}
           {offer.countries.map((country) => <span key={country} className="rounded-full bg-[var(--fill)] px-3 py-1.5 text-[11px] font-bold text-[var(--ink-3)]">{countryLabel(country)}</span>)}
         </div>
+
+        {legacy && offer.events.length > 0 && (
+          <div className="mt-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(255,107,90,.3)] bg-[rgba(255,107,90,.09)] p-3.5">
+            <Shield width={17} height={17} className="mt-0.5 flex-none text-[var(--coral)]" />
+            <p className="text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+              <span className="font-extrabold text-[var(--coral)]">Older version of this offer.</span> In our testing only
+              the first milestone has ever paid on offers like this one. The later milestones are advertised by the
+              provider but we have not seen one pay. Look for the same game without the dash in its name, which is the
+              newer version and does pay every milestone.
+            </p>
+          </div>
+        )}
 
         <div className="mt-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">
           <Shield width={17} height={17} className="mt-0.5 flex-none text-[#D99832]" />

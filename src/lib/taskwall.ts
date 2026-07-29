@@ -12,6 +12,7 @@ export type TaskwallOffer = {
   link: string
   reward: number
   providerWall: boolean
+  legacy: boolean
   multiEvent: boolean
   isUpTo: boolean
   events: Array<{ eventId: string; instructions: string; reward: number }>
@@ -23,6 +24,14 @@ export function isTaskwallProviderWall(offer: TaskwallOffer): boolean {
   return offer.providerWall === true
     || /\b(tapjoy|lootably)\b/i.test(offer.title)
     || (offer.reward <= 0 && (!Array.isArray(offer.events) || offer.events.length === 0))
+}
+
+// Older TaskWall campaigns advertise a full milestone ladder but only ever pay
+// the opening milestone. The server sets `legacy`; the title check is a
+// fallback so the warning still shows if an older Edge Function is live, since
+// every legacy offer we have seen is titled with a leading dash.
+export function isTaskwallLegacy(offer: TaskwallOffer): boolean {
+  return offer.legacy === true || /^-\s/.test(offer.title ?? '')
 }
 
 export function taskwallRewardLabel(offer: TaskwallOffer): string {
@@ -78,7 +87,7 @@ export function countryLabel(code: string): string {
 }
 
 const CACHE_TTL_MS = 15 * 60 * 1000
-const CACHE_PREFIX = 'picoworker:taskwall:v2'
+const CACHE_PREFIX = 'picoworker:taskwall:v3'
 type ReadyState = Extract<TaskwallOffersState, { status: 'ready' }>
 type CachedOffers = { savedAt: number; state: ReadyState }
 const memoryCache = new Map<string, CachedOffers>()
@@ -154,6 +163,7 @@ export async function requestTaskwallOffers(
       ...offer,
       // Keep the UI honest even while an older Edge Function version is live.
       providerWall: isTaskwallProviderWall(offer),
+      legacy: isTaskwallLegacy(offer),
     }))
     const ready: ReadyState = {
       status: 'ready',

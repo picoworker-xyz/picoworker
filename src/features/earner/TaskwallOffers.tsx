@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Page } from '../../components/Page'
-import { Globe } from '../../components/icons'
+import { Globe, Eye, EyeOff } from '../../components/icons'
 import { Button } from '../../components/ui'
 import { TaskwallOfferDetails } from '../../components/TaskwallOfferDetails'
 import {
@@ -8,6 +8,7 @@ import {
   requestTaskwallOffers,
   TASKWALL_DEVICE_OPTIONS,
   isTaskwallProviderWall,
+  isTaskwallLegacy,
   deviceLabel,
   countryLabel,
   type TaskwallDevice,
@@ -20,6 +21,9 @@ export function TaskwallOffers() {
   const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
   const [selectedOs, setSelectedOs] = useState<TaskwallDevice>(() => detectTaskwallDevice())
   const [selectedOffer, setSelectedOffer] = useState<TaskwallOffer | null>(null)
+  // Older campaigns only ever pay their opening milestone, so they are hidden
+  // by default rather than removed: a user who wants them can opt in.
+  const [showLegacy, setShowLegacy] = useState(false)
 
   const load = useCallback(async () => {
     setState({ status: 'loading' })
@@ -35,6 +39,14 @@ export function TaskwallOffers() {
       active = false
     }
   }, [selectedOs])
+
+  // A legacy offer with a single flat payout is not misleading, so only the
+  // milestone ladders are held back.
+  const allOffers = state.status === 'ready' ? state.offers : []
+  const isMisleading = (o: TaskwallOffer) =>
+    isTaskwallLegacy(o) && !isTaskwallProviderWall(o) && o.events.length > 0
+  const hiddenLegacy = allOffers.filter(isMisleading).length
+  const visible = showLegacy ? allOffers : allOffers.filter((o) => !isMisleading(o))
 
   return (
     <Page>
@@ -91,7 +103,7 @@ export function TaskwallOffers() {
         </div>
       )}
 
-      {state.status === 'ready' && state.offers.length === 0 && (
+      {state.status === 'ready' && visible.length === 0 && hiddenLegacy === 0 && (
         <div className="rounded-[22px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
           <Globe width={32} height={32} className="mx-auto text-[var(--ink-5)]" />
           <div className="mt-3 font-head text-[17px] font-extrabold text-[var(--ink)]">No offers right now</div>
@@ -104,18 +116,36 @@ export function TaskwallOffers() {
         </div>
       )}
 
-      {state.status === 'ready' && state.offers.length > 0 && (
+      {state.status === 'ready' && (visible.length > 0 || hiddenLegacy > 0) && (
         <>
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="font-head text-[14px] font-extrabold text-[var(--ink)]">
-              {state.offers.length} available {state.offers.length === 1 ? 'offer' : 'offers'}
+              {visible.length} available {visible.length === 1 ? 'offer' : 'offers'}
             </div>
             <button onClick={() => void load()} className="text-[12px] font-extrabold text-[var(--accent-strong)]">
               Refresh
             </button>
           </div>
+
+          {hiddenLegacy > 0 && (
+            <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[11.5px] font-semibold leading-[1.45] text-[var(--ink-4)] sm:max-w-[62%]">
+                {hiddenLegacy} older {hiddenLegacy === 1 ? 'offer is' : 'offers are'} hidden. They advertise several
+                milestones but in our testing only the first one has ever paid.
+              </p>
+              <Button
+                variant={showLegacy ? 'ghost' : 'dark'}
+                onClick={() => setShowLegacy((v) => !v)}
+                className="h-[40px] flex-none px-4 text-[12.5px]"
+              >
+                {showLegacy
+                  ? <><EyeOff width={16} height={16} /> Hide older offers</>
+                  : <><Eye width={16} height={16} /> Show {hiddenLegacy} older</>}
+              </Button>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {state.offers.map((offer) => (
+            {visible.map((offer) => (
               <article
                 key={offer.offerId}
                 className="flex flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4"
@@ -132,6 +162,7 @@ export function TaskwallOffers() {
                   <div className="min-w-0 flex-1">
                     <h2 className="font-head text-[15px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h2>
                     {isTaskwallProviderWall(offer) && <div className="mt-1 text-[10.5px] font-extrabold uppercase tracking-[.05em] text-[var(--accent-strong)]">Offerwall · requirements inside</div>}
+                  {!isTaskwallProviderWall(offer) && isTaskwallLegacy(offer) && offer.events.length > 0 && <div className="mt-1 text-[10.5px] font-extrabold uppercase tracking-[.05em] text-[var(--coral)]">Older version · first milestone only</div>}
                     <div className="mt-1 font-head text-[15px] font-extrabold text-[var(--green)]">
                       {taskwallRewardLabel(offer)}
                     </div>
