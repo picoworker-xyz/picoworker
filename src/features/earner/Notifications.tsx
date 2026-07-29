@@ -13,13 +13,11 @@ export function useNotifications(): Note[] {
   return useMemo(() => {
     if (!profile) return []
     const notes: Note[] = []
-    // Revenue-share rows land once per platform-wide completion, so for the six
-    // team members they would bury every real notification. They stay in the
-    // ledger for accounting and are reported in aggregate instead.
-    for (const l of ledgerFor(profile.id)) {
-      if (l.type === 'team_share' || l.type === 'development_share') continue
-      notes.push(ledgerToNote(l))
-    }
+    // Revenue shares are shown individually, one notification per share row.
+    // Note these land once per platform-wide completion, so a recipient's feed
+    // grows with total platform volume rather than their own activity. If it
+    // becomes unreadable, group by day here rather than dropping the rows.
+    for (const l of ledgerFor(profile.id)) notes.push(ledgerToNote(l))
     for (const r of referralsFor(profile.id)) {
       if (r.status !== 'joined' && r.status !== 'active') continue
       notes.push({
