@@ -371,7 +371,7 @@ function Field({ label, value, mono }: { label: string; value: string; mono?: bo
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-[var(--ink-4)] text-[12.5px] font-semibold flex-none">{label}</span>
-      <span className={`text-[#E6E7EC] text-[13px] font-bold text-right break-all ${mono ? 'font-mono text-[11.5px]' : ''}`}>{value}</span>
+      <span className={`text-[var(--ink)] text-[13px] font-bold text-right break-all ${mono ? 'font-mono text-[11.5px]' : ''}`}>{value}</span>
     </div>
   )
 }
@@ -594,7 +594,7 @@ function AdminSupport() {
                 m.from_admin ? (
                   <div key={i} className="self-end max-w-[80%] rounded-[14px] rounded-br-[4px] bg-[var(--accent)] text-[var(--accent-ink)] px-4 py-2.5 text-[14px] font-semibold">{m.body}</div>
                 ) : (
-                  <div key={i} className="max-w-[80%] rounded-[14px] rounded-bl-[4px] bg-[var(--fill)] text-[#E6E7EC] px-4 py-2.5 text-[14px] font-medium">{m.body}</div>
+                  <div key={i} className="max-w-[80%] rounded-[14px] rounded-bl-[4px] bg-[var(--fill)] text-[var(--ink)] px-4 py-2.5 text-[14px] font-medium">{m.body}</div>
                 ),
               )}
               <div ref={endRef} />

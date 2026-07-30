@@ -8,6 +8,10 @@ import { Page } from '../../components/Page'
 import { TaskTypeIcon } from '../../components/layout'
 import { Camera, X } from '../../components/icons'
 
+// Mirrors CATS in src/features/earner/EarnFeed.tsx (minus 'All'). Keep in sync:
+// a category not in that list is unreachable by any worker filter.
+const CUSTOM_CATEGORIES = ['Social', 'Surveys', 'Apps', 'Ads', 'Watch']
+
 const TYPES: { type: TaskType; label: string; category: string; needsTarget: 'handle' | 'url' | null; auto: boolean; reward: number }[] = [
   { type: 'follow_x', label: 'Follow X', category: 'Social', needsTarget: 'handle', auto: false, reward: 0.04 },
   { type: 'yt_views', label: 'YT views', category: 'Watch', needsTarget: 'url', auto: false, reward: 0.02 },
@@ -42,6 +46,9 @@ export function CreateTask() {
   const [typeIdx, setTypeIdx] = useState(0)
   const [target, setTarget] = useState('')
   const [customTitle, setCustomTitle] = useState('')
+  // Custom tasks used to be hardcoded to 'Apps', so a "join our Discord" task
+  // never appeared under the Social filter workers actually browse.
+  const [customCategory, setCustomCategory] = useState('Social')
   const [instructions, setInstructions] = useState('')
   const [reward, setReward] = useState('0.04')
   const [count, setCount] = useState('500')
@@ -112,7 +119,7 @@ export function CreateTask() {
       reward: effReward,
       goal_count: n,
       auto_verify: t.auto,
-      category: t.category,
+      category: isCustom ? customCategory : t.category,
       reference_images: refImages,
       screenshots: t.auto ? 1 : screenshots,
       screenshot_specs: t.auto ? [] : Array.from({ length: screenshots }, (_, i) => (specs[i] ?? '').trim()),
@@ -152,7 +159,23 @@ export function CreateTask() {
               <Label>Link to open (optional)</Label>
               <input value={target} onChange={(e) => setTarget(e.target.value)} placeholder="https://facebook.com/groups/yourgroup" className="w-full bg-[var(--fill)] border border-[var(--line)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[15px] font-semibold placeholder:text-[var(--ink-5)] outline-none mb-5" />
               <Label>Instructions for the worker</Label>
-              <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} placeholder="Explain exactly what to do and what screenshot to send as proof. Example: Join the group, then send a screenshot showing you are a member." className="w-full bg-[var(--fill)] border border-[var(--line)] rounded-[14px] px-4 py-[12px] text-[var(--ink)] text-[14px] font-semibold placeholder:text-[var(--ink-5)] outline-none mb-6 leading-[1.5] resize-none" />
+              <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} placeholder="Explain exactly what to do and what screenshot to send as proof. Example: Join the Discord server, then send a screenshot showing your username in the member list." className="w-full bg-[var(--fill)] border border-[var(--line)] rounded-[14px] px-4 py-[12px] text-[var(--ink)] text-[14px] font-semibold placeholder:text-[var(--ink-5)] outline-none mb-5 leading-[1.5] resize-none" />
+              <Label>Where should it appear?</Label>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                {CUSTOM_CATEGORIES.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setCustomCategory(c)}
+                    className={`rounded-[12px] border px-3 py-[10px] text-[13px] font-bold ${customCategory === c ? 'border-[var(--accent)] bg-[rgba(46,224,110,.1)] text-[var(--accent-strong)]' : 'border-[var(--line)] bg-[var(--fill)] text-[var(--ink-2)]'}`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mb-6 leading-[1.45]">
+                Workers filter the feed by these. Pick the one they would look under: a Discord, Telegram or
+                group join belongs in Social.
+              </div>
             </>
           )}
 
@@ -268,7 +291,7 @@ export function CreateTask() {
             <TaskTypeIcon type={t.type} size={46} />
             <div>
               <div className="text-[var(--ink)] text-[15px] font-bold">{t.label}</div>
-              <div className="text-[var(--ink-4)] text-[12px] font-semibold">{t.category}</div>
+              <div className="text-[var(--ink-4)] text-[12px] font-semibold">{isCustom ? customCategory : t.category}</div>
             </div>
           </div>
           <div className="flex flex-col gap-[10px] mb-5">
