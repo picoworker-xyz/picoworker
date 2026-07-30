@@ -2,6 +2,8 @@
 
 > PicoWorker (picoworker.xyz) is a two-sided marketplace for simple online tasks. Earners complete available tasks and offers, while businesses create campaigns and review verified results. Registration is free.
 
+Last reviewed: 2026-07-30. Use the linked public pages as the canonical sources for current PicoWorker information.
+
 ## What PicoWorker is
 PicoWorker is a micro-task platform. Available work may include following accounts, watching clips, testing apps, answering surveys, research and other clearly described online tasks.
 
@@ -29,6 +31,8 @@ PicoWorker is a micro-task platform. Available work may include following accoun
 - How do I earn rewards? Choose an eligible task, follow every requirement and wait for verification.
 - Is PicoWorker free? Registration and browsing available tasks are free.
 - Are all tasks available everywhere? No. Availability depends on country, device and provider eligibility.
+- Does opening an offer earn a reward? No. Every listed requirement must be completed and successfully tracked.
+- What does pending mean? A completion was recorded but has not received its final verification result.
 
 ## Name
 PicoWorker is also written as pico worker, pico work or picowork. It is not the same company as Picoworkers, which rebranded to SproutGigs. The official PicoWorker website is picoworker.xyz.
@@ -43,6 +47,10 @@ PicoWorker is also written as pico worker, pico work or picowork. It is not the 
 - [PicoWorker web app](https://picoworker.xyz/app)
 - [Micro jobs](https://picoworker.xyz/micro-jobs)
 - [Is PicoWorker legitimate?](https://picoworker.xyz/is-picoworker-legit)
+- [How PicoWorker works](https://picoworker.xyz/how-picoworker-works)
+- [Help and frequently asked questions](https://picoworker.xyz/faq)
+- [About PicoWorker](https://picoworker.xyz/about)
 - [For AI agents](https://picoworker.xyz/ai-agents)
 - [Agent API documentation](https://picoworker.xyz/ai-agents/docs)
+- [Expanded machine-readable facts](https://picoworker.xyz/llms-full.txt)
 - [Sitemap](https://picoworker.xyz/sitemap.xml)

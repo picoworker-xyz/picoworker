@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../../components/BrandLogo'
 import { MarketingFooter } from './SeoPages'
 import {
@@ -135,16 +135,16 @@ export function Landing() {
 
               <div className="relative p-7 pb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.08em]">Weekly progress</div>
+                  <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.08em]">Example activity</div>
                   <span className="flex items-center gap-1.5 text-[var(--green)] text-[10.5px] font-extrabold uppercase tracking-[.06em] px-2.5 py-1 rounded-full bg-[rgba(68,209,122,.12)]">
                     <span className="w-[6px] h-[6px] rounded-full bg-[var(--green)]" style={{ animation: 'pico-pulse 1.8s ease-in-out infinite' }} />
-                    live
+                    example
                   </span>
                 </div>
 
                 <div className="flex items-end gap-2.5">
                   <div className="font-head font-bold text-[54px] text-[var(--ink)] tracking-[-.02em] leading-none">12 tasks</div>
-                  <div className="font-head text-[14px] font-extrabold text-[var(--green)] mb-[5px]">4 today</div>
+                  <div className="font-head text-[14px] font-extrabold text-[var(--green)] mb-[5px]">4 recent</div>
                 </div>
 
                 <div className="inline-flex items-center gap-2 mt-4 px-3 py-[7px] rounded-full bg-[var(--fill)] border border-[var(--line)]">
@@ -206,12 +206,12 @@ export function Landing() {
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[1000px] mx-auto">
           {[
-            { icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on supported social platforms.', p: 'Quick tasks' },
-            { icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Watch eligible short clips through to the end.', p: 'Short clips' },
-            { icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Install, explore and complete the listed app requirements.', p: 'Multi-step tasks' },
-            { icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share genuine answers in available questionnaires.', p: 'Availability varies' },
+            { to: '/earn/follow-accounts', icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on supported social platforms.', p: 'Quick tasks' },
+            { to: '/earn/watch-videos', icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Watch eligible short clips through to the end.', p: 'Short clips' },
+            { to: '/earn/app-testing', icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Install, explore and complete the listed app requirements.', p: 'Multi-step tasks' },
+            { to: '/earn/paid-surveys', icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share genuine answers in available questionnaires.', p: 'Availability varies' },
           ].map((c) => (
-            <div key={c.t} className="card-hover rounded-[20px] p-6 bg-[var(--card)] border border-[var(--line)]">
+            <Link key={c.t} to={c.to} className="card-hover rounded-[20px] p-6 bg-[var(--card)] border border-[var(--line)] block">
               <div className="w-11 h-11 rounded-[13px] flex items-center justify-center" style={{ background: c.color }}>
                 {c.icon}
               </div>
@@ -220,7 +220,7 @@ export function Landing() {
               <div className="inline-flex items-center px-3 py-[6px] rounded-full bg-[var(--fill)] border border-[var(--line)] text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head mt-4">
                 {c.p}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -230,13 +230,13 @@ export function Landing() {
         <div className="app-container py-20 lg:py-24">
           <SectionHead
             eyebrow="How it works"
-            title="Three taps and you're earning."
+            title="Three clear steps."
             sub="No experience or application is required. Choose an eligible task and follow every listed step."
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-[1000px] mx-auto">
             {[
               { t: 'Choose a task', d: 'Scroll a live feed of quick tasks and grab whichever one catches your eye.' },
-              { t: 'Finish in seconds', d: 'Most tasks check themselves in about ten seconds. Anyone can do them.' },
+              { t: 'Complete the requirements', d: 'Follow every listed step. The time and eligibility depend on the individual task or provider.' },
               { t: 'Receive the reward', d: 'Eligible rewards are credited after the completion is verified.' },
             ].map((s, i) => (
               <div key={s.t} className="relative overflow-hidden rounded-[20px] p-7 bg-[var(--card)] border border-[var(--line)] text-center md:text-left">
@@ -267,7 +267,7 @@ export function Landing() {
               Reach genuine people for feedback, testing, research and permitted engagement tasks. Review results before approving completed work.
             </p>
             <div className="flex flex-col gap-3 mt-6">
-              {['Every result is verified, never botted', 'Your budget stays in escrow, refundable anytime', 'Live analytics that track every completion'].map((f) => (
+              {['Requirements defined before launch', 'Campaign status and review controls', 'Analytics for submitted completions'].map((f) => (
                 <div key={f} className="flex items-center gap-3 text-[var(--ink-2)] text-[14.5px] font-semibold">
                   <div className="w-6 h-6 rounded-full bg-[rgba(46,224,110,.14)] flex items-center justify-center flex-none">
                     <Check width={14} height={14} className="text-[var(--accent-strong)]" />

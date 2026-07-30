@@ -53,6 +53,9 @@ import {
   MicroJobs,
   IsLegit,
   AiAgents,
+  PicoWorkerFaq,
+  HowPicoWorkerWorks,
+  AboutPicoWorker,
 } from './features/marketing/SeoPages'
 import { AgentDocs } from './features/marketing/AgentDocs'
 
@@ -99,6 +102,9 @@ export default function App() {
       <Route path="/app" element={<AppPage />} />
       <Route path="/micro-jobs" element={<MicroJobs />} />
       <Route path="/is-picoworker-legit" element={<IsLegit />} />
+      <Route path="/how-picoworker-works" element={<HowPicoWorkerWorks />} />
+      <Route path="/faq" element={<PicoWorkerFaq />} />
+      <Route path="/about" element={<AboutPicoWorker />} />
       <Route path="/ai-agents" element={<AiAgents />} />
       <Route path="/ai-agents/docs" element={<AgentDocs />} />
 

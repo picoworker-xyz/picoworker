@@ -50,9 +50,135 @@
   to = "/index.html"
   status = 410
 
-# Client-side routing: serve index.html for any path so React Router can handle
-# deep links like /login, /wallet, /business/create.
+# Client-side application routes. Public information pages are emitted as real
+# static files by the SEO generator and therefore do not need SPA fallbacks.
 [[redirects]]
-  from = "/*"
+  from = "/login"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/reset-password"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/r/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/onboarding"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/task/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/wallet"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/wallet/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/payout-address"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/refer"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/rewards"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/notifications"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/leaderboard"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/verify"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/support"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/more"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/submissions"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/submissions/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/proof-of-income"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/offers/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/switch"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/developers"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/business"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/business/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/index.html"
+  status = 200
+
+# Unknown URLs must be real 404 responses instead of duplicate homepage 200s.
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

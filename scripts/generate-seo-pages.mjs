@@ -107,6 +107,44 @@ const pages = [
     ],
   },
   {
+    path: '/how-picoworker-works',
+    title: 'How PicoWorker Works: Tasks, Offers and Verification',
+    description: 'Learn how PicoWorker works for earners and businesses, including eligibility, task requirements, offer tracking and pending, approved or rejected statuses.',
+    h1: 'From an available task to a verified result',
+    intro: 'PicoWorker separates discovery, completion and verification so earners know what is required and businesses can review genuine results.',
+    sections: [
+      ['How PicoWorker works for earners', 'Sign in, choose a task available for the current country and device, read every requirement, complete the listed steps and wait for PicoWorker or the provider to return a final result.'],
+      ['How PicoWorker works for businesses', 'Create a permitted campaign, describe the required result, choose the eligible audience and review submitted work against the published requirements.'],
+      ['What each task status means', 'Available means a task can be opened. Started means its flow began. Pending means verification is incomplete. Approved means it passed verification. Rejected means the completion did not satisfy the requirements.'],
+      ['How provider offer tracking works', 'A provider records eligible milestones and sends a server confirmation when its rules are satisfied. Opening a provider page alone does not complete an offer.'],
+      ['Why country and device matching matters', 'Campaigns may support only selected locations and devices. VPN use, switching devices or repeating a new-user offer can prevent a provider from matching the completion.'],
+    ],
+  },
+  {
+    path: '/faq',
+    title: 'PicoWorker Help and FAQ: Tasks, Tracking and Verification',
+    description: 'Direct answers about PicoWorker tasks, country and device eligibility, offer tracking, pending verification, account safety and the official website.',
+    h1: 'PicoWorker questions, answered clearly',
+    intro: 'Factual answers about what PicoWorker is, how tasks are completed and verified, why availability changes, and how to use the official service safely.',
+    sections: [
+      ['The short answer', 'PicoWorker is a marketplace for simple online tasks and verified results. It connects earners with businesses and third-party offer providers.'],
+      ['Where to find task-specific information', 'The individual task or provider page is the source of truth for its requirements, eligibility, deadline and reward. Read it before starting.'],
+    ],
+  },
+  {
+    path: '/about',
+    title: 'About PicoWorker: Official Website and Platform Facts',
+    description: 'Official facts about PicoWorker, the independent online micro-task marketplace at picoworker.xyz for earners, businesses and eligible task providers.',
+    h1: 'The official facts about PicoWorker',
+    intro: 'PicoWorker is the name of the independent micro-task platform available at picoworker.xyz.',
+    sections: [
+      ['What PicoWorker is', 'PicoWorker is a two-sided online marketplace. Earners browse and complete eligible tasks, while businesses publish permitted campaigns and review results.'],
+      ['Official identity and website', 'The official product name is PicoWorker and the official domain is picoworker.xyz. PicoWorker is not Picoworkers or SproutGigs and is not affiliated with those services.'],
+      ['What PicoWorker can and cannot promise', 'PicoWorker displays the requirements and known status of a task. It cannot promise identical task availability for every account or provider approval when requirements are not satisfied.'],
+      ['Official contact', 'The public contact email is hello@picoworker.xyz. Support will not ask for an account password or one-time verification code.'],
+    ],
+  },
+  {
     path: '/ai-agents',
     title: 'PicoWorker for AI Agents: Human Tasks by API',
     description: 'Give your AI agent access to real human feedback, testing and research tasks through the PicoWorker API with campaign tracking and verified results.',
@@ -146,6 +184,83 @@ const pages = [
   },
 ]
 
+const coreFaqs = [
+  ['What is PicoWorker?', 'PicoWorker is an independent two-sided marketplace for simple online tasks. Earners complete eligible tasks, while businesses create campaigns and review results.'],
+  ['How does PicoWorker work for earners?', 'Create an account, browse tasks available for your country and device, read every requirement, complete the task and wait for PicoWorker or the provider to verify it.'],
+  ['Is PicoWorker free to join?', 'Yes. Creating an account and browsing available tasks are free.'],
+  ['What tasks can appear on PicoWorker?', 'Available work may include social actions, watch tasks, app testing, surveys, research and third-party provider offers. The active list changes with current campaigns.'],
+  ['Why are different tasks shown in different countries?', 'Availability can depend on country, device, audience and capacity rules. Confirm the eligibility shown on the task or provider page before starting.'],
+  ['Does opening an offer earn a reward?', 'No. Opening an offer only starts the provider journey. Every listed requirement must be completed and successfully tracked before a reward can be confirmed.'],
+  ['What does pending mean?', 'Pending means a completion was recorded but has not received its final verification result. Some provider offers take longer to confirm than direct PicoWorker tasks.'],
+  ['What do approved and rejected mean?', 'Approved means the submitted completion met the published requirements. Rejected means it did not pass review or provider verification; the account should show the available reason or status.'],
+  ['How can I keep offer tracking valid?', 'Start from PicoWorker, use the same device and account, allow required tracking, avoid VPNs, and do not repeat an offer that requires a new user.'],
+  ['Is PicoWorker the same as Picoworkers or SproutGigs?', 'No. Picoworkers rebranded to SproutGigs. PicoWorker at picoworker.xyz is a separate and independent platform.'],
+  ['What is the official PicoWorker website and app?', 'The official website is picoworker.xyz. PicoWorker is a browser-based web app and does not provide an official APK download.'],
+  ['How do I contact PicoWorker?', 'Use the support area after signing in or email hello@picoworker.xyz. Never send a password or verification code in a support message.'],
+]
+
+const pageFaqs = {
+  '/': [
+    ['What is PicoWorker?', 'PicoWorker is a micro-task marketplace where people complete small online tasks such as following accounts, watching clips, testing apps and answering surveys. Businesses post tasks and review verified results.'],
+    ['How do I earn rewards on PicoWorker?', 'Sign up for free, choose an eligible task or offer, follow every requirement and wait for the completion to be verified.'],
+    ['How are task rewards decided?', 'Each task shows its reward and requirements before you begin. Availability and reward values can vary by country, device and provider.'],
+    ['When is a reward credited?', 'Eligible rewards are credited after PicoWorker or the offer provider confirms that every required step was completed.'],
+    ['Is PicoWorker free to join?', 'Yes. Registration and browsing available tasks are free.'],
+    ['Can businesses post tasks on PicoWorker?', 'Yes. Businesses can create permitted campaigns, define the required result and review submitted work before approval.'],
+    ['Is PicoWorker the same as Picoworkers or SproutGigs?', 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker at picoworker.xyz is an independent marketplace for simple online tasks and verified rewards.'],
+  ],
+  '/earn/follow-accounts': [
+    ['When is the reward credited?', 'The reward is credited after PicoWorker or the provider confirms that the task requirements were completed.'],
+    ['Which platforms are supported?', 'Available platforms depend on current campaigns. Always use the exact link and instructions shown in the task.'],
+    ['Is it free to start?', 'Yes. Registration and browsing available tasks are free.'],
+  ],
+  '/earn/watch-videos': [
+    ['Do I have to watch the whole video?', 'Follow the exact duration shown in the task. Leaving early can prevent verification.'],
+    ['Why is a task unavailable?', 'Availability can depend on country, device, campaign limits and previous participation.'],
+    ['Is it free to start?', 'Yes. Registration and browsing available tasks are free.'],
+  ],
+  '/earn/app-testing': [
+    ['Do I need special skills to test apps?', 'No special testing background is required for everyday-user tasks. Follow the checklist and complete every listed milestone.'],
+    ['When is the reward credited?', 'The reward is credited after the app provider confirms the required milestone or completion.'],
+    ['Is it free to start?', 'Yes. Registration and browsing available tasks are free.'],
+  ],
+  '/earn/paid-surveys': [
+    ['How long do surveys take?', 'Duration varies by provider. Review the expected length and requirements on the survey page before starting.'],
+    ['Can a survey screen me out?', 'Yes. A provider may require a specific audience. Check eligibility first and answer profile questions accurately.'],
+    ['Is it free to start?', 'Yes. Registration and browsing available surveys are free.'],
+  ],
+  '/micro-jobs': [
+    ['Do I need experience or a resume for micro jobs?', 'No resume is required for the simple tasks listed on PicoWorker. Each task provides its own requirements.'],
+    ['When is a micro-job reward credited?', 'The listed reward is credited after the task or provider confirms that every required step was completed.'],
+    ['How is this different from Picoworkers or SproutGigs?', 'PicoWorker at picoworker.xyz is an independent platform and is not related to Picoworkers or SproutGigs.'],
+  ],
+  '/picoworkers-alternative': [
+    ['Is PicoWorker the same as Picoworkers or SproutGigs?', 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker.xyz is an independent marketplace for eligible online tasks and verified rewards.'],
+    ['How do task rewards work on PicoWorker?', 'Choose an eligible task, complete every listed requirement and wait for PicoWorker or the provider to confirm the result.'],
+    ['Is PicoWorker free to join?', 'Yes. Registration and browsing available tasks are free.'],
+  ],
+  '/app': [
+    ['Is there a PicoWorker app for Android or iPhone?', 'PicoWorker is a web app that installs from your browser. Open picoworker.xyz, choose Add to Home Screen, and it behaves like a native app on both Android and iPhone.'],
+    ['Is there a PicoWorker APK download?', 'No. There is no official APK, and you should not install one from third party sites. Use picoworker.xyz in your browser instead.'],
+    ['Does PicoWorker work on desktop?', 'Yes. The same account works in any modern browser on phone, tablet and desktop.'],
+  ],
+  '/is-picoworker-legit': [
+    ['Is PicoWorker free to join?', 'Yes. Registration and browsing available tasks are free.'],
+    ['Why do available tasks change?', 'Campaigns have country, device, audience and capacity limits, so the list can change throughout the day.'],
+    ['When is a reward confirmed?', 'Confirmation occurs after PicoWorker or the provider verifies that the published requirements were completed.'],
+  ],
+  '/how-picoworker-works': coreFaqs.slice(1, 9),
+  '/faq': coreFaqs,
+  '/about': [coreFaqs[0], coreFaqs[2], coreFaqs[9], coreFaqs[10], coreFaqs[11]],
+  '/ai-agents': [
+    ['Can an agent create its own account?', 'Yes. POST /register returns an API key with no email or password. Registration is rate limited, and the account must be funded before it can launch a campaign.'],
+    ['What if the agent loses its key?', 'The key is the account, so treat it like a wallet seed. To make an account recoverable, call POST /claim with a real email address: after that a human can use the normal forgot password flow on the login page to access the account in the app, see its campaigns and balance, and mint a fresh key or revoke the lost one.'],
+    ['Can my agent complete follow and watch tasks?', 'No. Social engagement tasks are humans only, enforced at the database. Agents can only complete tasks a poster explicitly marked as agent-eligible, such as data collection and research work.'],
+    ['How does my agent launch a campaign?', 'Authenticate with an API key, fund the campaign account, create the campaign and call the launch endpoint when its configuration is ready.'],
+    ['Can an agent earn task rewards?', 'Agents can complete only tasks explicitly marked as agent-eligible. Human-only tasks remain unavailable to automated participants.'],
+  ],
+}
+
 function escapeHtml(value) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 }
@@ -166,13 +281,21 @@ function setMeta(html, page) {
 }
 
 function pageMarkup(page) {
+  const faqs = pageFaqs[page.path] ?? []
   const sectionMarkup = page.sections.map(([heading, body]) => `
       <section>
         <h2>${escapeHtml(heading)}</h2>
         <p>${escapeHtml(body)}</p>
       </section>`).join('')
+  const faqMarkup = faqs.length ? `
+      <section id="questions">
+        <h2>Questions and direct answers</h2>
+        ${faqs.map(([question, answer]) => `<article>
+          <h3>${escapeHtml(question)}</h3>
+          <p>${escapeHtml(answer)}</p>
+        </article>`).join('\n        ')}
+      </section>` : ''
   const nav = pages
-    .filter((item) => ['/', '/micro-jobs', '/earn/app-testing', '/earn/paid-surveys', '/is-picoworker-legit'].includes(item.path))
     .map((item) => `<a href="${item.path}">${escapeHtml(item.path === '/' ? 'PicoWorker home' : item.h1)}</a>`)
     .join(' · ')
   return `<div id="root">
@@ -181,7 +304,9 @@ function pageMarkup(page) {
       <article>
         <h1 style="font-size:clamp(32px,7vw,54px);line-height:1.08">${escapeHtml(page.h1)}</h1>
         <p style="font-size:18px;line-height:1.7;color:#c7c9d4">${escapeHtml(page.intro)}</p>
+        <p style="font-size:13px;color:#8f929e">Reviewed 30 July 2026</p>
         ${sectionMarkup}
+        ${faqMarkup}
         <p><a href="/login">Create an account or sign in</a></p>
       </article>
       <nav aria-label="Related PicoWorker pages" style="margin-top:48px;line-height:2">${nav}</nav>
@@ -191,31 +316,94 @@ function pageMarkup(page) {
 
 function structuredData(page) {
   const url = `${origin}${page.path}`
-  return `<script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: page.title,
-    description: page.description,
-    url,
-    isPartOf: { '@type': 'WebSite', name: 'PicoWorker', url: `${origin}/` },
-  })}</script>`
+  const faqs = pageFaqs[page.path] ?? []
+  const pageType = page.path === '/about' ? 'AboutPage' : page.path === '/faq' ? 'FAQPage' : 'WebPage'
+  const pageId = `${url}#webpage`
+  const organizationId = `${origin}/#organization`
+  const websiteId = `${origin}/#website`
+  const graph = [
+    {
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: 'PicoWorker',
+      alternateName: ['Pico Worker', 'PicoWorker.xyz'],
+      url: `${origin}/`,
+      logo: { '@type': 'ImageObject', url: `${origin}/logo.png` },
+      description: 'An independent two-sided marketplace for simple online tasks and verified results.',
+      email: 'hello@picoworker.xyz',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'hello@picoworker.xyz',
+        url: `${origin}/faq`,
+      },
+      sameAs: ['https://x.com/picoworker', 'https://whatsapp.com/channel/0029Vb83K7C3WHTNsVZmkn2k'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: 'PicoWorker',
+      alternateName: ['Pico Worker', 'picoworker.xyz'],
+      url: `${origin}/`,
+      publisher: { '@id': organizationId },
+      inLanguage: 'en',
+    },
+    {
+      '@type': pageType,
+      '@id': pageId,
+      name: page.title,
+      headline: page.h1,
+      description: page.description,
+      url,
+      dateModified: '2026-07-30',
+      inLanguage: 'en',
+      isPartOf: { '@id': websiteId },
+      about: { '@id': organizationId },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+      ...(faqs.length ? {
+        mainEntity: faqs.map(([question, answer]) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer },
+        })),
+      } : {}),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#breadcrumb`,
+      itemListElement: page.path === '/' ? [
+        { '@type': 'ListItem', position: 1, name: 'PicoWorker', item: `${origin}/` },
+      ] : [
+        { '@type': 'ListItem', position: 1, name: 'PicoWorker', item: `${origin}/` },
+        { '@type': 'ListItem', position: 2, name: page.h1, item: url },
+      ],
+    },
+  ]
+  if (page.path === '/') {
+    graph.push({
+      '@type': 'SoftwareApplication',
+      name: 'PicoWorker',
+      url: `${origin}/`,
+      operatingSystem: 'Web, iOS, Android',
+      applicationCategory: 'BusinessApplication',
+      description: page.description,
+      offers: { '@type': 'Offer', description: 'Free registration' },
+      publisher: { '@id': organizationId },
+    })
+  }
+  return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`
 }
 
 const base = await readFile(new URL('index.html', dist), 'utf8')
 
 for (const page of pages) {
   let html = setMeta(base, page)
-  if (page.path !== '/') html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '')
+  html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '')
   html = html.replace(/<div id="root">[\s\S]*?<\/div>\s*<noscript>/, `${pageMarkup(page)}\n    <noscript>`)
   html = html.replace('</head>', `    ${structuredData(page)}\n  </head>`)
   const file = page.path === '/' ? new URL('index.html', dist) : new URL(`.${page.path}/index.html`, dist)
   await mkdir(dirname(file.pathname), { recursive: true })
   await writeFile(file, html)
-  if (page.path !== '/') {
-    const prettyFile = new URL(`.${page.path}.html`, dist)
-    await mkdir(dirname(prettyFile.pathname), { recursive: true })
-    await writeFile(prettyFile, html)
-  }
 }
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

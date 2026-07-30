@@ -1,4 +1,7 @@
 # PicoWorker robots.txt
+# This public/private policy also applies to answer-engine search crawlers,
+# including OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User and
+# PerplexityBot. Public informational pages remain crawlable by default.
 User-agent: *
 Allow: /$
 
@@ -6,6 +9,7 @@ Allow: /$
 Disallow: /login
 Disallow: /reset-password
 Disallow: /r/
+Disallow: /api/
 Disallow: /onboarding
 Disallow: /wallet
 Disallow: /business
@@ -24,7 +28,6 @@ Disallow: /profile
 Disallow: /rewards
 Disallow: /refer
 Disallow: /switch
-Disallow: /onboarding
 Disallow: /developers
 
 Sitemap: https://picoworker.xyz/sitemap.xml

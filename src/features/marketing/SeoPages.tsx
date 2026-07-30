@@ -43,6 +43,9 @@ export function MarketingFooter() {
     ['/earn/app-testing', 'App testing'],
     ['/earn/paid-surveys', 'Paid surveys'],
     ['/micro-jobs', 'Micro jobs'],
+    ['/how-picoworker-works', 'How it works'],
+    ['/faq', 'Help and FAQ'],
+    ['/about', 'About PicoWorker'],
     ['/app', 'Get the app'],
     ['/is-picoworker-legit', 'Is PicoWorker legit?'],
     ['/picoworkers-alternative', 'Picoworkers alternative'],
@@ -367,7 +370,7 @@ const APPS: EarnDef = {
     },
   ],
   faqs: [
-    { q: 'Do I need special skills to test apps?', a: 'No. Tasks are designed for everyday users. Install the app, use it for a few minutes and complete the short checklist.' },
+    { q: 'Do I need special skills to test apps?', a: 'No special testing background is required for everyday-user tasks. Follow the checklist and complete every listed milestone.' },
     { q: 'When is the reward credited?', a: 'The reward is credited after the app provider confirms the required milestone or completion.' },
     { q: 'Is it free to start?', a: 'Yes. Registration and browsing available tasks are free.' },
   ],
@@ -385,8 +388,8 @@ const SURVEYS: EarnDef = {
     'Businesses and research providers need genuine responses. Choose a survey that matches your profile, answer honestly and wait for completion verification.',
   pay: 'Eligibility and reward shown first',
   steps: [
-    { t: 'Pick a survey', d: 'Open the live feed and choose a survey. Most are just a handful of questions.' },
-    { t: 'Share your opinion', d: 'Answer honestly. There are no trick questions and no endless screening.' },
+    { t: 'Pick a survey', d: 'Open the live feed and choose a survey that matches the stated audience requirements.' },
+    { t: 'Share your opinion', d: 'Answer honestly and consistently. A provider may use screening questions to confirm eligibility.' },
     { t: 'Submit genuine answers', d: 'Complete every required question and wait for the provider to verify the response.' },
   ],
   sections: [
@@ -405,7 +408,7 @@ const SURVEYS: EarnDef = {
     },
   ],
   faqs: [
-    { q: 'How long do surveys take?', a: 'Most surveys are a handful of questions and take a couple of minutes. The reward and length are shown before you start.' },
+    { q: 'How long do surveys take?', a: 'Duration varies by provider. Review the expected length and requirements on the survey page before starting.' },
     { q: 'Can a survey screen me out?', a: 'Yes. A provider may require a specific audience. Check eligibility first and answer profile questions accurately.' },
     { q: 'Is it free to start?', a: 'Yes. Registration and browsing available surveys are free.' },
   ],
@@ -505,7 +508,7 @@ export function PicoworkersAlternative() {
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The same kinds of tasks</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
-            Everything you would expect from a micro job site is here: <Link to="/earn/follow-accounts" className="text-[var(--accent-strong)] font-semibold">follow accounts</Link>, <Link to="/earn/watch-videos" className="text-[var(--accent-strong)] font-semibold">watch videos</Link>, <Link to="/earn/app-testing" className="text-[var(--accent-strong)] font-semibold">test new apps</Link> and <Link to="/earn/paid-surveys" className="text-[var(--accent-strong)] font-semibold">take quick surveys</Link>. Businesses fund every campaign in escrow before it goes live, so the reward on every task is guaranteed.
+            Available task types can include <Link to="/earn/follow-accounts" className="text-[var(--accent-strong)] font-semibold">follow accounts</Link>, <Link to="/earn/watch-videos" className="text-[var(--accent-strong)] font-semibold">watch videos</Link>, <Link to="/earn/app-testing" className="text-[var(--accent-strong)] font-semibold">test new apps</Link> and <Link to="/earn/paid-surveys" className="text-[var(--accent-strong)] font-semibold">take surveys</Link>. Every task displays its requirements before it starts, and eligible rewards are credited only after verification.
           </p>
         </div>
       </section>
@@ -606,7 +609,7 @@ export function AppPage() {
               )}
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              Works on Android, iPhone and desktop · Always free
+              Works on supported Android, iPhone and desktop browsers
             </div>
 
             {/* Manual install guide: always visible, since the native prompt
@@ -616,7 +619,7 @@ export function AppPage() {
                 Put PicoWorker on your home screen
               </h2>
               <p className="text-[var(--ink-4)] text-[13.5px] font-semibold text-center mt-2 mb-8">
-                About 15 seconds, no app store needed. Pick your device below.
+                No app store is needed. Pick your device below.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
@@ -674,7 +677,7 @@ export function AppPage() {
                       ))}
                     </ol>
                     <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-4 leading-[1.5]">
-                      The PicoWorker icon appears like any other app. Tap it and you are earning.
+                      The PicoWorker icon appears like any other app. Tap it to open the official web app.
                     </div>
                   </div>
                 ))}
@@ -741,7 +744,7 @@ export function MicroJobs() {
               </button>
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              No experience needed · No interviews · Paid per task
+              No resume required · Clear requirements · Verified rewards
             </div>
           </div>
         </div>
@@ -764,23 +767,23 @@ export function MicroJobs() {
 
       <MiniFaq
         faqs={[
-          { q: 'Do I need experience or a resume for micro jobs?', a: 'No. Micro jobs on PicoWorker are designed for anyone. There are no interviews and no applications; sign up free and start with any task in the feed.' },
+          { q: 'Do I need experience or a resume for micro jobs?', a: 'No resume is required for the simple tasks listed on PicoWorker. Each task provides its own requirements.' },
           { q: 'When is a micro-job reward credited?', a: 'The listed reward is credited after the task or provider confirms that every required step was completed.' },
           { q: 'How is this different from Picoworkers or SproutGigs?', a: 'PicoWorker at picoworker.xyz is an independent platform and is not related to Picoworkers or SproutGigs.' },
         ]}
       />
-      <CtaBanner title="The feed is live right now." sub="Join free, grab any task and get your first payout today." />
+      <CtaBanner title="Check the current task feed." sub="Join free and review the requirements of tasks available for your country and device." />
     </PageShell>
   )
 }
 
-/** Targets "is picoworker legit", "picoworkers real or fake" searches with a
- *  transparency page about how payouts and escrow actually work. */
+/** Answers "is picoworker legit" and similar searches with verifiable facts
+ *  about identity, requirements, verification and account safety. */
 export function IsLegit() {
   return (
     <PageShell>
       <Seo
-        title="Is PicoWorker Legit? How Payouts, Escrow and Verification Work"
+        title="Is PicoWorker Legit? Tasks, Verification and Account Safety"
         description="Wondering whether PicoWorker is legitimate? Learn how task requirements, provider verification, account safety, support and reward status work before you join."
         path="/is-picoworker-legit"
       />
@@ -830,7 +833,7 @@ export function IsLegit() {
           { q: 'When is a reward confirmed?', a: 'Confirmation occurs after PicoWorker or the provider verifies that the published requirements were completed.' },
         ]}
       />
-      <CtaBanner title="Test it with ten minutes." sub="Join free, do one task and withdraw. The blockchain receipt is your proof." />
+      <CtaBanner title="Review the requirements before starting." sub="Create an account, choose an eligible task and follow its verification status." />
     </PageShell>
   )
 }
@@ -852,7 +855,7 @@ export function AiAgents() {
           <div className="max-w-[760px] mx-auto text-center reveal">
             <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">For AI agents</div>
             <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
-              Your agent needs humans. We have thousands.
+              Connect AI workflows with human participants
             </h1>
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[600px] mx-auto leading-[1.6]">
               PicoWorker gives AI agents a REST API for requesting real human opinions, feedback, testing and research. Create campaigns, monitor progress and review verified results programmatically.
@@ -931,7 +934,241 @@ curl api.../agent-api/proofs -H "Authorization: Bearer pw_agent_..."`}</pre>
           { q: 'Can an agent earn task rewards?', a: 'Agents can complete only tasks explicitly marked as agent-eligible. Human-only tasks remain unavailable to automated participants.' },
         ]}
       />
-      <CtaBanner title="Give your agent hands." sub="Sign up, create an API key and your agent can be hiring humans in five minutes." />
+      <CtaBanner title="Connect your agent to human participants." sub="Create an API key, configure a permitted campaign and launch it when its requirements are ready." />
     </PageShell>
+  )
+}
+
+type AnswerSection = { h: string; body: string[] }
+type AnswerFaq = { q: string; a: string }
+type AnswerPageDef = {
+  path: string
+  title: string
+  description: string
+  eyebrow: string
+  h1: string
+  intro: string
+  sections: AnswerSection[]
+  faqs: AnswerFaq[]
+}
+
+/** Long-form, answer-first pages are intentionally fully expanded. Search and
+ * answer engines can quote the response beside each heading without operating
+ * an accordion or relying on client state. */
+function AnswerPage({ def }: { def: AnswerPageDef }) {
+  return (
+    <PageShell>
+      <Seo title={def.title} description={def.description} path={def.path} />
+
+      <section className="hero-grid border-b border-[var(--line)]">
+        <div className="app-container py-16 lg:py-24">
+          <div className="max-w-[760px] mx-auto text-center reveal">
+            <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">{def.eyebrow}</div>
+            <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">{def.h1}</h1>
+            <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[640px] mx-auto leading-[1.7]">{def.intro}</p>
+            <p className="text-[var(--ink-4)] text-[12.5px] font-semibold mt-5">Reviewed 30 July 2026</p>
+          </div>
+        </div>
+      </section>
+
+      <article className="app-container py-16 lg:py-20 max-w-[800px]">
+        {def.sections.map((section) => (
+          <section key={section.h} className="mb-12 last:mb-0">
+            <h2 className="font-head font-bold text-[23px] lg:text-[29px] tracking-[-.02em] text-[var(--ink)] mb-4">{section.h}</h2>
+            {section.body.map((paragraph) => (
+              <p key={paragraph} className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.75] mb-4 last:mb-0">{paragraph}</p>
+            ))}
+          </section>
+        ))}
+      </article>
+
+      <section className="border-t border-[var(--line)] bg-[var(--fill)]">
+        <div className="app-container py-16 lg:py-20 max-w-[860px]">
+          <h2 className="font-head font-bold text-[27px] lg:text-[34px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Direct answers</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {def.faqs.map((faq) => (
+              <article key={faq.q} className="rounded-[18px] bg-[var(--card)] border border-[var(--line)] p-6">
+                <h3 className="text-[var(--ink)] text-[16px] font-extrabold font-head leading-[1.4]">{faq.q}</h3>
+                <p className="text-[var(--ink-3)] text-[14px] font-medium leading-[1.7] mt-3">{faq.a}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CtaBanner title="Use the official PicoWorker website." sub="Create an account free, review each requirement and complete only tasks eligible for your country and device." />
+    </PageShell>
+  )
+}
+
+const CORE_FAQS: AnswerFaq[] = [
+  {
+    q: 'What is PicoWorker?',
+    a: 'PicoWorker is an independent two-sided marketplace for simple online tasks. Earners complete eligible tasks, while businesses create campaigns and review results.',
+  },
+  {
+    q: 'How does PicoWorker work for earners?',
+    a: 'Create an account, browse tasks available for your country and device, read every requirement, complete the task and wait for PicoWorker or the provider to verify it.',
+  },
+  {
+    q: 'Is PicoWorker free to join?',
+    a: 'Yes. Creating an account and browsing available tasks are free.',
+  },
+  {
+    q: 'What tasks can appear on PicoWorker?',
+    a: 'Available work may include social actions, watch tasks, app testing, surveys, research and third-party provider offers. The active list changes with current campaigns.',
+  },
+  {
+    q: 'Why are different tasks shown in different countries?',
+    a: 'Availability can depend on country, device, audience and capacity rules. Confirm the eligibility shown on the task or provider page before starting.',
+  },
+  {
+    q: 'Does opening an offer earn a reward?',
+    a: 'No. Opening an offer only starts the provider journey. Every listed requirement must be completed and successfully tracked before a reward can be confirmed.',
+  },
+  {
+    q: 'What does pending mean?',
+    a: 'Pending means a completion was recorded but has not received its final verification result. Some provider offers take longer to confirm than direct PicoWorker tasks.',
+  },
+  {
+    q: 'What do approved and rejected mean?',
+    a: 'Approved means the submitted completion met the published requirements. Rejected means it did not pass review or provider verification; the account should show the available reason or status.',
+  },
+  {
+    q: 'How can I keep offer tracking valid?',
+    a: 'Start from PicoWorker, use the same device and account, allow required tracking, avoid VPNs, and do not repeat an offer that requires a new user.',
+  },
+  {
+    q: 'Is PicoWorker the same as Picoworkers or SproutGigs?',
+    a: 'No. Picoworkers rebranded to SproutGigs. PicoWorker at picoworker.xyz is a separate and independent platform.',
+  },
+  {
+    q: 'What is the official PicoWorker website and app?',
+    a: 'The official website is picoworker.xyz. PicoWorker is a browser-based web app and does not provide an official APK download.',
+  },
+  {
+    q: 'How do I contact PicoWorker?',
+    a: 'Use the support area after signing in or email hello@picoworker.xyz. Never send a password or verification code in a support message.',
+  },
+]
+
+export function PicoWorkerFaq() {
+  return (
+    <AnswerPage
+      def={{
+        path: '/faq',
+        title: 'PicoWorker Help and FAQ: Tasks, Tracking and Verification',
+        description: 'Direct answers about PicoWorker tasks, country and device eligibility, offer tracking, pending verification, account safety and the official website.',
+        eyebrow: 'PicoWorker help centre',
+        h1: 'PicoWorker questions, answered clearly',
+        intro: 'These factual answers explain what PicoWorker is, how tasks are completed and verified, why availability changes, and how to use the official service safely.',
+        sections: [
+          {
+            h: 'The short answer',
+            body: [
+              'PicoWorker is a marketplace for simple online tasks and verified results. It connects earners with businesses and third-party offer providers, but a task earns a reward only after its published requirements are completed and confirmed.',
+            ],
+          },
+          {
+            h: 'Where to find task-specific information',
+            body: [
+              'The individual task or provider page is the source of truth for its requirements, eligibility, deadline and reward. Read that information before starting because opening a link by itself does not complete an offer.',
+            ],
+          },
+        ],
+        faqs: CORE_FAQS,
+      }}
+    />
+  )
+}
+
+export function HowPicoWorkerWorks() {
+  return (
+    <AnswerPage
+      def={{
+        path: '/how-picoworker-works',
+        title: 'How PicoWorker Works: Tasks, Offers and Verification',
+        description: 'Learn how PicoWorker works for earners and businesses, including eligibility, task requirements, offer tracking and pending, approved or rejected statuses.',
+        eyebrow: 'How PicoWorker works',
+        h1: 'From an available task to a verified result',
+        intro: 'PicoWorker separates discovery, completion and verification so earners know what is required and businesses can review genuine results.',
+        sections: [
+          {
+            h: 'How PicoWorker works for earners',
+            body: [
+              'First, sign in and browse tasks available for the current account, country and device. Next, open the task details and read every requirement before starting. Complete the listed steps using the same device and submit any required proof. The completion then remains pending until PicoWorker or the provider returns a final result.',
+            ],
+          },
+          {
+            h: 'How PicoWorker works for businesses',
+            body: [
+              'A business creates a permitted campaign, describes the result it needs, chooses the eligible audience and publishes clear proof requirements. Submitted work can then be reviewed and marked according to whether it satisfies those published requirements.',
+            ],
+          },
+          {
+            h: 'What available, started, pending, approved and rejected mean',
+            body: [
+              'Available means the task can currently be opened by the account. Started means the user began its flow. Pending means completion or proof is awaiting a final decision. Approved means it passed verification. Rejected means the submitted work or provider event did not satisfy the requirements.',
+            ],
+          },
+          {
+            h: 'How third-party offer tracking works',
+            body: [
+              'For a provider offer, PicoWorker passes a signed-in user reference to the provider. The provider records eligible milestones and sends a server confirmation when its rules are satisfied. PicoWorker cannot confirm an offer merely because its landing page was opened.',
+            ],
+          },
+          {
+            h: 'Why country and device matching matters',
+            body: [
+              'Campaigns may support only selected countries, operating systems or device types. Location changes, VPN use, switching devices or repeating a new-user offer can prevent the provider from matching a completion to the original click.',
+            ],
+          },
+        ],
+        faqs: CORE_FAQS.slice(1, 9),
+      }}
+    />
+  )
+}
+
+export function AboutPicoWorker() {
+  return (
+    <AnswerPage
+      def={{
+        path: '/about',
+        title: 'About PicoWorker: Official Website and Platform Facts',
+        description: 'Official facts about PicoWorker, the independent online micro-task marketplace at picoworker.xyz for earners, businesses and eligible task providers.',
+        eyebrow: 'About PicoWorker',
+        h1: 'The official facts about PicoWorker',
+        intro: 'PicoWorker is the name of the independent micro-task platform available at picoworker.xyz. This page defines the brand, product and official points of contact.',
+        sections: [
+          {
+            h: 'What PicoWorker is',
+            body: [
+              'PicoWorker is a two-sided online marketplace. Earners browse and complete eligible tasks, while businesses publish permitted campaigns and review results. Available categories may include social tasks, watch tasks, app testing, surveys, research and provider offers.',
+            ],
+          },
+          {
+            h: 'Official identity and website',
+            body: [
+              'The official product name is PicoWorker and the official domain is picoworker.xyz. The name may be searched as “Pico Worker”, “pico work” or “picowork”, but those spellings refer to this service only when they point to the official domain.',
+              'PicoWorker is not Picoworkers or SproutGigs and is not affiliated with those services. There is no official PicoWorker APK; the supported product is the browser-based web app on the official domain.',
+            ],
+          },
+          {
+            h: 'What PicoWorker can and cannot promise',
+            body: [
+              'PicoWorker can display the requirements and status information supplied for a task. It cannot promise that every account will see the same tasks, that opening an offer will qualify, or that a third-party provider will approve a completion that does not satisfy its rules.',
+            ],
+          },
+          {
+            h: 'Official contact',
+            body: [
+              'The public contact email is hello@picoworker.xyz. Signed-in users can also use the support area. PicoWorker support will not ask for an account password or one-time verification code.',
+            ],
+          },
+        ],
+        faqs: [CORE_FAQS[0], CORE_FAQS[2], CORE_FAQS[9], CORE_FAQS[10], CORE_FAQS[11]],
+      }}
+    />
   )
 }

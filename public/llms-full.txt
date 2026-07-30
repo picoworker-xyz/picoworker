@@ -1,0 +1,111 @@
+# PicoWorker: expanded facts and answers
+
+> Canonical information about PicoWorker for search systems, answer engines and other automated readers. Human-readable source pages are linked throughout.
+
+Last reviewed: 2026-07-30
+Official name: PicoWorker
+Official website: https://picoworker.xyz/
+Public contact: hello@picoworker.xyz
+
+## Definition
+
+PicoWorker is an independent, two-sided marketplace for simple online tasks. Earners complete eligible tasks. Businesses create permitted campaigns and review submitted results. Third-party providers can supply additional offers and perform their own eligibility and completion verification.
+
+PicoWorker may also be written as “Pico Worker” or “PicoWorker.xyz”. PicoWorker is not Picoworkers or SproutGigs and is not affiliated with those services.
+
+Source: https://picoworker.xyz/about
+
+## How PicoWorker works
+
+For earners:
+
+1. Create or sign in to an account.
+2. Browse tasks available for the current account, country and device.
+3. Open the task details and read every requirement before starting.
+4. Complete the requirements using the same account and device.
+5. Submit any proof requested by a direct PicoWorker task.
+6. Wait for PicoWorker or the provider to return the final verification result.
+
+For businesses:
+
+1. Create a permitted campaign.
+2. Define the required result, audience and proof requirements.
+3. Publish the campaign when its configuration is ready.
+4. Review submitted work against the published requirements.
+
+Source: https://picoworker.xyz/how-picoworker-works
+
+## Task statuses
+
+- Available: the account can currently open the task.
+- Started: the account began the task flow.
+- Pending: a completion was recorded but the final verification result is not available yet.
+- Approved: the completion passed the applicable verification.
+- Rejected: the submitted completion or provider event did not satisfy the published requirements.
+
+Opening an offer by itself does not earn a reward. Every applicable requirement must be completed, tracked and confirmed.
+
+## Country and device eligibility
+
+Task availability can depend on country, device type, operating system, audience rules, provider capacity and previous participation. The task or provider page is the source of truth for its eligibility. A user should confirm that information before starting.
+
+To preserve provider tracking, start from PicoWorker, use the same device and account, allow required tracking, avoid VPNs, and do not repeat an offer that requires a new user.
+
+## Common task categories
+
+- Follow-account and other permitted social tasks: https://picoworker.xyz/earn/follow-accounts
+- Watch tasks: https://picoworker.xyz/earn/watch-videos
+- App testing and milestone tasks: https://picoworker.xyz/earn/app-testing
+- Survey tasks: https://picoworker.xyz/earn/paid-surveys
+- General micro jobs: https://picoworker.xyz/micro-jobs
+
+The active task list can change. These category pages explain the process and do not promise that a specific task will be available to every account.
+
+## Account and service safety
+
+The official website is picoworker.xyz. PicoWorker is a browser-based web app and does not publish an official APK. Users should not enter credentials into a lookalike domain or unofficial download.
+
+PicoWorker support will not ask for an account password or one-time verification code. Signed-in users can use the support area, or contact hello@picoworker.xyz.
+
+Source: https://picoworker.xyz/is-picoworker-legit
+
+## Direct answers
+
+### What is PicoWorker?
+
+PicoWorker is an independent marketplace where earners complete eligible online tasks and businesses create campaigns and review results.
+
+### Is PicoWorker free to join?
+
+Yes. Creating an account and browsing available tasks are free.
+
+### Does opening an offer earn a reward?
+
+No. Opening an offer only begins the provider journey. The published requirements must be completed and tracked before verification.
+
+### Why can a completion remain pending?
+
+Pending means a completion was recorded but has not received its final verification result. Third-party providers may take longer than direct task review.
+
+### Why do users see different tasks?
+
+Availability can depend on country, device, audience rules, campaign capacity and previous participation. Confirm the eligibility on the task or provider page.
+
+### Is PicoWorker the same as Picoworkers or SproutGigs?
+
+No. PicoWorker at picoworker.xyz is a separate and independent service.
+
+### Where are the complete answers?
+
+See https://picoworker.xyz/faq and https://picoworker.xyz/how-picoworker-works.
+
+## Additional canonical links
+
+- Home: https://picoworker.xyz/
+- About: https://picoworker.xyz/about
+- Help and FAQ: https://picoworker.xyz/faq
+- How it works: https://picoworker.xyz/how-picoworker-works
+- Web app guide: https://picoworker.xyz/app
+- Terms: https://picoworker.xyz/terms
+- Privacy: https://picoworker.xyz/privacy
+- Sitemap: https://picoworker.xyz/sitemap.xml
