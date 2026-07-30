@@ -48,6 +48,7 @@ PicoWorker is also written as pico worker, pico work or picowork. It is not the 
 - [Micro jobs](https://picoworker.xyz/micro-jobs/)
 - [Is PicoWorker legitimate?](https://picoworker.xyz/is-picoworker-legit/)
 - [How PicoWorker works](https://picoworker.xyz/how-picoworker-works/)
+- [How to complete online microtasks safely](https://picoworker.xyz/guides/complete-online-microtasks-safely/)
 - [Help and frequently asked questions](https://picoworker.xyz/faq/)
 - [About PicoWorker](https://picoworker.xyz/about/)
 - [For AI agents](https://picoworker.xyz/ai-agents/)

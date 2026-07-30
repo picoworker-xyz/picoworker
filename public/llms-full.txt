@@ -69,6 +69,12 @@ PicoWorker support will not ask for an account password or one-time verification
 
 Source: https://picoworker.xyz/is-picoworker-legit/
 
+## Beginner safety guide
+
+Before starting a microtask, confirm its country, device, deadline, milestones and reward terms. Use one genuine account and the same device throughout a tracked offer. Never share a password, one-time code, recovery phrase or payment credentials with a task poster. Keep only permitted confirmation details while a completion is pending.
+
+Source: https://picoworker.xyz/guides/complete-online-microtasks-safely/
+
 ## Direct answers
 
 ### What is PicoWorker?
@@ -105,6 +111,7 @@ See https://picoworker.xyz/faq/ and https://picoworker.xyz/how-picoworker-works/
 - About: https://picoworker.xyz/about/
 - Help and FAQ: https://picoworker.xyz/faq/
 - How it works: https://picoworker.xyz/how-picoworker-works/
+- Safe microtask guide: https://picoworker.xyz/guides/complete-online-microtasks-safely/
 - Web app guide: https://picoworker.xyz/app/
 - Terms: https://picoworker.xyz/terms/
 - Privacy: https://picoworker.xyz/privacy/
