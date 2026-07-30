@@ -1,102 +1,168 @@
-import { useEffect, useState } from 'react'
-import { useStore } from '../../lib/store'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Page } from '../../components/Page'
-import { Globe, Shield } from '../../components/icons'
+import { Button } from '../../components/ui'
+import { ExternalLink, Globe, Shield } from '../../components/icons'
 import { OfferTabs } from '../../components/OfferTabs'
-
-// Public placement key. It appears in the wall URL by design, so unlike the
-// signing secret it is safe in the client bundle.
-const PLACEMENT_ID = 'plc_fhes2g4o'
-
-// The wall's own background (--kw-background: oklch(0.16 0.02 265)).
-const WALL_SURFACE = '#090D16'
+import { countryLabel } from '../../lib/taskwall'
+import {
+  detectKiwiwallDevice,
+  kiwiwallRewardLabel,
+  openKiwiwallOffer,
+  requestKiwiwallOffers,
+  type KiwiwallOffer,
+  type KiwiwallState,
+} from '../../lib/kiwiwall'
 
 export function KiwiwallOffers() {
-  const { userId } = useStore()
-  const [loaded, setLoaded] = useState(false)
-  // The provider restricts embedding with `frame-ancestors` to picoworker.xyz,
-  // and some browsers block third-party frames outright. There is no reliable
-  // event for "the frame was refused", so treat a frame that never loads as
-  // blocked and steer the user to the direct link instead of a blank box.
-  const [maybeBlocked, setMaybeBlocked] = useState(false)
+  const [state, setState] = useState<KiwiwallState>({ status: 'loading' })
+  const [opening, setOpening] = useState<string | null>(null)
+  const [err, setErr] = useState('')
+  const device = useMemo(() => detectKiwiwallDevice(), [])
+
+  const load = useCallback(async (force = false) => {
+    setState({ status: 'loading' })
+    setState(await requestKiwiwallOffers(device, { force }))
+  }, [device])
 
   useEffect(() => {
-    if (loaded) return
-    const t = setTimeout(() => setMaybeBlocked(true), 4000)
-    return () => clearTimeout(t)
-  }, [loaded])
+    let active = true
+    void requestKiwiwallOffers(device).then((r) => { if (active) setState(r) })
+    return () => { active = false }
+  }, [device])
 
-  if (!userId) {
-    return (
-      <Page>
-        <div className="rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
-          <Globe width={30} height={30} className="mx-auto text-[var(--ink-5)]" />
-          <div className="mt-3 font-head text-[16px] font-extrabold text-[var(--ink)]">Sign in to see offers</div>
-        </div>
-      </Page>
-    )
+  async function open(offer: KiwiwallOffer) {
+    setErr('')
+    setOpening(offer.offerId)
+    // The tab is opened before awaiting: browsers only allow window.open during
+    // a user gesture, and minting is a network round trip. Opening first and
+    // redirecting after keeps this out of the popup blocker.
+    const tab = window.open('', '_blank', 'noopener,noreferrer')
+    try {
+      const url = await openKiwiwallOffer(offer, state.status === 'ready' ? state.country : null)
+      if (tab) tab.location.href = url
+      else window.location.assign(url)
+    } catch (e) {
+      tab?.close()
+      setErr((e as Error).message)
+    } finally {
+      setOpening(null)
+    }
   }
-
-  // sub_id is how the provider tells us who converted, so it must be the real
-  // account id. Never ship the placeholder from their docs.
-  const src = `https://offers.kiwiwall.com/wall/${PLACEMENT_ID}?user_id=${encodeURIComponent(userId)}`
 
   return (
     <Page>
       <OfferTabs />
-      <div className="mb-3 flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
+
+      <div className="mb-1 flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
         <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> Worldwide offers
       </div>
-      <div className="mb-4 text-[12.5px] font-semibold leading-[1.5] text-[var(--ink-4)]">
-        Surveys and app offers from our worldwide partner. Rewards are credited automatically after the
-        provider confirms your completion, which can take a few minutes.
+      <div className="mb-4 text-[12.5px] font-semibold text-[var(--ink-4)]">
+        {state.status === 'ready' && state.country ? `${countryLabel(state.country)} · ` : ''}
+        Rewards are credited after the provider confirms your completion.
       </div>
 
-      {maybeBlocked && !loaded && (
-        <div className="mb-4 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
-          The offers panel did not load. Your browser or an extension may be blocking embedded content.
-          Turn off any content blocker for picoworker.xyz and refresh.
+      {err && (
+        <div className="mb-4 rounded-[14px] border border-[rgba(255,107,90,.25)] bg-[rgba(255,107,90,.07)] p-3.5 text-[12.5px] font-semibold text-[var(--ink-2)]">
+          {err}
         </div>
       )}
 
-      {/*
-        The wall is a cross-origin document, so its interior cannot be styled and
-        it ships no theme parameter — theme=dark/light change nothing. It is
-        already dark with a green accent (#090D16 surface, #4ED589 primary),
-        which sits close to our own #0B0C10 / #2EE06E. Matching the container to
-        WALL_SURFACE hides the seam so the frame reads as part of the page
-        rather than a pasted-in box. Keep this in sync if they restyle.
-      */}
-      <div
-        className="relative overflow-hidden rounded-[18px] border border-[var(--line)]"
-        style={{ background: WALL_SURFACE, boxShadow: 'var(--shadow)' }}
-      >
-        {!loaded && (
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ background: WALL_SURFACE }}
-          >
-            <div className="text-[13px] font-semibold text-[#8A93A6]">Loading offers…</div>
-          </div>
-        )}
-        <iframe
-          src={src}
-          title="Worldwide offers"
-          onLoad={() => setLoaded(true)}
-          className="block h-[min(78svh,900px)] w-full border-0"
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          // The wall is a third-party document. Allow it to run and navigate
-          // itself, but not to reach back into this page's origin.
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"
-        />
-      </div>
+      {state.status === 'loading' && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-[168px] animate-pulse rounded-[18px] border border-[var(--line)] bg-[var(--card)]" />
+          ))}
+        </div>
+      )}
 
-      <div className="mt-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">
+      {state.status === 'error' && (
+        <div className="rounded-[16px] border border-[rgba(255,107,90,.2)] bg-[rgba(255,107,90,.06)] p-4">
+          <div className="text-[13px] font-bold text-[var(--ink-2)]">{state.message}</div>
+          <button onClick={() => void load(true)} className="mt-2 text-[12px] font-extrabold text-[var(--accent-strong)]">
+            Try again
+          </button>
+        </div>
+      )}
+
+      {state.status === 'ready' && state.offers.length === 0 && (
+        <div className="rounded-[22px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
+          <Globe width={30} height={30} className="mx-auto text-[var(--ink-5)]" />
+          <div className="mt-3 font-head text-[16px] font-extrabold text-[var(--ink)]">No offers right now</div>
+          <div className="mt-1 text-[13px] font-semibold text-[var(--ink-3)]">
+            Availability changes by country and device. Please check again later.
+          </div>
+          <Button variant="ghost" onClick={() => void load(true)} className="mx-auto mt-4 px-5 py-2.5">
+            Refresh
+          </Button>
+        </div>
+      )}
+
+      {state.status === 'ready' && state.offers.length > 0 && (
+        <>
+          <div className="mb-3 flex items-center justify-between">
+            <div className="font-head text-[14px] font-extrabold text-[var(--ink)]">
+              {state.offers.length} available {state.offers.length === 1 ? 'offer' : 'offers'}
+            </div>
+            <button onClick={() => void load(true)} className="text-[12px] font-extrabold text-[var(--accent-strong)]">
+              Refresh
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {state.offers.map((offer) => (
+              <article
+                key={offer.offerId}
+                className="flex min-h-[168px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4"
+                style={{ boxShadow: 'var(--shadow)' }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
+                    {offer.logo ? (
+                      <img src={offer.logo} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                    ) : (
+                      <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">
+                      {offer.title}
+                    </h3>
+                    {offer.category && (
+                      <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-[.04em] text-[var(--ink-5)]">
+                        {offer.category}
+                      </div>
+                    )}
+                    <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">
+                      {kiwiwallRewardLabel(offer)}
+                    </div>
+                  </div>
+                </div>
+
+                {(offer.kpi || offer.description) && (
+                  <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+                    {offer.kpi || offer.description}
+                  </p>
+                )}
+
+                <Button
+                  block
+                  className="mt-auto h-[38px] text-[12px]"
+                  disabled={opening === offer.offerId}
+                  onClick={() => void open(offer)}
+                >
+                  {opening === offer.offerId ? 'Opening…' : <>Start offer <ExternalLink width={14} height={14} /></>}
+                </Button>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="mt-5 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">
         <Shield width={17} height={17} className="mt-0.5 flex-none text-[#D99832]" />
         <p className="text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">
           Read each offer's requirements before you start. Some ask for a purchase or a paid subscription,
-          which is not required to earn on PicoWorker. The provider confirms every completion, so VPNs,
+          which is never required to earn on PicoWorker. The provider confirms every completion, so VPNs,
           duplicate accounts and automated traffic will not be paid.
         </p>
       </div>

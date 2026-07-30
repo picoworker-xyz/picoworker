@@ -2,6 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { REFERRAL_SHARE_PCT } from '../../lib/format'
+import { countryLabel } from '../../lib/taskwall'
+import {
+  detectKiwiwallDevice,
+  kiwiwallRewardLabel,
+  openKiwiwallOffer,
+  requestKiwiwallOffers,
+  type KiwiwallOffer,
+  type KiwiwallState,
+} from '../../lib/kiwiwall'
 import { Page } from '../../components/Page'
 import { TaskRow } from '../../components/blocks'
 import { Button, Chip } from '../../components/ui'
@@ -57,6 +66,7 @@ export function EarnFeed() {
       )}
 
       {cat === 'All' && <TaskwallEarnSection />}
+      {cat === 'All' && <KiwiwallEarnSection />}
     </Page>
   )
 }
@@ -174,5 +184,86 @@ function AllCaughtUp() {
         </button>
       </div>
     </div>
+  )
+}
+
+/**
+ * Worldwide offers on the Earn page, alongside the featured wall.
+ *
+ * Deliberately not hidden behind the Offers tab: these pay several times what
+ * a PicoWorker task does, so burying them costs workers real money. Shows the
+ * top six by reward and links out for the rest.
+ */
+function KiwiwallEarnSection() {
+  const nav = useNavigate()
+  const [state, setState] = useState<KiwiwallState>({ status: 'loading' })
+  const [opening, setOpening] = useState<string | null>(null)
+  const device = useMemo(() => detectKiwiwallDevice(), [])
+
+  useEffect(() => {
+    let active = true
+    void requestKiwiwallOffers(device).then((r) => { if (active) setState(r) })
+    return () => { active = false }
+  }, [device])
+
+  // Stay quiet when there is nothing to show rather than rendering an empty
+  // header: the section is additive to the task feed, not part of it.
+  if (state.status !== 'ready' || state.offers.length === 0) return null
+
+  async function open(offer: KiwiwallOffer) {
+    setOpening(offer.offerId)
+    // Opened before awaiting the mint so the popup blocker still sees a gesture.
+    const tab = window.open('', '_blank', 'noopener,noreferrer')
+    try {
+      const url = await openKiwiwallOffer(offer, state.status === 'ready' ? state.country : null)
+      if (tab) tab.location.href = url
+      else window.location.assign(url)
+    } catch {
+      tab?.close()
+      nav('/offers/worldwide')
+    } finally {
+      setOpening(null)
+    }
+  }
+
+  return (
+    <section className="mt-7">
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
+            <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> Worldwide offers
+          </div>
+          <div className="mt-1 text-[12px] font-semibold text-[var(--ink-4)]">
+            {state.country ? `${countryLabel(state.country)} · ` : ''}paid after the provider confirms
+          </div>
+        </div>
+        <button onClick={() => nav('/offers/worldwide')} className="flex items-center gap-1 text-[12px] font-extrabold text-[var(--accent-strong)]">
+          View all <ArrowRight width={14} height={14} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {state.offers.slice(0, 6).map((offer) => (
+          <article key={offer.offerId} className="flex min-h-[155px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
+                {offer.logo ? (
+                  <img src={offer.logo} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                ) : (
+                  <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h3>
+                <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{kiwiwallRewardLabel(offer)}</div>
+              </div>
+            </div>
+            <Button block className="mt-auto h-[38px] text-[12px]" disabled={opening === offer.offerId} onClick={() => void open(offer)}>
+              {opening === offer.offerId ? 'Opening…' : 'Start offer'}
+            </Button>
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
