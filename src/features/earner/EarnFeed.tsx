@@ -212,17 +212,13 @@ function KiwiwallEarnSection() {
 
   async function open(offer: KiwiwallOffer) {
     setOpening(offer.offerId)
-    // Opened before awaiting the mint so the popup blocker still sees a gesture.
-    const tab = window.open('', '_blank', 'noopener,noreferrer')
+    // Same-tab navigation — see the note in KiwiwallOffers.tsx.
     try {
       const url = await openKiwiwallOffer(offer, state.status === 'ready' ? state.country : null)
-      if (tab) tab.location.href = url
-      else window.location.assign(url)
+      window.location.assign(url)
     } catch {
-      tab?.close()
-      nav('/offers/worldwide')
-    } finally {
       setOpening(null)
+      nav('/offers/worldwide')
     }
   }
 
@@ -259,7 +255,7 @@ function KiwiwallEarnSection() {
               </div>
             </div>
             <Button block className="mt-auto h-[38px] text-[12px]" disabled={opening === offer.offerId} onClick={() => void open(offer)}>
-              {opening === offer.offerId ? 'Opening…' : 'Start offer'}
+              {opening === offer.offerId ? 'Taking you there…' : 'Start offer'}
             </Button>
           </article>
         ))}

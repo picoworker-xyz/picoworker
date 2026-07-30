@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
   if (!API_TOKEN || !PLACEMENT_ID) {
-    return json({ error: 'Worldwide offers are awaiting publisher configuration' }, 503)
+    return json({ status: 'error', error: 'Worldwide offers are awaiting publisher configuration.' })
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
@@ -49,13 +49,13 @@ Deno.serve(async (req) => {
   try { body = await req.json() } catch { return json({ error: 'Bad request' }, 400) }
 
   const offerId = clean(body.offerId, 200)
-  if (!offerId) return json({ error: 'Missing offer' }, 422)
+  if (!offerId) return json({ status: 'error', error: 'Missing offer.' })
 
   const ip = clientIp(req)
   const country = (req.headers.get('cf-ipcountry') ?? clean(body.country, 2)).toUpperCase()
   const userAgent = clean(req.headers.get('user-agent'), 500)
   if (!ip || !/^[A-Z]{2}$/.test(country)) {
-    return json({ error: 'Could not verify your location. Disable any VPN and retry.' }, 422)
+    return json({ status: 'error', error: 'We could not verify your location. Please disable VPN and try again.' })
   }
 
   // Our idempotency key with the provider. Replaying one returns 409 on their
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('KiwiWall mint request failed', error)
-    return json({ error: 'Could not open this offer right now. Please try again.' }, 502)
+    return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
   }
 
   if (!res.ok) {
@@ -92,17 +92,17 @@ Deno.serve(async (req) => {
     const detail = await res.text().catch(() => '')
     console.warn('KiwiWall mint rejected', { status: res.status, offerId, detail: detail.slice(0, 300) })
     if (res.status === 422) {
-      return json({ error: 'This offer is no longer available to you. Pull to refresh the list.' }, 422)
+      return json({ status: 'error', error: 'This offer is no longer available to you. Tap Refresh for an updated list.' })
     }
     if (res.status === 429) {
-      return json({ error: 'Too many offers opened at once. Wait a moment and try again.' }, 429)
+      return json({ status: 'error', error: 'Too many offers opened at once. Wait a moment and try again.' })
     }
-    return json({ error: 'Could not open this offer right now. Please try again.' }, 502)
+    return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
   }
 
   const payload = await res.json() as { data?: { entry_url?: string } }
   const entryUrl = clean(payload.data?.entry_url, 3000)
-  if (!entryUrl) return json({ error: 'Could not open this offer right now. Please try again.' }, 502)
+  if (!entryUrl) return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
 
   // Recorded so a later conversion postback can be traced to this user + offer.
   await admin.from('kiwiwall_clicks').insert({

@@ -33,18 +33,15 @@ export function KiwiwallOffers() {
   async function open(offer: KiwiwallOffer) {
     setErr('')
     setOpening(offer.offerId)
-    // The tab is opened before awaiting: browsers only allow window.open during
-    // a user gesture, and minting is a network round trip. Opening first and
-    // redirecting after keeps this out of the popup blocker.
-    const tab = window.open('', '_blank', 'noopener,noreferrer')
+    // Navigate in this tab rather than opening a new one. Minting is a network
+    // round trip, so a pre-opened tab sits on about:blank looking broken, and
+    // on mobile a background tab is easy to lose entirely. The offer needs the
+    // full screen anyway, and the back button returns here.
     try {
       const url = await openKiwiwallOffer(offer, state.status === 'ready' ? state.country : null)
-      if (tab) tab.location.href = url
-      else window.location.assign(url)
+      window.location.assign(url)
     } catch (e) {
-      tab?.close()
       setErr((e as Error).message)
-    } finally {
       setOpening(null)
     }
   }
@@ -150,7 +147,7 @@ export function KiwiwallOffers() {
                   disabled={opening === offer.offerId}
                   onClick={() => void open(offer)}
                 >
-                  {opening === offer.offerId ? 'Opening…' : <>Start offer <ExternalLink width={14} height={14} /></>}
+                  {opening === offer.offerId ? 'Taking you there…' : <>Start offer <ExternalLink width={14} height={14} /></>}
                 </Button>
               </article>
             ))}

@@ -54,15 +54,20 @@ function clientIp(req: Request): string {
 }
 
 async function detectCountry(req: Request, ip: string): Promise<string> {
-  const header = (req.headers.get('cf-ipcountry') ?? '').trim().toUpperCase()
-  if (/^[A-Z]{2}$/.test(header) && header !== 'XX') return header
+  // Same order as taskwall-offers, which is proven in production: Supabase's
+  // edge proxy sets one of these two headers for most requests.
+  const header = [req.headers.get('cf-ipcountry'), req.headers.get('x-country-code')]
+    .find((v) => /^[A-Z]{2}$/i.test(v?.trim() ?? ''))
+  if (header && header.toUpperCase() !== 'XX') return header.toUpperCase()
   if (!ip) return ''
   try {
-    const res = await fetch(`https://ipapi.co/${ip}/country/`, {
+    const res = await fetch(`https://api.country.is/${encodeURIComponent(ip)}`, {
+      headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(4000),
     })
     if (!res.ok) return ''
-    const c = (await res.text()).trim().toUpperCase()
+    const payload = await res.json() as { country?: unknown }
+    const c = typeof payload.country === 'string' ? payload.country.trim().toUpperCase() : ''
     return /^[A-Z]{2}$/.test(c) && c !== 'XX' ? c : ''
   } catch {
     return ''
@@ -127,7 +132,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
   if (!API_TOKEN || !PLACEMENT_ID || !Number.isFinite(USD_PER_CREDIT) || USD_PER_CREDIT <= 0) {
-    return json({ error: 'Worldwide offers are awaiting publisher configuration' }, 503)
+    return json({ status: 'error', error: 'Worldwide offers are awaiting publisher configuration.' })
   }
 
   const auth = req.headers.get('Authorization') ?? ''
@@ -145,8 +150,11 @@ Deno.serve(async (req) => {
 
   const ip = clientIp(req)
   const country = await detectCountry(req, ip)
-  if (!country || !ip) {
-    return json({ error: 'Could not determine your country. Please disable any VPN and retry.' }, 422)
+  if (!country) {
+    return json({
+      status: 'error',
+      error: 'We could not verify your country. Please disable VPN and tap Refresh.',
+    })
   }
 
   const cached = await admin
@@ -161,6 +169,15 @@ Deno.serve(async (req) => {
     : Number.POSITIVE_INFINITY
   if (!body.force && Array.isArray(cached.data?.offers) && age < CACHE_TTL_MS) {
     return json({ status: 'success', offers: cached.data.offers, country, os, cached: true })
+  }
+
+  // KiwiWall requires `ip` on every pull, so without one we cannot refresh —
+  // serve whatever is cached rather than failing outright.
+  if (!ip) {
+    if (Array.isArray(cached.data?.offers)) {
+      return json({ status: 'success', offers: cached.data.offers, country, os, cached: true })
+    }
+    return json({ status: 'error', error: 'Could not load offers. Please try again.' })
   }
 
   try {
@@ -181,7 +198,7 @@ Deno.serve(async (req) => {
         console.error('KiwiWall reward share out of range — check the placement exchange rate', {
           share, sample: priced.slice(0, 3).map((o) => ({ payout: o.payout, rewardUsd: o.rewardUsd })),
         })
-        return json({ error: 'Worldwide offers are awaiting publisher configuration' }, 503)
+        return json({ status: 'error', error: 'Worldwide offers are awaiting publisher configuration.' })
       }
     }
 
