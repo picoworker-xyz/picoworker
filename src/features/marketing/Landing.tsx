@@ -206,10 +206,10 @@ export function Landing() {
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[1000px] mx-auto">
           {[
-            { to: '/earn/follow-accounts', icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on supported social platforms.', p: 'Quick tasks' },
-            { to: '/earn/watch-videos', icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Watch eligible short clips through to the end.', p: 'Short clips' },
-            { to: '/earn/app-testing', icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Install, explore and complete the listed app requirements.', p: 'Multi-step tasks' },
-            { to: '/earn/paid-surveys', icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share genuine answers in available questionnaires.', p: 'Availability varies' },
+            { to: '/earn/follow-accounts/', icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on supported social platforms.', p: 'Quick tasks' },
+            { to: '/earn/watch-videos/', icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Watch eligible short clips through to the end.', p: 'Short clips' },
+            { to: '/earn/app-testing/', icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Install, explore and complete the listed app requirements.', p: 'Multi-step tasks' },
+            { to: '/earn/paid-surveys/', icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share genuine answers in available questionnaires.', p: 'Availability varies' },
           ].map((c) => (
             <Link key={c.t} to={c.to} className="card-hover rounded-[20px] p-6 bg-[var(--card)] border border-[var(--line)] block">
               <div className="w-11 h-11 rounded-[13px] flex items-center justify-center" style={{ background: c.color }}>

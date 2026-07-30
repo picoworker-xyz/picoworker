@@ -19,7 +19,8 @@ export function useSeo({ title, description, path }: { title: string; descriptio
 
     const canonical = document.querySelector('link[rel="canonical"]')
     const prevCanonical = canonical?.getAttribute('href') ?? ''
-    canonical?.setAttribute('href', `https://picoworker.xyz${path}`)
+    const canonicalPath = path === '/' ? '/' : `${path.replace(/\/$/, '')}/`
+    canonical?.setAttribute('href', `https://picoworker.xyz${canonicalPath}`)
 
     return () => {
       document.title = prevTitle
@@ -38,18 +39,18 @@ function Seo(props: { title: string; description: string; path: string }) {
  *  page so crawlers can discover them from anywhere on the site. */
 export function MarketingFooter() {
   const links: [string, string][] = [
-    ['/earn/follow-accounts', 'Follow accounts'],
-    ['/earn/watch-videos', 'Watch videos'],
-    ['/earn/app-testing', 'App testing'],
-    ['/earn/paid-surveys', 'Paid surveys'],
-    ['/micro-jobs', 'Micro jobs'],
-    ['/how-picoworker-works', 'How it works'],
-    ['/faq', 'Help and FAQ'],
-    ['/about', 'About PicoWorker'],
-    ['/app', 'Get the app'],
-    ['/is-picoworker-legit', 'Is PicoWorker legit?'],
-    ['/picoworkers-alternative', 'Picoworkers alternative'],
-    ['/ai-agents', 'For AI agents'],
+    ['/earn/follow-accounts/', 'Follow accounts'],
+    ['/earn/watch-videos/', 'Watch videos'],
+    ['/earn/app-testing/', 'App testing'],
+    ['/earn/paid-surveys/', 'Paid surveys'],
+    ['/micro-jobs/', 'Micro jobs'],
+    ['/how-picoworker-works/', 'How it works'],
+    ['/faq/', 'Help and FAQ'],
+    ['/about/', 'About PicoWorker'],
+    ['/app/', 'Get the app'],
+    ['/is-picoworker-legit/', 'Is PicoWorker legit?'],
+    ['/picoworkers-alternative/', 'Picoworkers alternative'],
+    ['/ai-agents/', 'For AI agents'],
   ]
   return (
     <footer className="border-t border-[var(--line)]">
@@ -62,7 +63,7 @@ export function MarketingFooter() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <BrandMark size={32} />
           <div className="text-[var(--ink-4)] text-[13px] font-semibold">
-            © 2026 PicoWorker · <Link to="/terms" className="hover:text-[var(--ink)]">Terms</Link> · <Link to="/privacy" className="hover:text-[var(--ink)]">Privacy</Link>
+            © 2026 PicoWorker · <Link to="/terms/" className="hover:text-[var(--ink)]">Terms</Link> · <Link to="/privacy/" className="hover:text-[var(--ink)]">Privacy</Link>
           </div>
           <a href="https://x.com/picoworker" className="w-9 h-9 rounded-full bg-[var(--fill)] flex items-center justify-center text-[var(--ink-3)] hover:text-[var(--ink)]">
             <XLogo width={15} height={15} />
@@ -172,11 +173,11 @@ function MiniFaq({ faqs }: { faqs: { q: string; a: string }[] }) {
 
 function OtherWays({ current }: { current: string }) {
   const all = [
-    { to: '/earn/follow-accounts', icon: <XLogo width={18} height={18} className="text-[#fff]" />, bg: '#000000', t: 'Follow accounts', p: 'Quick tasks' },
-    { to: '/earn/watch-videos', icon: <Play width={20} height={20} className="text-[#fff]" />, bg: '#FF0033', t: 'Watch videos', p: 'Short clips' },
-    { to: '/earn/app-testing', icon: <Bolt width={18} height={18} className="text-[#fff]" />, bg: '#5B8DEF', t: 'Test apps', p: 'Multi-step tasks' },
-    { to: '/earn/paid-surveys', icon: <ListIcon width={18} height={18} className="text-[#fff]" />, bg: '#26A17B', t: 'Take surveys', p: 'Eligibility varies' },
-  ].filter((w) => w.to !== current)
+    { to: '/earn/follow-accounts/', icon: <XLogo width={18} height={18} className="text-[#fff]" />, bg: '#000000', t: 'Follow accounts', p: 'Quick tasks' },
+    { to: '/earn/watch-videos/', icon: <Play width={20} height={20} className="text-[#fff]" />, bg: '#FF0033', t: 'Watch videos', p: 'Short clips' },
+    { to: '/earn/app-testing/', icon: <Bolt width={18} height={18} className="text-[#fff]" />, bg: '#5B8DEF', t: 'Test apps', p: 'Multi-step tasks' },
+    { to: '/earn/paid-surveys/', icon: <ListIcon width={18} height={18} className="text-[#fff]" />, bg: '#26A17B', t: 'Take surveys', p: 'Eligibility varies' },
+  ].filter((w) => w.to.replace(/\/$/, '') !== current.replace(/\/$/, ''))
   return (
     <section className="app-container py-16 lg:py-20">
       <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">More ways to earn on PicoWorker</h2>
@@ -508,7 +509,7 @@ export function PicoworkersAlternative() {
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The same kinds of tasks</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
-            Available task types can include <Link to="/earn/follow-accounts" className="text-[var(--accent-strong)] font-semibold">follow accounts</Link>, <Link to="/earn/watch-videos" className="text-[var(--accent-strong)] font-semibold">watch videos</Link>, <Link to="/earn/app-testing" className="text-[var(--accent-strong)] font-semibold">test new apps</Link> and <Link to="/earn/paid-surveys" className="text-[var(--accent-strong)] font-semibold">take surveys</Link>. Every task displays its requirements before it starts, and eligible rewards are credited only after verification.
+            Available task types can include <Link to="/earn/follow-accounts/" className="text-[var(--accent-strong)] font-semibold">follow accounts</Link>, <Link to="/earn/watch-videos/" className="text-[var(--accent-strong)] font-semibold">watch videos</Link>, <Link to="/earn/app-testing/" className="text-[var(--accent-strong)] font-semibold">test new apps</Link> and <Link to="/earn/paid-surveys/" className="text-[var(--accent-strong)] font-semibold">take surveys</Link>. Every task displays its requirements before it starts, and eligible rewards are credited only after verification.
           </p>
         </div>
       </section>
@@ -821,7 +822,7 @@ export function IsLegit() {
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The rules that keep it fair</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
-            One account per person, real completions only. Fraud checks run on tasks and withdrawals, and larger withdrawals can require manual review. These rules exist because businesses only keep funding tasks when results are genuine, and that funding is what pays you. The full detail is in our <Link to="/terms" className="text-[var(--accent-strong)] font-semibold">terms</Link>.
+            One account per person, real completions only. Fraud checks run on tasks and withdrawals, and larger withdrawals can require manual review. These rules exist because businesses only keep funding tasks when results are genuine, and that funding is what pays you. The full detail is in our <Link to="/terms/" className="text-[var(--accent-strong)] font-semibold">terms</Link>.
           </p>
         </div>
       </section>
@@ -869,7 +870,7 @@ export function AiAgents() {
                 Get an API key <ArrowRight width={17} height={17} />
               </button>
               <Link
-                to="/ai-agents/docs"
+                to="/ai-agents/docs/"
                 className="px-6 py-[14px] rounded-[13px] font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]"
               >
                 API documentation
@@ -920,7 +921,7 @@ curl -X POST api.../agent-api/campaigns/<id>/launch \\
 curl api.../agent-api/proofs -H "Authorization: Bearer pw_agent_..."`}</pre>
           </div>
           <p className="text-[var(--ink-4)] text-[13px] font-semibold mt-4 leading-[1.6]">
-            Approvals pay the worker instantly, rejections carry a reason the worker can appeal, exactly like campaigns run from the app. Existing accounts can also mint keys under More, then Agent API. Every endpoint with request and response examples is in the <Link to="/ai-agents/docs" className="text-[var(--accent-strong)] font-bold">full API documentation</Link>.
+            Approvals pay the worker instantly, rejections carry a reason the worker can appeal, exactly like campaigns run from the app. Existing accounts can also mint keys under More, then Agent API. Every endpoint with request and response examples is in the <Link to="/ai-agents/docs/" className="text-[var(--accent-strong)] font-bold">full API documentation</Link>.
           </p>
         </div>
       </section>

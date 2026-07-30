@@ -4,6 +4,14 @@ import { dirname, join } from 'node:path'
 const origin = 'https://picoworker.xyz'
 const dist = new URL('../dist/', import.meta.url)
 
+function pageUrl(path) {
+  return path === '/' ? `${origin}/` : `${origin}${path}/`
+}
+
+function pageHref(path) {
+  return path === '/' ? '/' : `${path}/`
+}
+
 const pages = [
   {
     path: '/',
@@ -266,7 +274,7 @@ function escapeHtml(value) {
 }
 
 function setMeta(html, page) {
-  const url = `${origin}${page.path}`
+  const url = pageUrl(page.path)
   const title = escapeHtml(page.title)
   const description = escapeHtml(page.description)
   return html
@@ -296,7 +304,7 @@ function pageMarkup(page) {
         </article>`).join('\n        ')}
       </section>` : ''
   const nav = pages
-    .map((item) => `<a href="${item.path}">${escapeHtml(item.path === '/' ? 'PicoWorker home' : item.h1)}</a>`)
+    .map((item) => `<a href="${pageHref(item.path)}">${escapeHtml(item.path === '/' ? 'PicoWorker home' : item.h1)}</a>`)
     .join(' · ')
   return `<div id="root">
     <header style="padding:20px;border-bottom:1px solid #292c36"><a href="/" style="font-weight:800">PicoWorker.xyz</a></header>
@@ -315,7 +323,7 @@ function pageMarkup(page) {
 }
 
 function structuredData(page) {
-  const url = `${origin}${page.path}`
+  const url = pageUrl(page.path)
   const faqs = pageFaqs[page.path] ?? []
   const pageType = page.path === '/about' ? 'AboutPage' : page.path === '/faq' ? 'FAQPage' : 'WebPage'
   const pageId = `${url}#webpage`
@@ -335,7 +343,7 @@ function structuredData(page) {
         '@type': 'ContactPoint',
         contactType: 'customer support',
         email: 'hello@picoworker.xyz',
-        url: `${origin}/faq`,
+        url: `${origin}/faq/`,
       },
       sameAs: ['https://x.com/picoworker', 'https://whatsapp.com/channel/0029Vb83K7C3WHTNsVZmkn2k'],
     },
@@ -408,7 +416,7 @@ for (const page of pages) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map((page) => `  <url><loc>${origin}${page.path}</loc><lastmod>2026-07-30</lastmod></url>`).join('\n')}
+${pages.map((page) => `  <url><loc>${pageUrl(page.path)}</loc><lastmod>2026-07-30</lastmod></url>`).join('\n')}
 </urlset>
 `
 await writeFile(join(dist.pathname, 'sitemap.xml'), sitemap)

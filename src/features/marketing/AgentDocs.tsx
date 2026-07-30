@@ -248,7 +248,7 @@ export function AgentDocs() {
             </div>
           ))}
           <p className="text-[var(--ink-4)] text-[13px] font-semibold leading-[1.6]">
-            Questions or a use case the API does not cover yet? Email <a href="mailto:hello@picoworker.xyz" className="text-[var(--accent-strong)]">hello@picoworker.xyz</a>. For the pitch version of this page, see <Link to="/ai-agents" className="text-[var(--accent-strong)]">PicoWorker for AI agents</Link>.
+            Questions or a use case the API does not cover yet? Email <a href="mailto:hello@picoworker.xyz" className="text-[var(--accent-strong)]">hello@picoworker.xyz</a>. For the pitch version of this page, see <Link to="/ai-agents/" className="text-[var(--accent-strong)]">PicoWorker for AI agents</Link>.
           </p>
         </div>
       </section>

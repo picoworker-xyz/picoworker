@@ -13,7 +13,7 @@ PicoWorker is an independent, two-sided marketplace for simple online tasks. Ear
 
 PicoWorker may also be written as “Pico Worker” or “PicoWorker.xyz”. PicoWorker is not Picoworkers or SproutGigs and is not affiliated with those services.
 
-Source: https://picoworker.xyz/about
+Source: https://picoworker.xyz/about/
 
 ## How PicoWorker works
 
@@ -33,7 +33,7 @@ For businesses:
 3. Publish the campaign when its configuration is ready.
 4. Review submitted work against the published requirements.
 
-Source: https://picoworker.xyz/how-picoworker-works
+Source: https://picoworker.xyz/how-picoworker-works/
 
 ## Task statuses
 
@@ -53,11 +53,11 @@ To preserve provider tracking, start from PicoWorker, use the same device and ac
 
 ## Common task categories
 
-- Follow-account and other permitted social tasks: https://picoworker.xyz/earn/follow-accounts
-- Watch tasks: https://picoworker.xyz/earn/watch-videos
-- App testing and milestone tasks: https://picoworker.xyz/earn/app-testing
-- Survey tasks: https://picoworker.xyz/earn/paid-surveys
-- General micro jobs: https://picoworker.xyz/micro-jobs
+- Follow-account and other permitted social tasks: https://picoworker.xyz/earn/follow-accounts/
+- Watch tasks: https://picoworker.xyz/earn/watch-videos/
+- App testing and milestone tasks: https://picoworker.xyz/earn/app-testing/
+- Survey tasks: https://picoworker.xyz/earn/paid-surveys/
+- General micro jobs: https://picoworker.xyz/micro-jobs/
 
 The active task list can change. These category pages explain the process and do not promise that a specific task will be available to every account.
 
@@ -67,7 +67,7 @@ The official website is picoworker.xyz. PicoWorker is a browser-based web app an
 
 PicoWorker support will not ask for an account password or one-time verification code. Signed-in users can use the support area, or contact hello@picoworker.xyz.
 
-Source: https://picoworker.xyz/is-picoworker-legit
+Source: https://picoworker.xyz/is-picoworker-legit/
 
 ## Direct answers
 
@@ -97,15 +97,15 @@ No. PicoWorker at picoworker.xyz is a separate and independent service.
 
 ### Where are the complete answers?
 
-See https://picoworker.xyz/faq and https://picoworker.xyz/how-picoworker-works.
+See https://picoworker.xyz/faq/ and https://picoworker.xyz/how-picoworker-works/.
 
 ## Additional canonical links
 
 - Home: https://picoworker.xyz/
-- About: https://picoworker.xyz/about
-- Help and FAQ: https://picoworker.xyz/faq
-- How it works: https://picoworker.xyz/how-picoworker-works
-- Web app guide: https://picoworker.xyz/app
-- Terms: https://picoworker.xyz/terms
-- Privacy: https://picoworker.xyz/privacy
+- About: https://picoworker.xyz/about/
+- Help and FAQ: https://picoworker.xyz/faq/
+- How it works: https://picoworker.xyz/how-picoworker-works/
+- Web app guide: https://picoworker.xyz/app/
+- Terms: https://picoworker.xyz/terms/
+- Privacy: https://picoworker.xyz/privacy/
 - Sitemap: https://picoworker.xyz/sitemap.xml
