@@ -9,6 +9,7 @@ import type {
   Referral,
   Task,
   TaskCompletion,
+  TaskHold,
   Wallet,
   Withdrawal,
 } from './types'
@@ -25,10 +26,11 @@ const mapWallet = (r: DbRow): Wallet => ({
   business_escrow: num(r.business_escrow),
   lifetime_earned: num(r.lifetime_earned),
 })
-const mapTask = (r: DbRow): Task => ({ ...(r as unknown as Task), reward: num(r.reward), fee: num(r.fee), goal_count: num(r.goal_count), done_count: num(r.done_count), est_seconds: num(r.est_seconds) })
+const mapTask = (r: DbRow): Task => ({ ...(r as unknown as Task), reward: num(r.reward), fee: num(r.fee), goal_count: num(r.goal_count), done_count: num(r.done_count), est_seconds: num(r.est_seconds), max_file_mb: r.max_file_mb == null ? undefined : num(r.max_file_mb) })
 const mapCompletion = (r: DbRow): TaskCompletion => ({ ...(r as unknown as TaskCompletion), reward: num(r.reward) })
 const mapLedger = (r: DbRow): LedgerEntry => ({ ...(r as unknown as LedgerEntry), amount: num(r.amount), balance_after: num(r.balance_after) })
 const mapWithdrawal = (r: DbRow): Withdrawal => ({ ...(r as unknown as Withdrawal), amount: num(r.amount), fee: num(r.fee) })
+const mapHold = (r: DbRow): TaskHold => ({ ...(r as unknown as TaskHold), deposit: num(r.deposit) })
 const mapReferral = (r: DbRow): Referral => ({ ...(r as unknown as Referral), tasks: num(r.tasks), earnings: num(r.earnings) })
 
 interface Cache {
@@ -39,9 +41,10 @@ interface Cache {
   ledger: LedgerEntry[]
   withdrawals: Withdrawal[]
   referrals: Referral[]
+  holds: TaskHold[]
   underfundedIds: string[]
 }
-const EMPTY: Cache = { profile: null, wallet: null, tasks: [], completions: [], ledger: [], withdrawals: [], referrals: [], underfundedIds: [] }
+const EMPTY: Cache = { profile: null, wallet: null, tasks: [], completions: [], ledger: [], withdrawals: [], referrals: [], holds: [], underfundedIds: [] }
 
 export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
   const sb = supabase! // only mounted when supabaseEnabled
@@ -51,7 +54,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
   const uidRef = useRef<string | null>(null)
 
   const loadAll = useCallback(async (uid: string) => {
-    const [p, w, tk, comp, led, wd, ref, uf] = await Promise.all([
+    const [p, w, tk, comp, led, wd, ref, hold, uf] = await Promise.all([
       sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
       sb.from('wallets').select('*').eq('profile_id', uid).maybeSingle(),
       sb.from('tasks').select('*'), // RLS → live tasks + own campaigns
@@ -59,6 +62,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       sb.from('ledger_entries').select('*').order('created_at', { ascending: false }),
       sb.from('withdrawals').select('*').order('created_at', { ascending: false }),
       sb.from('referrals').select('*'),
+      sb.from('task_holds').select('*').eq('status', 'active'),
       sb.rpc('underfunded_task_ids'), // live tasks whose owner can't currently cover the reward
     ])
     setCache({
@@ -69,6 +73,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       ledger: (led.data ?? []).map(mapLedger),
       withdrawals: (wd.data ?? []).map(mapWithdrawal),
       referrals: (ref.data ?? []).map(mapReferral),
+      holds: (hold.data ?? []).map(mapHold),
       underfundedIds: Array.isArray(uf.data) ? (uf.data as string[]) : [],
     })
   }, [sb])
@@ -288,6 +293,30 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         void sb.rpc('verify_identity_now').then(refresh)
       },
 
+      // ---- job holds ----
+      holdsFor: (taskId) => cache.holds.filter((h) => h.task_id === taskId && h.status === 'active'),
+      myHold: (taskId) =>
+        cache.holds.find(
+          (h) => h.task_id === taskId && h.earner_id === uidRef.current && h.status === 'active',
+        ) ?? null,
+      async holdTask(taskId) {
+        const { data, error } = await sb.rpc('hold_task', { p_task: taskId })
+        if (error) throw new Error(error.message)
+        await refresh()
+        return data as { deposit: number; expires_at: string }
+      },
+      async releaseHold(taskId) {
+        const { error } = await sb.rpc('release_task_hold', { p_task: taskId })
+        if (error) throw new Error(error.message)
+        await refresh()
+      },
+      async extendHold(taskId) {
+        const { data, error } = await sb.rpc('extend_task_hold', { p_task: taskId })
+        if (error) throw new Error(error.message)
+        await refresh()
+        return data as { expires_at: string; added_minutes: number }
+      },
+
       // ---- business mutations (RPC) ----
       async createTask(draft: TaskDraft) {
         const { data, error } = await sb.rpc('create_campaign', {
@@ -295,6 +324,8 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
           p_reward: draft.reward, p_goal: draft.goal_count, p_auto: draft.auto_verify, p_category: draft.category,
           p_proof_instructions: draft.proof_instructions ?? null, p_reference_images: draft.reference_images ?? [],
           p_screenshots: draft.screenshots ?? 1, p_screenshot_specs: draft.screenshot_specs ?? [],
+          p_accepted_file_types: draft.accepted_file_types ?? ['image'], p_max_file_mb: draft.max_file_mb ?? 10,
+          p_hold_minutes: draft.hold_minutes ?? null,
         })
         if (error || !data) throw new Error(error?.message ?? 'Could not create task.')
         let task = mapTask(data)

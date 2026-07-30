@@ -3,6 +3,7 @@ import { Page } from '../../components/Page'
 import { Globe, Eye, EyeOff } from '../../components/icons'
 import { Button } from '../../components/ui'
 import { TaskwallOfferDetails } from '../../components/TaskwallOfferDetails'
+import { OfferTabs } from '../../components/OfferTabs'
 import {
   detectTaskwallDevice,
   requestTaskwallOffers,
@@ -50,6 +51,7 @@ export function TaskwallOffers() {
 
   return (
     <Page>
+      <OfferTabs />
       <div className="mb-4 rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

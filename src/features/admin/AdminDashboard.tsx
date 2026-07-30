@@ -5,7 +5,7 @@ import { timeAgo, usd } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Send } from '../../components/icons'
 
-const TABS = ['Overview', 'Users', 'Tasks', 'Proofs', 'Support', 'Appeals', 'Deposits', 'Withdrawals', 'Fraud'] as const
+const TABS = ['Overview', 'Users', 'Tasks', 'Proofs', 'Support', 'Appeals', 'Deposits', 'Withdrawals', 'Fraud', 'Settings'] as const
 type Tab = (typeof TABS)[number]
 const RPC: Partial<Record<Tab, string>> = {
   Overview: 'admin_stats',
@@ -33,7 +33,7 @@ export function AdminDashboard() {
     setData(null) // drop the previous tab's data so it can't render into this tab
     setSearch('')
     setPage(0)
-    if (tab === 'Support' || tab === 'Appeals' || tab === 'Withdrawals') { setLoading(false); return }
+    if (tab === 'Support' || tab === 'Appeals' || tab === 'Withdrawals' || tab === 'Settings') { setLoading(false); return }
     let alive = true
     setLoading(true)
     supabase!.rpc(RPC[tab]!).then(({ data, error }) => {
@@ -67,7 +67,7 @@ export function AdminDashboard() {
     )
   }
 
-  const isTable = tab !== 'Overview' && tab !== 'Support' && tab !== 'Appeals' && tab !== 'Withdrawals'
+  const isTable = tab !== 'Overview' && tab !== 'Support' && tab !== 'Appeals' && tab !== 'Withdrawals' && tab !== 'Settings'
 
   return (
     <Page>
@@ -103,6 +103,8 @@ export function AdminDashboard() {
         <AdminAppeals />
       ) : tab === 'Withdrawals' ? (
         <AdminWithdrawals />
+      ) : tab === 'Settings' ? (
+        <AdminSettings />
       ) : loading ? (
         <Loading />
       ) : err ? (
@@ -351,6 +353,78 @@ function UserDetail({ id, onClose }: { id: string; onClose: () => void }) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function AdminSettings() {
+  const [def, setDef] = useState('30')
+  const [max, setMax] = useState('240')
+  const [ext, setExt] = useState('30')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+  const [err, setErr] = useState('')
+
+  useEffect(() => {
+    supabase!.from('platform_settings').select('*').maybeSingle().then(({ data }) => {
+      if (!data) return
+      setDef(String(data.hold_default_minutes))
+      setMax(String(data.hold_max_minutes))
+      setExt(String(data.hold_extend_minutes))
+    })
+  }, [])
+
+  async function save() {
+    setBusy(true); setErr(''); setMsg('')
+    const { error } = await supabase!.rpc('admin_set_hold_settings', {
+      p_default: Number(def), p_max: Number(max), p_extend: Number(ext),
+    })
+    setBusy(false)
+    if (error) setErr(error.message)
+    else setMsg('Saved')
+  }
+
+  return (
+    <div className="max-w-[560px] rounded-[16px] bg-[var(--card)] border border-[var(--line)] p-5">
+      <div className="text-[var(--ink)] text-[15px] font-extrabold font-head">Job holds</div>
+      <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-1 leading-[1.5]">
+        Workers pay a deposit to reserve a slot and lose it if they run out of time. These control how
+        long they get. Businesses can pick a longer window per task, up to the maximum.
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3">
+        <SettingRow label="Default hold (minutes)" hint="Used when a task does not set its own" value={def} onChange={setDef} />
+        <SettingRow label="Maximum hold (minutes)" hint="Ceiling a business can choose" value={max} onChange={setMax} />
+        <SettingRow label="Extension (minutes)" hint="Granted once per hold when a worker asks for more time" value={ext} onChange={setExt} />
+      </div>
+
+      {err && <div className="mt-3 text-[var(--coral)] text-[12.5px] font-semibold">{err}</div>}
+      {msg && <div className="mt-3 text-[var(--accent-strong)] text-[12.5px] font-semibold">{msg}</div>}
+
+      <button
+        onClick={() => void save()}
+        disabled={busy}
+        className="mt-4 px-5 py-2.5 rounded-[12px] bg-[var(--accent)] text-[var(--accent-ink)] text-[13px] font-extrabold font-head disabled:opacity-50"
+      >
+        {busy ? 'Saving…' : 'Save'}
+      </button>
+    </div>
+  )
+}
+
+function SettingRow({ label, hint, value, onChange }: { label: string; hint: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="min-w-0">
+        <div className="text-[var(--ink)] text-[13px] font-bold">{label}</div>
+        <div className="text-[var(--ink-4)] text-[11.5px] font-semibold">{hint}</div>
+      </div>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ''))}
+        inputMode="numeric"
+        className="w-[92px] flex-none bg-[var(--fill)] border border-[var(--line-2)] rounded-[10px] px-3 py-2 text-[var(--ink)] text-[14px] font-bold text-right outline-none focus:border-[var(--accent)]/60"
+      />
     </div>
   )
 }

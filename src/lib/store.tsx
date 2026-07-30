@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { LedgerEntry, Mode, Profile, Referral, Task, TaskAudience, TaskCompletion, TaskType, Wallet } from './types'
+import type { LedgerEntry, Mode, Profile, Referral, Task, TaskAudience, TaskCompletion, TaskHold, TaskType, Wallet } from './types'
 import type { WithdrawalInput } from './payments'
 import type { FraudSignals } from './fraud'
 
@@ -31,6 +31,14 @@ export interface StoreApi {
 
   // earner mutations
   completeTask(taskId: string, proofUrl?: string, note?: string, proofUrls?: string[]): Promise<{ reward: number; balance: number; manual: boolean }>
+
+  // Job holds: reserve a slot with a refundable deposit. Returned on submit,
+  // forfeited if the hold expires unused.
+  holdsFor(taskId: string): TaskHold[]
+  myHold(taskId: string): TaskHold | null
+  holdTask(taskId: string): Promise<{ deposit: number; expires_at: string }>
+  releaseHold(taskId: string): Promise<void>
+  extendHold(taskId: string): Promise<{ expires_at: string; added_minutes: number }>
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
   claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number; day: number }>
 
@@ -57,6 +65,9 @@ export interface TaskDraft {
   goal_count: number
   auto_verify: boolean
   category: string
+  accepted_file_types?: string[]
+  max_file_mb?: number
+  hold_minutes?: number
   proof_instructions?: string
   reference_images?: string[]
   screenshots?: number

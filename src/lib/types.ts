@@ -29,6 +29,9 @@ export type LedgerType =
   | 'welcome_bonus'
   | 'team_share'
   | 'development_share'
+  | 'hold_deposit'
+  | 'hold_refund'
+  | 'hold_forfeit'
 
 export type WithdrawalStatus = 'pending' | 'sent' | 'failed'
 
@@ -86,6 +89,21 @@ export interface Task {
   reference_images?: string[]
   screenshots_required?: number
   screenshot_specs?: string[]
+  accepted_file_types?: string[]
+  max_file_mb?: number
+  hold_minutes?: number
+  created_at: string
+}
+
+/** A worker's reservation of a slot on a task, paid for with a deposit. */
+export interface TaskHold {
+  id: string
+  task_id: string
+  earner_id: string
+  deposit: number
+  status: 'active' | 'released' | 'forfeited'
+  extended?: boolean
+  expires_at: string
   created_at: string
 }
 

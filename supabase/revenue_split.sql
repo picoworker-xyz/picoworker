@@ -22,7 +22,8 @@ alter table ledger_entries drop constraint if exists ledger_entries_type_check;
 alter table ledger_entries add constraint ledger_entries_type_check
   check (type in ('task_reward','offer_reward','withdrawal','deposit','escrow_hold',
                   'escrow_release','referral_bonus','welcome_bonus',
-                  'team_share','development_share'));
+                  'team_share','development_share',
+   'hold_deposit','hold_refund','hold_forfeit'));
 
 create table if not exists revenue_recipients (
   id          uuid primary key default gen_random_uuid(),

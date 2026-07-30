@@ -7,6 +7,7 @@ import { Page } from '../../components/Page'
 import { TaskTypeIcon } from '../../components/layout'
 import { Pill } from '../../components/ui'
 import { ExternalLink, Shield } from '../../components/icons'
+import { HoldPanel } from '../../components/HoldPanel'
 
 const STEPS: Record<TaskType, [string, string, string]> = {
   follow_x: ['Tap Open X — we drop you on the profile', 'Hit Follow', 'Come back — auto-verified in ~10s'],
@@ -187,6 +188,8 @@ export function TaskFlow() {
             <div className="font-head font-bold text-[48px] text-[var(--accent-strong)] tracking-[-.02em] leading-tight my-1">{usd(earnerNet(t.reward), { sign: true })}</div>
             <div className="text-[var(--ink-3)] text-[12px] font-semibold">Paid in USDC · instantly</div>
           </div>
+
+          <HoldPanel task={t} />
 
           {err && <div className="text-[var(--coral)] text-[13px] font-semibold text-center">{err}</div>}
 

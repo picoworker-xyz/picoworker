@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { usd, timeAgo, earnerNet, autoApproveAt, timeUntil } from '../../lib/format'
 import type { CompletionStatus } from '../../lib/types'
 import { Page } from '../../components/Page'
+import { ProofFiles } from '../../components/ProofFiles'
 import { Check, Clock, X, Zoom } from '../../components/icons'
 
 const STATUS_CONFIG: Record<CompletionStatus, { icon: typeof Check; color: string; bgColor: string; label: string; description: string }> = {
@@ -104,14 +105,8 @@ export function SubmissionDetail() {
             {/* proof screenshots */}
             {proofImages.length > 0 ? (
                 <div className="rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4 mb-4">
-                    <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-3">Proof screenshot{proofImages.length > 1 ? 's' : ''}</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {proofImages.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer" className="block rounded-[12px] overflow-hidden border border-[var(--line)]">
-                                <img src={url} alt={`proof ${i + 1}`} className="w-full max-h-[280px] object-contain bg-black/40" />
-                            </a>
-                        ))}
-                    </div>
+                    <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-3">Proof file{proofImages.length > 1 ? 's' : ''}</div>
+                    <ProofFiles urls={proofImages} />
                 </div>
             ) : (
                 <div className="rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-8 mb-4 flex flex-col items-center justify-center gap-2 text-[var(--ink-4)] text-[13px] font-semibold">

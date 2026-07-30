@@ -28,6 +28,7 @@ import { TaskRejected } from './features/earner/TaskRejected'
 import { MySubmissions } from './features/earner/MySubmissions'
 import { ProofOfIncome } from './features/earner/ProofOfIncome'
 import { PaymentwallOffers } from './features/earner/PaymentwallOffers'
+import { KiwiwallOffers } from './features/earner/KiwiwallOffers'
 import { TaskwallOffers } from './features/earner/TaskwallOffers'
 import { MorePage } from './features/MorePage'
 import { SubmissionDetail } from './features/earner/SubmissionDetail'
@@ -129,6 +130,7 @@ export default function App() {
       <Route path="/proof-of-income" element={<Shell><ProofOfIncome /></Shell>} />
       <Route path="/offers/paymentwall" element={<Shell><PaymentwallOffers /></Shell>} />
       <Route path="/offers/taskwall" element={<Shell><TaskwallOffers /></Shell>} />
+      <Route path="/offers/worldwide" element={<Shell><KiwiwallOffers /></Shell>} />
       <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
       <Route path="/developers" element={<Shell><Developers /></Shell>} />

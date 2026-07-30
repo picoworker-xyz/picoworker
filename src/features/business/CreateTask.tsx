@@ -10,6 +10,8 @@ import { Camera, X } from '../../components/icons'
 
 // Mirrors CATS in src/features/earner/EarnFeed.tsx (minus 'All'). Keep in sync:
 // a category not in that list is unreachable by any worker filter.
+import { DEFAULT_MAX_FILE_MB, DEFAULT_PROOF_KINDS, PROOF_FILE_KINDS, type ProofFileKind } from '../../lib/proofFiles'
+
 const CUSTOM_CATEGORIES = ['Social', 'Surveys', 'Apps', 'Ads', 'Watch']
 
 const TYPES: { type: TaskType; label: string; category: string; needsTarget: 'handle' | 'url' | null; auto: boolean; reward: number }[] = [
@@ -49,6 +51,8 @@ export function CreateTask() {
   // Custom tasks used to be hardcoded to 'Apps', so a "join our Discord" task
   // never appeared under the Social filter workers actually browse.
   const [customCategory, setCustomCategory] = useState('Social')
+  const [fileKinds, setFileKinds] = useState<ProofFileKind[]>(DEFAULT_PROOF_KINDS)
+  const [holdMinutes, setHoldMinutes] = useState('30')
   const [instructions, setInstructions] = useState('')
   const [reward, setReward] = useState('0.04')
   const [count, setCount] = useState('500')
@@ -124,6 +128,9 @@ export function CreateTask() {
       screenshots: t.auto ? 1 : screenshots,
       screenshot_specs: t.auto ? [] : Array.from({ length: screenshots }, (_, i) => (specs[i] ?? '').trim()),
       audience: isCustom || t.type === 'survey' ? audience : 'humans',
+      accepted_file_types: isCustom ? fileKinds : DEFAULT_PROOF_KINDS,
+      max_file_mb: DEFAULT_MAX_FILE_MB,
+      hold_minutes: isCustom ? Number(holdMinutes) : undefined,
     })
     nav(`/business/fund?task=${task.id}`)
   }
@@ -175,6 +182,49 @@ export function CreateTask() {
               <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mb-6 leading-[1.45]">
                 Workers filter the feed by these. Pick the one they would look under: a Discord, Telegram or
                 group join belongs in Social.
+              </div>
+
+              <Label>What can they send as proof?</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                {PROOF_FILE_KINDS.map((k) => {
+                  const on = fileKinds.includes(k.value)
+                  return (
+                    <button
+                      key={k.value}
+                      onClick={() =>
+                        setFileKinds((cur) =>
+                          on ? (cur.length === 1 ? cur : cur.filter((v) => v !== k.value)) : [...cur, k.value],
+                        )
+                      }
+                      className={`rounded-[12px] border px-3 py-[10px] text-[13px] font-bold ${on ? 'border-[var(--accent)] bg-[rgba(46,224,110,.1)] text-[var(--accent-strong)]' : 'border-[var(--line)] bg-[var(--fill)] text-[var(--ink-2)]'}`}
+                    >
+                      {k.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mb-6 leading-[1.45]">
+                Screenshots suit most tasks. SVG and ZIP are downloaded rather than previewed, so you open
+                them on your own machine. Max {DEFAULT_MAX_FILE_MB} MB per file.
+              </div>
+
+              <Label>How long can a worker hold this job?</Label>
+              <div className="grid grid-cols-4 gap-2 mb-2">
+                {['30', '60', '120', '240'].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setHoldMinutes(m)}
+                    className={`rounded-[12px] border px-3 py-[10px] text-[13px] font-bold ${holdMinutes === m ? 'border-[var(--accent)] bg-[rgba(46,224,110,.1)] text-[var(--accent-strong)]' : 'border-[var(--line)] bg-[var(--fill)] text-[var(--ink-2)]'}`}
+                  >
+                    {Number(m) < 60 ? `${m} min` : `${Number(m) / 60}h`}
+                  </button>
+                ))}
+              </div>
+              <div className="text-[var(--ink-4)] text-[11.5px] font-semibold mb-6 leading-[1.45]">
+                Workers pay a small deposit to reserve a slot so nobody else takes it while they work, and
+                lose it if they run out of time. Set this longer than the job actually takes, or good workers
+                will be penalised for your estimate. A quick follow needs 30 minutes; recording a video or
+                writing a review needs hours.
               </div>
             </>
           )}

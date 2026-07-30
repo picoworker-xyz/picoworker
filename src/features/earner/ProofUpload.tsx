@@ -3,8 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { supabase } from '../../lib/supabase'
 import { usd, earnerNet } from '../../lib/format'
+import { acceptAttr, safeContentType, validateProofFile } from '../../lib/proofFiles'
 import { Page, CenteredPage } from '../../components/Page'
-import { Camera, Check } from '../../components/icons'
+import { Camera, Check, ListIcon } from '../../components/icons'
 
 type Shot = { file: File; preview: string }
 
@@ -37,9 +38,14 @@ export function ProofUpload() {
   function openPicker(i: number) { activeSlot.current = i; fileRef.current?.click() }
   function pick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
-    if (!f) return
-    setShots((s) => { const c = [...s]; c[activeSlot.current] = { file: f, preview: URL.createObjectURL(f) }; return c })
     if (fileRef.current) fileRef.current.value = ''
+    if (!f) return
+    const bad = validateProofFile(f, t?.accepted_file_types, t?.max_file_mb)
+    if (bad) return setErr(bad)
+    setErr('')
+    // Only raster images can be previewed; anything else shows its filename.
+    const preview = /^image\/(png|jpeg|webp|gif)$/.test(f.type) ? URL.createObjectURL(f) : ''
+    setShots((s) => { const c = [...s]; c[activeSlot.current] = { file: f, preview }; return c })
   }
 
   async function submit() {
@@ -54,7 +60,8 @@ export function ProofUpload() {
         const f = chosen[i].file
         const ext = (f.name.split('.').pop() || 'jpg').toLowerCase()
         const path = `${userId}/${t!.id}-${Date.now()}-${i}.${ext}`
-        const up = await supabase!.storage.from('proofs').upload(path, f, { upsert: true, contentType: f.type })
+        // safeContentType keeps SVG/HTML from being served inline — see lib/proofFiles.ts
+        const up = await supabase!.storage.from('proofs').upload(path, f, { upsert: true, contentType: safeContentType(f) })
         if (up.error) throw new Error(up.error.message)
         urls.push(supabase!.storage.from('proofs').getPublicUrl(path).data.publicUrl)
       }
@@ -149,7 +156,20 @@ export function ProofUpload() {
               {specs[i] && <div className="text-[var(--ink-3)] text-[12px] font-semibold mb-1.5">{i + 1}. {specs[i]}</div>}
               {shot ? (
                 <div className="relative rounded-[16px] overflow-hidden border border-[var(--line-2)]">
-                  <img src={shot.preview} alt="proof" className="w-full max-h-[280px] object-contain bg-black/30" />
+                  {shot.preview ? (
+                    <img src={shot.preview} alt="proof" className="w-full max-h-[280px] object-contain bg-black/30" />
+                  ) : (
+                    // PDF, SVG and ZIP have no safe inline preview — name them instead.
+                    <div className="flex items-center gap-3 bg-[var(--fill)] px-4 py-6">
+                      <ListIcon width={20} height={20} className="text-[var(--ink-3)] flex-none" />
+                      <div className="min-w-0">
+                        <div className="text-[13px] font-bold text-[var(--ink)] truncate">{shot.file.name}</div>
+                        <div className="text-[11.5px] font-semibold text-[var(--ink-4)]">
+                          {(shot.file.size / 1024 / 1024).toFixed(2)} MB
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <button onClick={() => openPicker(i)} className="absolute bottom-2 right-2 px-3 py-1.5 rounded-[10px] bg-black/60 text-[#fff] text-[12px] font-bold">Change</button>
                 </div>
               ) : (
@@ -162,7 +182,7 @@ export function ProofUpload() {
           )
         })}
       </div>
-      <input ref={fileRef} type="file" accept="image/*" hidden onChange={pick} />
+      <input ref={fileRef} type="file" accept={acceptAttr(t.accepted_file_types)} hidden onChange={pick} />
 
       <div className="text-[var(--ink-4)] text-[12.5px] font-semibold mt-4 leading-[1.5]">
         Show your username and the completed action clearly. The task giver checks every proof before paying.

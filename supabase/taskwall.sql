@@ -36,7 +36,8 @@ alter table ledger_entries drop constraint if exists ledger_entries_type_check;
 -- otherwise drop the revenue-share types back out of the constraint.
 alter table ledger_entries add constraint ledger_entries_type_check check (type in
   ('task_reward','offer_reward','withdrawal','deposit','escrow_hold','escrow_release',
-   'referral_bonus','welcome_bonus','team_share','development_share'));
+   'referral_bonus','welcome_bonus','team_share','development_share',
+   'hold_deposit','hold_refund','hold_forfeit'));
 
 create or replace function credit_taskwall_reward(
   p_event_key text,
