@@ -57,11 +57,17 @@ function countryAliases(country: string): Set<string> {
   return new Set([country])
 }
 
+// An empty list means the offer carries no restriction, i.e. it is available
+// everywhere / on every device. Array.some() returns false for an empty array,
+// so without this guard every unrestricted offer was silently filtered out —
+// which is precisely the inventory a worldwide audience should be seeing.
 function matchesCountry(countries: string[], aliases: Set<string>): boolean {
+  if (countries.length === 0) return true
   return countries.some((country) => aliases.has(country) || country === 'ALL' || country === 'WORLDWIDE')
 }
 
 function matchesDevice(devices: string[], requestedOs: string): boolean {
+  if (devices.length === 0) return true
   const values = new Set(devices.map((device) => device.toLowerCase()))
   if (requestedOs === 'desktop') {
     return ['desktop', 'web', 'mac', 'windows'].some((device) => values.has(device))

@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { Page } from '../../components/Page'
-import { ExternalLink, Globe, Shield } from '../../components/icons'
+import { Globe, Shield } from '../../components/icons'
 import { OfferTabs } from '../../components/OfferTabs'
 
 // Public placement key. It appears in the wall URL by design, so unlike the
 // signing secret it is safe in the client bundle.
 const PLACEMENT_ID = 'plc_fhes2g4o'
+
+// The wall's own background (--kw-background: oklch(0.16 0.02 265)).
+const WALL_SURFACE = '#090D16'
 
 export function KiwiwallOffers() {
   const { userId } = useStore()
@@ -49,30 +52,31 @@ export function KiwiwallOffers() {
         provider confirms your completion, which can take a few minutes.
       </div>
 
-      <a
-        href={src}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="mb-4 flex items-center justify-center gap-2 rounded-[14px] bg-[var(--accent)] py-[13px] font-head text-[14px] font-extrabold text-[var(--accent-ink)]"
-        style={{ boxShadow: 'var(--glow)' }}
-      >
-        Open offers in a new tab <ExternalLink width={16} height={16} />
-      </a>
-
       {maybeBlocked && !loaded && (
         <div className="mb-4 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
-          The offers panel below did not load. Your browser may be blocking embedded content. Use the
-          button above to open the offers in a new tab instead. Your rewards work exactly the same.
+          The offers panel did not load. Your browser or an extension may be blocking embedded content.
+          Turn off any content blocker for picoworker.xyz and refresh.
         </div>
       )}
 
+      {/*
+        The wall is a cross-origin document, so its interior cannot be styled and
+        it ships no theme parameter — theme=dark/light change nothing. It is
+        already dark with a green accent (#090D16 surface, #4ED589 primary),
+        which sits close to our own #0B0C10 / #2EE06E. Matching the container to
+        WALL_SURFACE hides the seam so the frame reads as part of the page
+        rather than a pasted-in box. Keep this in sync if they restyle.
+      */}
       <div
-        className="relative overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--card)]"
-        style={{ boxShadow: 'var(--shadow)' }}
+        className="relative overflow-hidden rounded-[18px] border border-[var(--line)]"
+        style={{ background: WALL_SURFACE, boxShadow: 'var(--shadow)' }}
       >
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[var(--card)]">
-            <div className="text-[13px] font-semibold text-[var(--ink-4)]">Loading offers…</div>
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ background: WALL_SURFACE }}
+          >
+            <div className="text-[13px] font-semibold text-[#8A93A6]">Loading offers…</div>
           </div>
         )}
         <iframe
