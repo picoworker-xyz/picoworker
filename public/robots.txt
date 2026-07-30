@@ -1,12 +1,25 @@
 # PicoWorker robots.txt
 User-agent: *
 Allow: /$
-Allow: /login
 
 # App routes are behind auth and have no unique indexable content.
+Disallow: /login
+Disallow: /reset-password
+Disallow: /r/
+Disallow: /onboarding
 Disallow: /wallet
 Disallow: /business
 Disallow: /task
+Disallow: /offers
+Disallow: /submissions
+Disallow: /notifications
+Disallow: /leaderboard
+Disallow: /verify
+Disallow: /support
+Disallow: /more
+Disallow: /admin
+Disallow: /payout-address
+Disallow: /proof-of-income
 Disallow: /profile
 Disallow: /rewards
 Disallow: /refer

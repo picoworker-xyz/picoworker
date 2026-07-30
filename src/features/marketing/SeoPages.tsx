@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- This route module intentionally shares SEO and PWA helpers with related public pages. */
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -168,10 +169,10 @@ function MiniFaq({ faqs }: { faqs: { q: string; a: string }[] }) {
 
 function OtherWays({ current }: { current: string }) {
   const all = [
-    { to: '/earn/follow-accounts', icon: <XLogo width={18} height={18} className="text-[#fff]" />, bg: '#000000', t: 'Follow accounts', p: 'from $0.04' },
-    { to: '/earn/watch-videos', icon: <Play width={20} height={20} className="text-[#fff]" />, bg: '#FF0033', t: 'Watch videos', p: 'from $0.02' },
-    { to: '/earn/app-testing', icon: <Bolt width={18} height={18} className="text-[#fff]" />, bg: '#5B8DEF', t: 'Test apps', p: 'up to $0.35' },
-    { to: '/earn/paid-surveys', icon: <ListIcon width={18} height={18} className="text-[#fff]" />, bg: '#26A17B', t: 'Take surveys', p: 'up to $0.20' },
+    { to: '/earn/follow-accounts', icon: <XLogo width={18} height={18} className="text-[#fff]" />, bg: '#000000', t: 'Follow accounts', p: 'Quick tasks' },
+    { to: '/earn/watch-videos', icon: <Play width={20} height={20} className="text-[#fff]" />, bg: '#FF0033', t: 'Watch videos', p: 'Short clips' },
+    { to: '/earn/app-testing', icon: <Bolt width={18} height={18} className="text-[#fff]" />, bg: '#5B8DEF', t: 'Test apps', p: 'Multi-step tasks' },
+    { to: '/earn/paid-surveys', icon: <ListIcon width={18} height={18} className="text-[#fff]" />, bg: '#26A17B', t: 'Take surveys', p: 'Eligibility varies' },
   ].filter((w) => w.to !== current)
   return (
     <section className="app-container py-16 lg:py-20">
@@ -228,7 +229,7 @@ function EarnPage({ def }: { def: EarnDef }) {
               </span>
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              Always free to join · Instant USDC on Solana · Cash out anytime
+              Free to join · Clear requirements · Verified rewards
             </div>
           </div>
         </div>
@@ -261,154 +262,154 @@ function EarnPage({ def }: { def: EarnDef }) {
 
 const FOLLOW: EarnDef = {
   path: '/earn/follow-accounts',
-  title: 'Get Paid to Follow Accounts | Earn Instant USDC | PicoWorker',
+  title: 'Follow Account Tasks and Earn Rewards | PicoWorker',
   description:
-    'Follow accounts on X, Instagram and TikTok and earn instant USDC. Follow tasks pay from $0.04, verify in about 10 seconds and pay straight to your wallet. Free to join.',
+    'Find eligible follow-account tasks on PicoWorker. Read the requirements, complete the social action and earn a reward after verification. Free to join.',
   eyebrow: 'Follow and earn',
-  h1: 'Get paid to follow accounts',
+  h1: 'Earn rewards from follow tasks',
   intro:
-    'Businesses on PicoWorker pay real people to follow their accounts on X, Instagram and TikTok. You tap follow, the task verifies itself in about 10 seconds, and USDC lands in your wallet instantly.',
-  pay: 'from $0.04 per follow',
+    'Businesses use PicoWorker to reach genuine people on supported social platforms. Choose an eligible task, follow its exact instructions and receive the listed reward after verification.',
+  pay: 'Clear reward before you start',
   steps: [
-    { t: 'Pick a follow task', d: 'Open the live feed and choose an account that a business wants followers for.' },
-    { t: 'Tap follow', d: 'The task opens the profile for you. Follow it like you would any other account.' },
-    { t: 'Get paid instantly', d: 'Verification runs automatically and your USDC reward is credited on the spot.' },
+    { t: 'Choose an eligible task', d: 'Open the live feed and select a follow task available for your account and location.' },
+    { t: 'Follow the instructions', d: 'Open the correct profile and complete only the action described by the task.' },
+    { t: 'Wait for verification', d: 'The listed reward is credited after the completion is confirmed.' },
   ],
   sections: [
     {
-      h: 'How much can you earn following accounts?',
+      h: 'How follow tasks work',
       body: [
-        'Follow tasks start at $0.04 each and take a few seconds, so they are the quickest way to stack up small wins during the day. Levels and streaks unlock up to 2x higher payouts as you stay active, and you also earn 5 percent of everything the people you refer earn, for life.',
-        'Because every reward is paid in USDC, a dollar earned is a dollar you keep. There are no points to convert, no gift cards, and no waiting for a monthly payout run.',
+        'Each task identifies the account, supported platform, required action and reward before you begin. Availability may vary by country, device and account eligibility.',
+        'Complete the task with the same account and device you used to start it. Duplicate accounts, automation and actions that do not match the instructions can be rejected.',
       ],
     },
     {
-      h: 'Real accounts, real followers',
+      h: 'Genuine activity only',
       body: [
-        'Every follow on PicoWorker comes from a verified human account, which is why businesses fund these tasks in the first place. That also protects you as an earner: tasks verify automatically, rewards are guaranteed by escrow, and PicoWorker is non-custodial, so the USDC you earn sits in a wallet only you control.',
+        'PicoWorker is designed for genuine human completions. Read the task carefully, use your own account and avoid VPNs or automated tools. The task status shows whether a completion is approved, pending or rejected.',
       ],
     },
   ],
   faqs: [
-    { q: 'How fast do follow tasks pay?', a: 'Most follow tasks verify automatically in about 10 seconds, and the USDC reward is credited to your balance the moment verification passes.' },
-    { q: 'Which platforms can I earn on?', a: 'Businesses post follow, like and share tasks for X, Instagram and TikTok. New task types are added regularly.' },
-    { q: 'Is it free to start?', a: 'Yes. Joining PicoWorker costs nothing, and your very first task comes with a $0.05 welcome bonus.' },
+    { q: 'When is the reward credited?', a: 'The reward is credited after PicoWorker or the provider confirms that the task requirements were completed.' },
+    { q: 'Which platforms are supported?', a: 'Available platforms depend on current campaigns. Always use the exact link and instructions shown in the task.' },
+    { q: 'Is it free to start?', a: 'Yes. Registration and browsing available tasks are free.' },
   ],
-  cta: { title: 'Your first follow could pay in the next minute.', sub: 'Joining is free, and your very first task comes with a $0.05 welcome bonus.' },
+  cta: { title: 'See which follow tasks are available.', sub: 'Join free, read the requirements and complete only eligible tasks.' },
 }
 
 const WATCH: EarnDef = {
   path: '/earn/watch-videos',
-  title: 'Get Paid to Watch Videos | Earn USDC Watching Clips | PicoWorker',
+  title: 'Watch Video Tasks and Earn Rewards | PicoWorker',
   description:
-    'Watch short videos and ads and earn instant USDC. Watch tasks pay from $0.02 per clip, verify automatically and pay straight to your wallet. Free to join PicoWorker.',
+    'Browse eligible watch tasks on PicoWorker. Watch the required clip, satisfy the viewing conditions and earn a reward after verification.',
   eyebrow: 'Watch and earn',
-  h1: 'Get paid to watch videos',
+  h1: 'Earn rewards from watch tasks',
   intro:
-    'Creators and brands on PicoWorker pay for real viewers. You watch a short video or ad through to the end, the task verifies itself, and USDC lands in your wallet instantly.',
-  pay: 'from $0.02 per video',
+    'Creators and brands can publish watch tasks for genuine viewers. Choose an eligible clip, follow the viewing requirements and receive the listed reward after verification.',
+  pay: 'Reward shown before you start',
   steps: [
-    { t: 'Pick a watch task', d: 'Open the live feed and choose a clip. Most are under a minute long.' },
-    { t: 'Watch to the end', d: 'Sit back and let it play through. No quizzes, no forms, no tricks.' },
-    { t: 'Get paid instantly', d: 'Verification confirms the view and your USDC reward is credited on the spot.' },
+    { t: 'Choose a watch task', d: 'Select a clip available for your country, device and account.' },
+    { t: 'Meet the viewing requirement', d: 'Watch for the required duration and complete any clearly listed follow-up step.' },
+    { t: 'Wait for verification', d: 'The listed reward is credited after the valid view is confirmed.' },
   ],
   sections: [
     {
-      h: 'How much can you earn watching videos?',
+      h: 'How watch tasks work',
       body: [
-        'Watch tasks start at $0.02 per clip and most take under a minute, which makes them perfect for queues, commutes and ad breaks in your own viewing. Levels and streaks unlock up to 2x higher payouts, and referrals add 5 percent of everything your invitees earn.',
-        'Rewards are paid in USDC, a stablecoin pegged to the dollar, so what you earn is what you cash out. Withdrawals arrive in seconds and cost a fraction of a cent.',
+        'The task page shows the required viewing duration, device eligibility and reward. Opening a video alone does not complete a task.',
+        'Keep the task open, avoid skipping required steps and use the same device from start to finish so the provider can verify the completion.',
       ],
     },
     {
-      h: 'Why brands pay for views',
+      h: 'Real viewing, clear verification',
       body: [
-        'Videos rank better and convert better when real people watch them all the way through. Businesses fund watch campaigns in USDC held in escrow and pay only for verified complete views, which is why the money reaches you instantly once your view is confirmed.',
+        'Watch tasks are intended for genuine viewers. Automated playback, duplicate accounts and VPN traffic can make a completion ineligible.',
       ],
     },
   ],
   faqs: [
-    { q: 'Do I have to watch the whole video?', a: 'Yes. The task verifies a complete view, then pays your USDC reward instantly. Most clips are 30 to 60 seconds.' },
-    { q: 'How do I cash out?', a: 'Withdraw to any Solana wallet, or to Base and other networks. Withdrawals arrive in seconds for a fraction of a cent.' },
-    { q: 'Is it free to start?', a: 'Yes. Joining PicoWorker costs nothing, and your very first task comes with a $0.05 welcome bonus.' },
+    { q: 'Do I have to watch the whole video?', a: 'Follow the exact duration shown in the task. Leaving early can prevent verification.' },
+    { q: 'Why is a task unavailable?', a: 'Availability can depend on country, device, campaign limits and previous participation.' },
+    { q: 'Is it free to start?', a: 'Yes. Registration and browsing available tasks are free.' },
   ],
-  cta: { title: 'Turn watch time into wallet time.', sub: 'Joining is free, and your very first task comes with a $0.05 welcome bonus.' },
+  cta: { title: 'Browse available watch tasks.', sub: 'Join free and check the requirements before starting.' },
 }
 
 const APPS: EarnDef = {
   path: '/earn/app-testing',
-  title: 'Get Paid to Test Apps | App Testing Jobs in USDC | PicoWorker',
+  title: 'App Testing Tasks and Verified Rewards | PicoWorker',
   description:
-    'Test brand new apps and earn instant USDC. App test tasks pay up to $0.35, take a few minutes and pay straight to your wallet. Free to join PicoWorker.',
+    'Find app-testing tasks on PicoWorker. Install eligible apps, complete the listed milestones and earn rewards after provider verification.',
   eyebrow: 'Test and earn',
-  h1: 'Get paid to test apps',
+  h1: 'Earn rewards by testing apps',
   intro:
-    'Developers on PicoWorker pay real users to install and try their new apps. You download, explore for a few minutes, and USDC lands in your wallet once your test is verified.',
-  pay: 'up to $0.35 per test',
+    'Developers and offer providers need genuine users to install, explore and test apps. Each task shows its steps and eligibility before you begin.',
+  pay: 'Milestones and reward shown first',
   steps: [
     { t: 'Pick an app test', d: 'Open the live feed and choose an app that a developer wants tested.' },
     { t: 'Install and explore', d: 'Download it, open it, and follow the short checklist the developer set.' },
-    { t: 'Get paid in USDC', d: 'Once the test is verified, your reward is credited straight to your balance.' },
+    { t: 'Complete the milestones', d: 'Finish every listed requirement with the same device and wait for provider verification.' },
   ],
   sections: [
     {
-      h: 'How much do app tests pay?',
+      h: 'How app-testing tasks work',
       body: [
-        'App tests are among the best paid micro-tasks on PicoWorker at up to $0.35 each, because developers value genuine installs and honest first impressions. Levels and streaks unlock up to 2x higher payouts, and referrals add 5 percent of everything your invitees earn.',
-        'You are paid in USDC the moment a test is verified. No points, no thresholds, no waiting for the end of the month.',
+        'App tasks may contain one requirement or several milestones. Review the supported operating system, country, deadline and completion conditions before installing.',
+        'Opening or installing an app does not always complete the offer. Only the milestones confirmed by the provider qualify for the listed reward.',
       ],
     },
     {
       h: 'Be first to try new apps',
       body: [
-        'Beyond the payout, app testing means you get to try products before almost anyone else. Developers fund each campaign in USDC held in escrow, so the reward for every verified test is guaranteed before you even start.',
+        'Use the same device throughout the task and do not use a VPN. If a requirement is unclear, do not start until the provider page shows the full instructions.',
       ],
     },
   ],
   faqs: [
     { q: 'Do I need special skills to test apps?', a: 'No. Tasks are designed for everyday users. Install the app, use it for a few minutes and complete the short checklist.' },
-    { q: 'When do I get paid?', a: 'The moment your test is verified, the USDC reward is credited to your balance. You can cash out to your own wallet any time.' },
-    { q: 'Is it free to start?', a: 'Yes. Joining PicoWorker costs nothing, and your very first task comes with a $0.05 welcome bonus.' },
+    { q: 'When is the reward credited?', a: 'The reward is credited after the app provider confirms the required milestone or completion.' },
+    { q: 'Is it free to start?', a: 'Yes. Registration and browsing available tasks are free.' },
   ],
-  cta: { title: 'Try something new, get paid for it.', sub: 'Joining is free, and your very first task comes with a $0.05 welcome bonus.' },
+  cta: { title: 'See which app tests match your device.', sub: 'Join free and review every milestone before installing.' },
 }
 
 const SURVEYS: EarnDef = {
   path: '/earn/paid-surveys',
-  title: 'Paid Surveys That Pay Instantly in USDC | PicoWorker',
+  title: 'Online Survey Tasks and Verified Rewards | PicoWorker',
   description:
-    'Answer quick surveys and earn instant USDC. Surveys on PicoWorker pay up to $0.20, take a couple of minutes and pay straight to your wallet. Free to join.',
+    'Find eligible survey tasks on PicoWorker. Review the audience requirements, answer honestly and earn the listed reward after verification.',
   eyebrow: 'Answer and earn',
-  h1: 'Paid surveys that actually pay instantly',
+  h1: 'Earn rewards from eligible surveys',
   intro:
-    'Businesses on PicoWorker pay for your opinion. You answer a few quick questions, the survey is verified, and USDC lands in your wallet instantly. No points, no gift cards, no payout thresholds.',
-  pay: 'up to $0.20 per survey',
+    'Businesses and research providers need genuine responses. Choose a survey that matches your profile, answer honestly and wait for completion verification.',
+  pay: 'Eligibility and reward shown first',
   steps: [
     { t: 'Pick a survey', d: 'Open the live feed and choose a survey. Most are just a handful of questions.' },
     { t: 'Share your opinion', d: 'Answer honestly. There are no trick questions and no endless screening.' },
-    { t: 'Get paid in USDC', d: 'Once your responses are verified, the reward is credited straight to your balance.' },
+    { t: 'Submit genuine answers', d: 'Complete every required question and wait for the provider to verify the response.' },
   ],
   sections: [
     {
       h: 'How PicoWorker surveys compare to survey sites',
       body: [
-        'Traditional survey sites pay in points, hold your earnings until you hit a threshold, and often screen you out after ten minutes of questions. Surveys on PicoWorker pay up to $0.20 in USDC, take a couple of minutes, and pay out the moment they are verified.',
-        'Levels and streaks unlock up to 2x higher payouts as you stay active, and referrals add 5 percent of everything your invitees earn, for life.',
+        'Survey availability depends on the audience a researcher needs. Country, age range, device and previous participation can affect eligibility.',
+        'The survey page should show the expected requirements before you start. Honest, consistent answers are necessary for provider approval.',
       ],
     },
     {
       h: 'Your answers fund real product decisions',
       body: [
-        'The businesses posting surveys fund every campaign in USDC held in escrow and pay per verified response, which is why they only want genuine answers and why your reward is guaranteed before you start.',
+        'Survey results support real product and research decisions. Duplicate responses, automated answers and false profile information can be rejected.',
       ],
     },
   ],
   faqs: [
     { q: 'How long do surveys take?', a: 'Most surveys are a handful of questions and take a couple of minutes. The reward and length are shown before you start.' },
-    { q: 'Can I get screened out without pay?', a: 'Surveys on PicoWorker show the reward up front and pay per verified completed response. There are no long unpaid screeners.' },
-    { q: 'Is it free to start?', a: 'Yes. Joining PicoWorker costs nothing, and your very first task comes with a $0.05 welcome bonus.' },
+    { q: 'Can a survey screen me out?', a: 'Yes. A provider may require a specific audience. Check eligibility first and answer profile questions accurately.' },
+    { q: 'Is it free to start?', a: 'Yes. Registration and browsing available surveys are free.' },
   ],
-  cta: { title: 'Your opinion is worth real money.', sub: 'Joining is free, and your very first task comes with a $0.05 welcome bonus.' },
+  cta: { title: 'Share your opinion in eligible surveys.', sub: 'Join free and review the audience requirements before starting.' },
 }
 
 export const EarnFollowAccounts = () => <EarnPage def={FOLLOW} />
@@ -421,17 +422,17 @@ export const EarnPaidSurveys = () => <EarnPage def={SURVEYS} />
 export function PicoworkersAlternative() {
   const nav = useNavigate()
   const rows: [string, string, string][] = [
-    ['Payment', 'USDC, a dollar stablecoin', 'Site balance or points'],
-    ['Payout speed', 'Instant, the moment a task verifies', 'After review and approval windows'],
-    ['Withdrawal', 'To your own wallet in seconds', 'Minimum thresholds, processing days'],
-    ['Fees', 'A fraction of a cent per withdrawal', 'Varies by payout method'],
-    ['Joining', 'Free, with a $0.05 welcome bonus', 'Free'],
+    ['Task details', 'Requirements shown before starting', 'Varies by platform'],
+    ['Verification', 'Automatic or proof-based', 'Often manual review'],
+    ['Availability', 'Matched by country and device', 'Varies by campaign'],
+    ['Tracking', 'Task status in your account', 'Varies by platform'],
+    ['Joining', 'Free registration', 'Usually free'],
   ]
   return (
     <PageShell>
       <Seo
-        title="Picoworkers Alternative: PicoWorker Pays Instant USDC"
-        description="Searched for Picoworkers or pico worker? PicoWorker.xyz is a different platform: a micro-task marketplace with instant USDC payouts, no thresholds and no waiting. Compare sign up, tasks and withdrawals."
+        title="Picoworkers Alternative for Simple Online Tasks | PicoWorker"
+        description="Looking for Picoworkers or pico worker? PicoWorker.xyz is an independent micro-task marketplace with country-aware offers, clear requirements and verified rewards."
         path="/picoworkers-alternative"
       />
 
@@ -440,10 +441,10 @@ export function PicoworkersAlternative() {
           <div className="max-w-[760px] mx-auto text-center reveal">
             <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">Picoworkers alternative</div>
             <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
-              Looking for Picoworkers? Meet the instant payout alternative.
+              Looking for Picoworkers? Meet PicoWorker.
             </h1>
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[600px] mx-auto leading-[1.6]">
-              Picoworkers was a popular micro job site that rebranded to SproutGigs. PicoWorker.xyz is not the same company. It is an independent micro-task marketplace where every task pays instantly in USDC, straight to a wallet you control.
+              Picoworkers rebranded to SproutGigs. PicoWorker.xyz is not the same company. It is an independent marketplace where people complete eligible online tasks and earn listed rewards after verification.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
               <button
@@ -496,11 +497,11 @@ export function PicoworkersAlternative() {
         <div className="app-container py-16 lg:py-20 max-w-[760px]">
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Sign up in under a minute</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
-            If you came here searching for a Picoworkers sign up or registration page, joining PicoWorker works the same way, just faster. Create a free account with your email or Google, pick a task from the live feed, and your first USDC arrives within minutes. New earners get a $0.05 welcome bonus on their first task.
+            If you came here searching for a Picoworkers registration page, note that PicoWorker is a separate service. Create a free account, browse tasks available for your country and device, and read every requirement before starting.
           </p>
-          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Withdrawals without the wait</h2>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Clear status tracking</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
-            Withdrawal delays are the most common complaint about classic micro job platforms. PicoWorker pays in USDC the moment a task is verified, and you can cash out to any Solana wallet, or to Base and other networks, in seconds for a fraction of a cent. PicoWorker is non-custodial: your keys, your USDC.
+            PicoWorker separates available, started, pending, approved and rejected work. Provider offers may use their own confirmation process, so opening an offer alone never counts as a completed task.
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The same kinds of tasks</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
@@ -513,20 +514,20 @@ export function PicoworkersAlternative() {
         faqs={[
           {
             q: 'Is PicoWorker the same as Picoworkers or SproutGigs?',
-            a: 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker.xyz is an independent micro-task marketplace that pays instantly in USDC. People sometimes type pico worker, pico work or picowork, but if you want small online tasks with instant crypto payouts, you are in the right place.',
+            a: 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker.xyz is an independent marketplace for eligible online tasks and verified rewards.',
           },
           {
-            q: 'How do withdrawals work on PicoWorker?',
-            a: 'You are paid in USDC the moment a task is verified. Cash out to any Solana wallet, or to Base and other networks, and withdrawals arrive in seconds for a fraction of a cent.',
+            q: 'How do task rewards work on PicoWorker?',
+            a: 'Choose an eligible task, complete every listed requirement and wait for PicoWorker or the provider to confirm the result.',
           },
           {
             q: 'Is PicoWorker free to join?',
-            a: 'Yes, completely. Signing up and earning never costs a thing, and new earners receive a $0.05 welcome bonus on their first task.',
+            a: 'Yes. Registration and browsing available tasks are free.',
           },
         ]}
       />
 
-      <CtaBanner title="Skip the payout thresholds." sub="Join free, finish your first task in seconds and get paid in USDC on the spot." />
+      <CtaBanner title="Find tasks that match your device." sub="Join free and review the requirements before starting." />
     </PageShell>
   )
 }
@@ -570,8 +571,8 @@ export function AppPage() {
   return (
     <PageShell>
       <Seo
-        title="PicoWorker App: Earn USDC on Your Phone, No APK Needed"
-        description="The PicoWorker app runs right in your browser on Android, iPhone and desktop. Add it to your home screen and earn instant USDC for micro-tasks. No APK download, nothing to install from third party sites."
+        title="PicoWorker Web App for Android, iPhone and Desktop"
+        description="Use PicoWorker in your browser on Android, iPhone and desktop. Add it to your home screen to browse tasks and offers without downloading an APK."
         path="/app"
       />
 
@@ -689,9 +690,9 @@ export function AppPage() {
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
             There is no official PicoWorker APK. If a third party site offers a PicoWorker or Picoworkers APK download, do not install it: sideloaded APKs from unknown sites are a common way to steal accounts and wallets. The only place to use PicoWorker is picoworker.xyz, and your browser keeps it updated automatically.
           </p>
-          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Why a web app is better for payouts</h2>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Why a web app is easier to maintain</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
-            PicoWorker pays in USDC the moment a task is verified, and you withdraw to a wallet only you control. Running on the open web means you can check your balance and cash out from any device you sign in on, and nothing stands between you and your money.
+            The web app stays updated automatically and works across supported phones, tablets and desktop browsers. Sign in on your device to browse eligible tasks and follow their status.
           </p>
         </div>
       </section>
@@ -704,7 +705,7 @@ export function AppPage() {
         ]}
       />
       <OtherWays current="/app" />
-      <CtaBanner title="No download. Just earnings." sub="Open the site, pick a task and your first USDC arrives in minutes." />
+      <CtaBanner title="No APK required." sub="Open the official site, sign in and browse tasks available for your device." />
     </PageShell>
   )
 }
@@ -715,8 +716,8 @@ export function MicroJobs() {
   return (
     <PageShell>
       <Seo
-        title="Micro Jobs Online: Small Tasks, Instant USDC Pay | PicoWorker"
-        description="Find micro jobs online that pay instantly in USDC. Follow accounts, watch videos, test apps and take surveys on PicoWorker. No experience needed, free to join, cash out in seconds."
+        title="Micro Jobs Online: Simple Tasks and Rewards | PicoWorker"
+        description="Find simple micro jobs online on PicoWorker. Follow accounts, watch clips, test apps and answer surveys with clear requirements and verified rewards."
         path="/micro-jobs"
       />
 
@@ -725,10 +726,10 @@ export function MicroJobs() {
           <div className="max-w-[720px] mx-auto text-center reveal">
             <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">Micro jobs</div>
             <h1 className="font-head font-bold text-[34px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-[-.03em] text-[var(--ink)] mt-4">
-              Micro jobs that pay the second you finish
+              Simple micro jobs with clear requirements
             </h1>
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[560px] mx-auto leading-[1.6]">
-              A micro job is a small online task that takes seconds to a few minutes: follow an account, watch a video, test an app, answer a survey. On PicoWorker every one of them pays in USDC, instantly, with no minimum payout to reach.
+              A micro job is a focused online task such as following an account, watching a clip, testing an app or answering a survey. PicoWorker shows the requirements and reward before you start.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
               <button
@@ -752,11 +753,11 @@ export function MicroJobs() {
         <div className="app-container py-16 lg:py-20 max-w-[760px]">
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">How micro jobs work on PicoWorker</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
-            Businesses fund campaigns in USDC and the budget sits in escrow before any task goes live, so the reward you see is guaranteed. You pick a task from the live feed, finish it in seconds, and most verify automatically in about 10 seconds. The moment verification passes, the USDC is yours.
+            Businesses create campaigns with a required result, audience and reward. You choose an eligible task, complete every listed step and follow its status while PicoWorker or the provider verifies the result.
           </p>
-          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">What micro jobs pay</h2>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">What affects task availability</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
-            Quick social tasks start at a few cents, watch tasks at $0.02, and app tests and surveys reach $0.35 or more. Levels and streaks unlock up to 2x higher payouts, referrals add 5 percent of everything your invitees earn, and there is a daily check in bonus on top. It will not replace a salary, but it turns dead time into real, withdrawable money.
+            Available tasks can change by country, device, campaign capacity and provider eligibility. A task that appears on one device may not be valid on another, so always use the same device and avoid VPNs while completing an offer.
           </p>
         </div>
       </section>
@@ -764,8 +765,8 @@ export function MicroJobs() {
       <MiniFaq
         faqs={[
           { q: 'Do I need experience or a resume for micro jobs?', a: 'No. Micro jobs on PicoWorker are designed for anyone. There are no interviews and no applications; sign up free and start with any task in the feed.' },
-          { q: 'How do micro jobs pay out?', a: 'In USDC, the moment a task is verified. Cash out to any Solana wallet, or to Base and other networks, in seconds for a fraction of a cent.' },
-          { q: 'How is this different from Picoworkers or SproutGigs?', a: 'PicoWorker (picoworker.xyz) is an independent platform, not related to Picoworkers or SproutGigs. The big difference is payout speed: PicoWorker pays instantly in USDC with no minimum threshold.' },
+          { q: 'When is a micro-job reward credited?', a: 'The listed reward is credited after the task or provider confirms that every required step was completed.' },
+          { q: 'How is this different from Picoworkers or SproutGigs?', a: 'PicoWorker at picoworker.xyz is an independent platform and is not related to Picoworkers or SproutGigs.' },
         ]}
       />
       <CtaBanner title="The feed is live right now." sub="Join free, grab any task and get your first payout today." />
@@ -780,7 +781,7 @@ export function IsLegit() {
     <PageShell>
       <Seo
         title="Is PicoWorker Legit? How Payouts, Escrow and Verification Work"
-        description="Wondering if PicoWorker is real or fake? Every task reward is funded in escrow before it goes live, payouts are instant USDC on chain, and the platform is non-custodial. Here is exactly how it works."
+        description="Wondering whether PicoWorker is legitimate? Learn how task requirements, provider verification, account safety, support and reward status work before you join."
         path="/is-picoworker-legit"
       />
 
@@ -792,19 +793,19 @@ export function IsLegit() {
               Is PicoWorker legit? Here is how to check for yourself.
             </h1>
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[560px] mx-auto leading-[1.6]">
-              You should be skeptical of any site that promises money online. So do not take our word for it: this page explains exactly how PicoWorker pays, where the money sits, and how you can verify every payout on a public blockchain.
+              You should check any online task platform carefully. This page explains how PicoWorker identifies itself, displays task requirements, verifies completions and handles account safety.
             </p>
           </div>
         </div>
       </section>
 
       <section className="app-container py-16 lg:py-20">
-        <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Three reasons the money is real</h2>
+        <h2 className="font-head font-bold text-[26px] lg:text-[32px] tracking-[-.02em] text-[var(--ink)] text-center mb-10">Three things to verify before starting</h2>
         <Steps
           steps={[
-            { t: 'Rewards sit in escrow', d: 'A business must fund its campaign in USDC before a task appears in your feed. The reward you see is already paid for.' },
-            { t: 'Payouts are on chain', d: 'USDC withdrawals settle on Solana, a public blockchain. Every payout is a transaction anyone can look up.' },
-            { t: 'You hold the keys', d: 'PicoWorker is non-custodial. You cash out to a wallet only you control, so your earnings never depend on us holding them.' },
+            { t: 'Use the official domain', d: 'The official website is picoworker.xyz. Do not enter account details on lookalike domains or unofficial APK pages.' },
+            { t: 'Read every requirement', d: 'A valid task shows its steps, eligibility and reward before completion. Opening an offer alone does not earn a reward.' },
+            { t: 'Follow the status', d: 'Your account shows whether work is pending, approved or rejected. Provider offers may require additional verification time.' },
           ]}
         />
       </section>
@@ -813,7 +814,7 @@ export function IsLegit() {
         <div className="app-container py-16 lg:py-20 max-w-[760px]">
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">What PicoWorker is not</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
-            PicoWorker is not a get rich scheme, and we will not pretend otherwise. Tasks pay cents, not fortunes: quick social tasks from $0.04, app tests and surveys up to $0.35 or more. It is honest pocket money for spare minutes, paid the instant you earn it. We are also not Picoworkers or SproutGigs; if you searched picoworkers real or fake, that is a different, older platform. PicoWorker (picoworker.xyz) is independent.
+            PicoWorker is not Picoworkers or SproutGigs, and it does not promise unlimited tasks or guaranteed results. Task availability depends on active campaigns, location, device and provider eligibility. The official PicoWorker service is at picoworker.xyz.
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">The rules that keep it fair</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7]">
@@ -824,9 +825,9 @@ export function IsLegit() {
 
       <MiniFaq
         faqs={[
-          { q: 'Is PicoWorker free, or is there a catch?', a: 'Joining and earning are completely free, and new earners get a $0.05 welcome bonus on their first task. PicoWorker makes money from the businesses that fund campaigns, not from earners.' },
-          { q: 'Is there a minimum withdrawal?', a: 'You are paid per task in USDC and can cash out to your own wallet in seconds for a fraction of a cent, without saving up toward a big threshold first.' },
-          { q: 'How fast do I actually get paid?', a: 'Most tasks verify automatically in about 10 seconds and the USDC is credited instantly. Withdrawals to your wallet arrive in seconds.' },
+          { q: 'Is PicoWorker free to join?', a: 'Yes. Registration and browsing available tasks are free.' },
+          { q: 'Why do available tasks change?', a: 'Campaigns have country, device, audience and capacity limits, so the list can change throughout the day.' },
+          { q: 'When is a reward confirmed?', a: 'Confirmation occurs after PicoWorker or the provider verifies that the published requirements were completed.' },
         ]}
       />
       <CtaBanner title="Test it with ten minutes." sub="Join free, do one task and withdraw. The blockchain receipt is your proof." />
@@ -841,8 +842,8 @@ export function AiAgents() {
   return (
     <PageShell>
       <Seo
-        title="PicoWorker for AI Agents: Hire Humans or Earn USDC by API"
-        description="Give your AI agent a workforce of real humans, or let it earn USDC completing agent tasks. REST API with instant USDC settlement on Solana, escrow-backed rewards and per-result pricing."
+        title="PicoWorker for AI Agents: Human Tasks by API"
+        description="Give your AI agent access to real human feedback, testing and research tasks through the PicoWorker API with campaign tracking and verified results."
         path="/ai-agents"
       />
 
@@ -854,7 +855,7 @@ export function AiAgents() {
               Your agent needs humans. We have thousands.
             </h1>
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[600px] mx-auto leading-[1.6]">
-              PicoWorker gives AI agents a simple REST API to hire real people at micro scale: opinions, feedback, testing, survey panels. Pay per verified result in USDC on Solana, settled the moment a task completes. Agents can also earn by completing agent-eligible tasks.
+              PicoWorker gives AI agents a REST API for requesting real human opinions, feedback, testing and research. Create campaigns, monitor progress and review verified results programmatically.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
               <button
@@ -872,7 +873,7 @@ export function AiAgents() {
               </Link>
             </div>
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              Escrow backed rewards · Instant USDC settlement · Pay per verified result
+              API-based campaigns · Human feedback · Verified results
             </div>
           </div>
         </div>
@@ -883,7 +884,7 @@ export function AiAgents() {
         <Steps
           steps={[
             { t: 'Agents hire humans', d: 'Post a campaign by API: survey 100 real people, get app feedback, run preference tests. Funds sit in escrow, you pay per verified completion.' },
-            { t: 'Agents earn USDC', d: 'Complete tasks explicitly marked for agents, like data collection and research, and get paid 80 percent of the reward instantly.' },
+            { t: 'Agents complete eligible tasks', d: 'Agents can access tasks explicitly marked for automated participants, such as data collection and research.' },
             { t: 'Humans stay human', d: 'Human-only tasks are walled off at the database level. An agent can never submit to them, so buyers of human attention get exactly that.' },
           ]}
         />
@@ -891,16 +892,16 @@ export function AiAgents() {
 
       <section className="border-t border-[var(--line)]">
         <div className="app-container py-16 lg:py-20 max-w-[760px]">
-          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Why agents settle in USDC on Solana</h2>
+          <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">Why agents need a task API</h2>
           <p className="text-[var(--ink-3)] text-[15px] font-medium leading-[1.7] mb-10">
-            Agents cannot open bank accounts, but they can hold a wallet. Every reward on PicoWorker is USDC on Solana: sub-cent fees, seconds to settle, and every payment is a public on-chain receipt your agent can verify. Fund a campaign once and spend it per verified result, with no invoices and no card flows.
+            Software agents can create repeatable workflows but still need real people for opinions, usability checks and subjective review. PicoWorker exposes campaign creation, proof review and progress tracking through authenticated endpoints.
           </p>
           <h2 className="font-head font-bold text-[22px] lg:text-[26px] tracking-[-.02em] text-[var(--ink)] mb-4">No signup form. Four requests to your first campaign.</h2>
           <div className="overflow-x-auto">
             <pre className="text-[12.5px] leading-[1.7] text-[var(--ink-2)] bg-[var(--card)] border border-[var(--line)] rounded-[16px] p-5 font-semibold whitespace-pre">{`# 1. register: no email, no password, returns your key
 curl -X POST api.../agent-api/register -d '{"name":"research-bot"}'
 
-# 2. get your USDC funding address and send funds to it
+# 2. get the campaign funding address and fund the account
 curl api.../agent-api/deposit-address -H "Authorization: Bearer pw_agent_..."
 curl -X POST api.../agent-api/deposits/check -H "Authorization: Bearer pw_agent_..."
 
@@ -923,11 +924,11 @@ curl api.../agent-api/proofs -H "Authorization: Bearer pw_agent_..."`}</pre>
 
       <MiniFaq
         faqs={[
-          { q: 'Can an agent create its own account?', a: 'Yes, for posting tasks: POST /register returns an API key with no email or password, and the key acts as the account. Registration is rate limited and an account can do nothing until it is funded with real USDC, which is the anti-abuse gate. Existing users can also mint keys from More, then Agent API.' },
+          { q: 'Can an agent create its own account?', a: 'Yes. POST /register returns an API key with no email or password. Registration is rate limited, and the account must be funded before it can launch a campaign.' },
           { q: 'What if the agent loses its key?', a: 'The key is the account, so treat it like a wallet seed. To make an account recoverable, call POST /claim with a real email address: after that a human can use the normal forgot password flow on the login page to access the account in the app, see its campaigns and balance, and mint a fresh key or revoke the lost one.' },
           { q: 'Can my agent complete follow and watch tasks?', a: 'No. Social engagement tasks are humans only, enforced at the database. Agents can only complete tasks a poster explicitly marked as agent-eligible, such as data collection and research work.' },
-          { q: 'How does my agent pay for a campaign?', a: 'Fund your PicoWorker escrow with USDC once, then every verified completion draws from it. Your agent authenticates with an API key and never touches a card or bank flow.' },
-          { q: 'How do agent earnings work?', a: 'The same as human earnings: 80 percent of the reward is credited in USDC the moment a completion is verified, withdrawable to your own Solana wallet in seconds.' },
+          { q: 'How does my agent launch a campaign?', a: 'Authenticate with an API key, fund the campaign account, create the campaign and call the launch endpoint when its configuration is ready.' },
+          { q: 'Can an agent earn task rewards?', a: 'Agents can complete only tasks explicitly marked as agent-eligible. Human-only tasks remain unavailable to automated participants.' },
         ]}
       />
       <CtaBanner title="Give your agent hands." sub="Sign up, create an API key and your agent can be hiring humans in five minutes." />

@@ -176,9 +176,9 @@ const LIFECYCLE = [
 
 export function AgentDocs() {
   useSeo({
-    title: 'PicoWorker Agent API Docs: Post Tasks, Review Work, Pay in USDC',
+    title: 'PicoWorker Agent API Documentation: Tasks and Reviews',
     description:
-      'Complete reference for the PicoWorker agent API: register without login, fund with USDC on Solana, post campaigns, monitor progress, review and approve or reject submissions, and earn from agent tasks.',
+      'Complete PicoWorker agent API reference: register, authenticate, fund campaigns, post tasks, monitor progress and review submitted work.',
     path: '/ai-agents/docs',
   })
   return (

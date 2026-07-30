@@ -53,9 +53,9 @@ export function Landing() {
           {/* centered, restrained hero */}
           <div className="max-w-[760px] mx-auto text-center reveal">
             <h1 className="font-head font-bold text-[38px] sm:text-[48px] lg:text-[58px] leading-[1.05] tracking-[-.03em] text-[var(--ink)]">
-              Turn tiny tasks<br />
+              Complete tiny tasks.<br />
               <span className="relative inline-block text-[var(--accent-strong)]">
-                into real money
+                Earn useful rewards.
                 <svg className="absolute left-0 -bottom-1.5 w-full" height="12" viewBox="0 0 320 12" fill="none" preserveAspectRatio="none" aria-hidden="true">
                   <path d="M3 8.5C70 3 250 3 317 7.5" stroke="var(--accent)" strokeWidth="3.5" strokeLinecap="round" />
                 </svg>
@@ -63,7 +63,7 @@ export function Landing() {
             </h1>
 
             <p className="text-[var(--ink-3)] text-[15px] lg:text-[17px] font-medium mt-6 max-w-[540px] mx-auto leading-[1.6]">
-              PicoWorker is a micro-task marketplace. Follow an account, watch a clip, try an app or share your opinion, and every task pays instant <span className="text-[var(--ink)] font-semibold">USDC</span>, straight to your wallet.
+              PicoWorker is a micro-task marketplace. Follow an account, watch a clip, try an app or share your opinion, then earn a reward when your work is verified.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 mt-9">
@@ -80,7 +80,7 @@ export function Landing() {
             </div>
 
             <div className="text-[var(--ink-4)] text-[13.5px] font-semibold mt-6">
-              Always free to join · Instant USDC on Solana · Cash out anytime
+              Free to join · Clear requirements · Verified rewards
             </div>
           </div>
 
@@ -105,7 +105,7 @@ export function Landing() {
                 </div>
                 <div>
                   <div className="text-[var(--ink)] text-[12.5px] font-bold">Survey verified</div>
-                  <div className="font-head text-[13px] font-extrabold text-[var(--green)]">+$0.20</div>
+                  <div className="font-head text-[13px] font-extrabold text-[var(--green)]">Reward added</div>
                 </div>
               </div>
               <div
@@ -117,8 +117,8 @@ export function Landing() {
                   <WalletIcon width={15} height={15} className="text-[#fff]" />
                 </div>
                 <div>
-                  <div className="text-[var(--ink)] text-[12.5px] font-bold">Cash out sent</div>
-                  <div className="text-[var(--ink-4)] text-[11.5px] font-semibold">arrived in 4s</div>
+                  <div className="text-[var(--ink)] text-[12.5px] font-bold">Task approved</div>
+                  <div className="text-[var(--ink-4)] text-[11.5px] font-semibold">status updated</div>
                 </div>
               </div>
 
@@ -135,7 +135,7 @@ export function Landing() {
 
               <div className="relative p-7 pb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.08em]">Available balance</div>
+                  <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.08em]">Weekly progress</div>
                   <span className="flex items-center gap-1.5 text-[var(--green)] text-[10.5px] font-extrabold uppercase tracking-[.06em] px-2.5 py-1 rounded-full bg-[rgba(68,209,122,.12)]">
                     <span className="w-[6px] h-[6px] rounded-full bg-[var(--green)]" style={{ animation: 'pico-pulse 1.8s ease-in-out infinite' }} />
                     live
@@ -143,13 +143,13 @@ export function Landing() {
                 </div>
 
                 <div className="flex items-end gap-2.5">
-                  <div className="font-head font-bold text-[54px] text-[var(--ink)] tracking-[-.02em] leading-none">$12.84</div>
-                  <div className="font-head text-[14px] font-extrabold text-[var(--green)] mb-[5px]">+$0.41 today</div>
+                  <div className="font-head font-bold text-[54px] text-[var(--ink)] tracking-[-.02em] leading-none">12 tasks</div>
+                  <div className="font-head text-[14px] font-extrabold text-[var(--green)] mb-[5px]">4 today</div>
                 </div>
 
                 <div className="inline-flex items-center gap-2 mt-4 px-3 py-[7px] rounded-full bg-[var(--fill)] border border-[var(--line)]">
                   <span className="w-[8px] h-[8px] rounded-full bg-[var(--usdc)]" />
-                  <span className="text-[var(--ink-2)] text-[12px] font-bold">12.84 USDC on Solana</span>
+                  <span className="text-[var(--ink-2)] text-[12px] font-bold">Account ready for new tasks</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5 mt-5">
@@ -157,13 +157,13 @@ export function Landing() {
                     onClick={go}
                     className="py-[11px] rounded-[12px] font-head font-extrabold text-[13.5px] bg-[var(--accent)] text-[var(--accent-ink)]"
                   >
-                    Cash out
+                    View tasks
                   </button>
                   <button
                     onClick={go}
                     className="py-[11px] rounded-[12px] font-head font-extrabold text-[13.5px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)]"
                   >
-                    Earn more
+                    View activity
                   </button>
                 </div>
               </div>
@@ -172,9 +172,9 @@ export function Landing() {
                 <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.08em] mb-3">Recent activity</div>
                 <div className="flex flex-col gap-[10px]">
                   {[
-                    { icon: <XLogo width={16} height={16} className="text-[#fff]" />, bg: '#000', t: 'Follow on X', m: '+$0.04', s: 'just now' },
-                    { icon: <Play width={18} height={18} className="text-[#fff]" />, bg: '#FF0033', t: 'Watched 30s video', m: '+$0.02', s: '2m ago' },
-                    { icon: <Check width={16} height={16} className="text-[#fff]" />, bg: '#5B8DEF', t: 'App test · FitTrack', m: '+$0.35', s: '5m ago' },
+                    { icon: <XLogo width={16} height={16} className="text-[#fff]" />, bg: '#000', t: 'Follow on X', m: 'Verified', s: 'just now' },
+                    { icon: <Play width={18} height={18} className="text-[#fff]" />, bg: '#FF0033', t: 'Watched 30s video', m: 'Verified', s: '2m ago' },
+                    { icon: <Check width={16} height={16} className="text-[#fff]" />, bg: '#5B8DEF', t: 'App test · FitTrack', m: 'Approved', s: '5m ago' },
                   ].map((r, i) => (
                     <div key={i} className="flex items-center gap-3 p-3 rounded-[14px] bg-[var(--fill)] border border-[var(--line)]">
                       <div className="w-9 h-9 rounded-[11px] flex-none flex items-center justify-center" style={{ background: r.bg }}>
@@ -201,15 +201,15 @@ export function Landing() {
       <section id="earn" className="app-container py-20 lg:py-24">
         <SectionHead
           eyebrow="Ways to earn"
-          title="Small effort. Real money."
-          sub="Four ways to earn, each done in seconds. Pick whatever fits your moment and get paid in USDC."
+          title="Small tasks. Clear rewards."
+          sub="Choose a task that fits your device and location, read the requirements, and earn after verification."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[1000px] mx-auto">
           {[
-            { icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on X, Instagram and TikTok.', p: 'from $0.04' },
-            { icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Sit back and watch short videos and ads through to the end.', p: 'from $0.02' },
-            { icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Be among the first to try a brand new app.', p: 'up to $0.35' },
-            { icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share your thoughts in a few quick questions.', p: 'up to $0.20' },
+            { icon: <XLogo width={20} height={20} className="text-[#fff]" />, color: '#000000', t: 'Social', d: 'Follow, like and share on supported social platforms.', p: 'Quick tasks' },
+            { icon: <Play width={22} height={22} className="text-[#fff]" />, color: '#FF0033', t: 'Watch', d: 'Watch eligible short clips through to the end.', p: 'Short clips' },
+            { icon: <Bolt width={20} height={20} className="text-[#fff]" />, color: '#5B8DEF', t: 'App tests', d: 'Install, explore and complete the listed app requirements.', p: 'Multi-step tasks' },
+            { icon: <ListIcon width={20} height={20} className="text-[#fff]" />, color: '#26A17B', t: 'Surveys', d: 'Share genuine answers in available questionnaires.', p: 'Availability varies' },
           ].map((c) => (
             <div key={c.t} className="card-hover rounded-[20px] p-6 bg-[var(--card)] border border-[var(--line)]">
               <div className="w-11 h-11 rounded-[13px] flex items-center justify-center" style={{ background: c.color }}>
@@ -231,13 +231,13 @@ export function Landing() {
           <SectionHead
             eyebrow="How it works"
             title="Three taps and you're earning."
-            sub="No experience, no paperwork, no waiting around. Pick a task, tap through it, and the money is yours."
+            sub="No experience or application is required. Choose an eligible task and follow every listed step."
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-[1000px] mx-auto">
             {[
               { t: 'Choose a task', d: 'Scroll a live feed of quick tasks and grab whichever one catches your eye.' },
               { t: 'Finish in seconds', d: 'Most tasks check themselves in about ten seconds. Anyone can do them.' },
-              { t: 'Get paid on the spot', d: 'USDC lands in your wallet the moment you finish. Send it anywhere, anytime.' },
+              { t: 'Receive the reward', d: 'Eligible rewards are credited after the completion is verified.' },
             ].map((s, i) => (
               <div key={s.t} className="relative overflow-hidden rounded-[20px] p-7 bg-[var(--card)] border border-[var(--line)] text-center md:text-left">
                 <div
@@ -264,7 +264,7 @@ export function Landing() {
             <div className="text-[var(--accent-strong)] text-[12.5px] font-extrabold font-head uppercase tracking-[.16em]">For business</div>
             <h2 className="font-head font-bold text-[28px] lg:text-[36px] tracking-[-.02em] text-[var(--ink)] mt-3 leading-[1.1]">Real people. Real results.</h2>
             <p className="text-[var(--ink-3)] text-[15px] font-medium mt-4 leading-[1.65] max-w-[440px]">
-              Reach genuine people who follow, watch, install and answer. Fund a campaign in USDC and pay only when a result is verified.
+              Reach genuine people for feedback, testing, research and permitted engagement tasks. Review results before approving completed work.
             </p>
             <div className="flex flex-col gap-3 mt-6">
               {['Every result is verified, never botted', 'Your budget stays in escrow, refundable anytime', 'Live analytics that track every completion'].map((f) => (
@@ -298,7 +298,7 @@ export function Landing() {
               <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: '68%' }} />
             </div>
             <div className="grid grid-cols-3 gap-3">
-              {[['$13.60', 'Spent'], ['$8.40', 'Left'], ['14s', 'Avg time']].map(([v, l]) => (
+              {[['340', 'Completed'], ['160', 'Remaining'], ['14s', 'Avg time']].map(([v, l]) => (
                 <div key={l} className="rounded-[13px] p-3.5 bg-[var(--fill)] border border-[var(--line)]">
                   <div className="font-head text-[17px] font-extrabold text-[var(--ink)]">{v}</div>
                   <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-1">{l}</div>
@@ -346,10 +346,10 @@ export function Landing() {
           />
           <div className="relative">
             <h2 className="font-head font-bold text-[30px] lg:text-[44px] tracking-[-.02em] text-[var(--ink)] max-w-[620px] mx-auto leading-[1.1]">
-              Your first payout is a minute away.
+              Your next task could be ready now.
             </h2>
             <p className="text-[var(--ink-3)] text-[15px] font-medium mt-4 max-w-[440px] mx-auto leading-[1.6]">
-              Joining is free, and your very first task comes with a $0.05 welcome bonus.
+              Join for free, browse eligible tasks and start with clear requirements.
             </p>
             <button
               onClick={go}
@@ -373,31 +373,31 @@ export function Landing() {
 const FAQS: { q: string; a: string }[] = [
   {
     q: 'What is PicoWorker?',
-    a: 'PicoWorker is a micro-task marketplace where every small job pays in USDC. You follow accounts, watch videos, test apps and answer surveys, while businesses post the tasks and pay only for verified results.',
+    a: 'PicoWorker is a micro-task marketplace where people complete small online tasks such as following accounts, watching clips, testing apps and answering surveys. Businesses post tasks and review verified results.',
   },
   {
-    q: 'How do I earn money on PicoWorker?',
-    a: 'Sign up for free, pick a task from the live feed and finish it in seconds. Most tasks verify automatically in about 10 seconds, and your USDC reward lands in your wallet instantly.',
+    q: 'How do I earn rewards on PicoWorker?',
+    a: 'Sign up for free, choose an eligible task or offer, follow every requirement and wait for the completion to be verified.',
   },
   {
-    q: 'How much can I earn from micro-tasks?',
-    a: 'Quick social tasks pay a few cents, while app tests and surveys pay $0.35 or more. Levels and streaks unlock up to 2x higher payouts, and referrals add even more on top.',
+    q: 'How are task rewards decided?',
+    a: 'Each task shows its reward and requirements before you begin. Availability and reward values can vary by country, device and provider.',
   },
   {
-    q: 'When and how do I get paid?',
-    a: 'You are paid in USDC the moment a task is verified. Cash out to any Solana wallet, or to Base and other networks, and withdrawals arrive in seconds for a fraction of a cent. PicoWorker is non-custodial: your keys, your USDC.',
+    q: 'When is a reward credited?',
+    a: 'Eligible rewards are credited after PicoWorker or the offer provider confirms that every required step was completed.',
   },
   {
     q: 'Is PicoWorker free to join?',
-    a: 'Yes, completely. Signing up and earning never costs a thing, and new earners receive a $0.05 welcome bonus on their first task.',
+    a: 'Yes. Registration and browsing available tasks are free.',
   },
   {
     q: 'Can businesses post tasks on PicoWorker?',
-    a: 'Absolutely. Fund a campaign in USDC, set your reward and quantity, and reach real people for followers, views, installs and survey responses. Your budget sits safely in escrow and you only pay per verified completion.',
+    a: 'Yes. Businesses can create permitted campaigns, define the required result and review submitted work before approval.',
   },
   {
     q: 'Is PicoWorker the same as Picoworkers or SproutGigs?',
-    a: 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker (picoworker.xyz) is an independent micro-task marketplace that pays instantly in USDC. People sometimes type pico worker, pico work or picowork, but if you want small online tasks with instant crypto payouts, you are in the right place.',
+    a: 'No. Picoworkers rebranded to SproutGigs and is a separate company. PicoWorker at picoworker.xyz is an independent marketplace for simple online tasks and verified rewards.',
   },
 ]
 

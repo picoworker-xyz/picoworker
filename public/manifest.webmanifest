@@ -1,7 +1,7 @@
 {
-  "name": "PicoWorker: Micro-Tasks, Instant USDC",
+  "name": "PicoWorker: Simple Online Tasks",
   "short_name": "PicoWorker",
-  "description": "Earn instant USDC for micro-tasks. Follow, watch, test apps and take surveys.",
+  "description": "Complete simple online tasks, explore offers and earn rewards for verified work.",
   "id": "/",
   "start_url": "/?source=pwa",
   "scope": "/",

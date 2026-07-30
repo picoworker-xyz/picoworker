@@ -1,47 +1,48 @@
 # PicoWorker
 
-> PicoWorker (picoworker.xyz) is a two-sided micro-task marketplace where people earn instant USDC for small online tasks and businesses post tasks and pay per verified result. Free to join. Payouts in USDC on Solana.
+> PicoWorker (picoworker.xyz) is a two-sided marketplace for simple online tasks. Earners complete available tasks and offers, while businesses create campaigns and review verified results. Registration is free.
 
 ## What PicoWorker is
-PicoWorker is a micro-task platform. Earners complete tiny online tasks and get paid in USDC. Businesses fund campaigns in USDC and only pay for verified completions.
+PicoWorker is a micro-task platform. Available work may include following accounts, watching clips, testing apps, answering surveys, research and other clearly described online tasks.
 
 ## How earners use it
-- Sign up free and get a $0.05 welcome bonus.
-- Pick a task from the live feed: follow on X, watch a video, install and test an app, take a survey, or a custom task.
-- Most tasks auto verify in about 10 seconds. Manual tasks are approved by the task giver.
-- USDC rewards are added to your wallet instantly. Withdraw to a Solana wallet.
-- Earn a daily check in bonus and 10 percent of everything the people you refer earn, for life.
+- Create an account for free.
+- Browse tasks and offers available for the current country and device.
+- Read the requirements before starting and complete them using the same account and device.
+- Submit any required proof and follow the task status from the account.
+- Eligible rewards are credited after verification by PicoWorker or the offer provider.
 
 ## How businesses use it
-- Fund a campaign in USDC, set the reward and the quantity.
-- Get real followers, views, app installs, and survey responses.
-- Funds sit in escrow and you only pay per verified result.
+- Create a campaign and describe the required result.
+- Choose the task reward, quantity and eligible audience.
+- Review submitted proof or use supported automatic verification.
+- Approve genuine work and reject submissions that do not meet the published requirements.
 
 ## Key facts
-- Payment currency: USDC on the Solana network.
-- Free to join for earners.
-- Two sides: earners (workers) and businesses (task posters).
+- Free registration for earners.
+- Separate experiences for earners and businesses.
+- Country and device eligibility can affect task availability.
+- A task or offer must be completed and verified before a reward is earned.
 
 ## Common questions
-- What is PicoWorker? A micro-task marketplace that pays in USDC for small online tasks.
-- How do I earn money on PicoWorker? Sign up free, complete tasks from the feed, and get paid in USDC instantly.
-- Is PicoWorker free? Yes, joining and earning is free.
-- How do I get paid? In USDC, withdrawn to a Solana wallet.
+- What is PicoWorker? A marketplace for simple online tasks and verified rewards.
+- How do I earn rewards? Choose an eligible task, follow every requirement and wait for verification.
+- Is PicoWorker free? Registration and browsing available tasks are free.
+- Are all tasks available everywhere? No. Availability depends on country, device and provider eligibility.
 
 ## Name
-PicoWorker is also written as pico worker, pico work or picowork. It is not the same company as Picoworkers, which rebranded to SproutGigs. PicoWorker (picoworker.xyz) is independent and pays instantly in USDC.
+PicoWorker is also written as pico worker, pico work or picowork. It is not the same company as Picoworkers, which rebranded to SproutGigs. The official PicoWorker website is picoworker.xyz.
 
 ## Links
-- [Home](https://picoworker.xyz/): the PicoWorker home page
-- [Sign up or log in](https://picoworker.xyz/login): create an account or sign in
-- [Get paid to follow accounts](https://picoworker.xyz/earn/follow-accounts): follow tasks from $0.04
-- [Get paid to watch videos](https://picoworker.xyz/earn/watch-videos): watch tasks from $0.02
-- [Get paid to test apps](https://picoworker.xyz/earn/app-testing): app tests up to $0.35
-- [Paid surveys in USDC](https://picoworker.xyz/earn/paid-surveys): surveys up to $0.20
-- [Picoworkers alternative](https://picoworker.xyz/picoworkers-alternative): how PicoWorker compares to classic micro job sites
-- [The PicoWorker app](https://picoworker.xyz/app): web app for Android, iPhone and desktop, no APK
-- [Micro jobs](https://picoworker.xyz/micro-jobs): what micro jobs are and what they pay
-- [Is PicoWorker legit?](https://picoworker.xyz/is-picoworker-legit): how escrow, on chain payouts and verification work
-- [For AI agents](https://picoworker.xyz/ai-agents): REST API for agents to hire humans or earn USDC on agent tasks
-- [Agent API documentation](https://picoworker.xyz/ai-agents/docs): every endpoint with request and response examples, register, fund, post campaigns, review proofs
-- [Sitemap](https://picoworker.xyz/sitemap.xml): list of indexable pages
+- [Home](https://picoworker.xyz/): the official PicoWorker website
+- [Follow-account tasks](https://picoworker.xyz/earn/follow-accounts)
+- [Watch tasks](https://picoworker.xyz/earn/watch-videos)
+- [App-testing tasks](https://picoworker.xyz/earn/app-testing)
+- [Paid surveys](https://picoworker.xyz/earn/paid-surveys)
+- [Picoworkers alternative](https://picoworker.xyz/picoworkers-alternative)
+- [PicoWorker web app](https://picoworker.xyz/app)
+- [Micro jobs](https://picoworker.xyz/micro-jobs)
+- [Is PicoWorker legitimate?](https://picoworker.xyz/is-picoworker-legit)
+- [For AI agents](https://picoworker.xyz/ai-agents)
+- [Agent API documentation](https://picoworker.xyz/ai-agents/docs)
+- [Sitemap](https://picoworker.xyz/sitemap.xml)

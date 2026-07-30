@@ -26,7 +26,7 @@
   <text x="80" y="392" font-size="84" font-weight="700" letter-spacing="-2"><tspan fill="#ffffff">the</tspan><tspan fill="#C2F94D" dx="28">tiny stuff.</tspan></text>
 
   <!-- subline -->
-  <text x="82" y="456" font-size="30" font-weight="500" fill="#C7C9D4">Micro-tasks → instant USDC. Follow, watch, test, survey.</text>
+  <text x="82" y="456" font-size="30" font-weight="500" fill="#C7C9D4">Simple online tasks. Follow, watch, test, survey.</text>
 
   <!-- chips -->
   <g transform="translate(82,500)" font-size="24" font-weight="600">
@@ -36,7 +36,7 @@
     </g>
     <g transform="translate(264,0)">
       <rect width="250" height="56" rx="28" fill="#15161C" stroke="#ffffff" stroke-opacity="0.08" />
-      <text x="30" y="37" fill="#44D17A">✓ Paid in USDC</text>
+      <text x="30" y="37" fill="#44D17A">✓ Verified rewards</text>
     </g>
     <g transform="translate(538,0)">
       <rect width="270" height="56" rx="28" fill="#15161C" stroke="#ffffff" stroke-opacity="0.08" />
