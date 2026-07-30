@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { Page } from '../../components/Page'
-import { Globe, Shield } from '../../components/icons'
+import { ExternalLink, Globe, Shield } from '../../components/icons'
 import { OfferTabs } from '../../components/OfferTabs'
 
 // Public placement key. It appears in the wall URL by design, so unlike the
@@ -11,6 +11,17 @@ const PLACEMENT_ID = 'plc_fhes2g4o'
 export function KiwiwallOffers() {
   const { userId } = useStore()
   const [loaded, setLoaded] = useState(false)
+  // The provider restricts embedding with `frame-ancestors` to picoworker.xyz,
+  // and some browsers block third-party frames outright. There is no reliable
+  // event for "the frame was refused", so treat a frame that never loads as
+  // blocked and steer the user to the direct link instead of a blank box.
+  const [maybeBlocked, setMaybeBlocked] = useState(false)
+
+  useEffect(() => {
+    if (loaded) return
+    const t = setTimeout(() => setMaybeBlocked(true), 4000)
+    return () => clearTimeout(t)
+  }, [loaded])
 
   if (!userId) {
     return (
@@ -37,6 +48,23 @@ export function KiwiwallOffers() {
         Surveys and app offers from our worldwide partner. Rewards are credited automatically after the
         provider confirms your completion, which can take a few minutes.
       </div>
+
+      <a
+        href={src}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="mb-4 flex items-center justify-center gap-2 rounded-[14px] bg-[var(--accent)] py-[13px] font-head text-[14px] font-extrabold text-[var(--accent-ink)]"
+        style={{ boxShadow: 'var(--glow)' }}
+      >
+        Open offers in a new tab <ExternalLink width={16} height={16} />
+      </a>
+
+      {maybeBlocked && !loaded && (
+        <div className="mb-4 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+          The offers panel below did not load. Your browser may be blocking embedded content. Use the
+          button above to open the offers in a new tab instead. Your rewards work exactly the same.
+        </div>
+      )}
 
       <div
         className="relative overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--card)]"
