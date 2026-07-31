@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { usd, timeAgo } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Check, Shield } from '../../components/icons'
+import { txUrl } from '../../lib/explorer'
 
 // Real custodial Solana USDC deposits: per-user address + on-chain detection.
 export function AddFunds() {
@@ -132,7 +133,7 @@ export function AddFunds() {
                     <div className="flex-1 min-w-0">
                       <div className="text-[var(--ink)] text-[14px] font-bold">{d.amount.toFixed(2)} USDC</div>
                       <a
-                        href={`https://solscan.io/tx/${d.signature}`}
+                        href={txUrl(d.signature)}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[var(--ink-4)] text-[11.5px] font-semibold mt-[1px] hover:text-[var(--accent-strong)] inline-flex items-center gap-1"

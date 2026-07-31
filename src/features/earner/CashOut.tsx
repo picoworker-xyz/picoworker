@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { usd, shortAddr } from '../../lib/format'
 import { Page, CenteredPage } from '../../components/Page'
 import { ArrowUp, Shield } from '../../components/icons'
+import { txUrl, explorerName } from '../../lib/explorer'
 
 // Base has no per-recipient account setup, unlike Solana where the treasury
 // paid ~0.00204 SOL of token-account rent on a worker's first withdrawal — the
@@ -14,6 +15,10 @@ import { ArrowUp, Shield } from '../../components/icons'
 const FEE = 0.005
 // Format a balance for the input without ever rounding UP past the real amount.
 const fmtAmt = (v: number) => (Math.floor(v * 10000) / 10000).toString()
+// Amounts here can be sub-cent now that the fee is $0.005, so two decimals
+// would show a $0.005 payout as "0.01" — more than the worker receives. Show
+// up to 6dp and trim trailing zeros so round amounts still read cleanly.
+const fmtUsdc = (v: number) => v.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')
 
 export function CashOut() {
   const nav = useNavigate()
@@ -61,13 +66,13 @@ export function CashOut() {
               <ArrowUp width={34} height={34} className="text-[var(--accent-ink)]" />
             </div>
             <div className="font-head font-bold text-[24px] text-[var(--ink)] mt-6">{result.review ? 'Pending approval' : 'Withdrawal sent'}</div>
-            <div className="font-head font-bold text-[32px] text-[var(--accent-strong)] mt-2">{result.net.toFixed(2)} USDC</div>
+            <div className="font-head font-bold text-[32px] text-[var(--accent-strong)] mt-2">{fmtUsdc(result.net)} USDC</div>
             {result.review ? (
               <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold.</div>
             ) : (
               <>
                 <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">Sent to your Base address.</div>
-                <a href={`https://solscan.io/tx/${result.sig}`} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
+                <a href={txUrl(result.sig)} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] text-[13px] font-bold mt-3 inline-block">View on {explorerName(result.sig)}</a>
               </>
             )}
           </div>
@@ -119,7 +124,7 @@ export function CashOut() {
         <Line label="You send" value={`${usd(amt)} USDC`} />
         <Line label="Fee" value={usd(FEE)} />
         <div className="h-px bg-[var(--fill)] my-1" />
-        <Line label="You receive" value={`${netReceived.toFixed(2)} USDC`} strong />
+        <Line label="You receive" value={`${fmtUsdc(netReceived)} USDC`} strong />
       </div>
       <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1 mb-1">
         <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />

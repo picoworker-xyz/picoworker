@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { timeAgo, usd } from '../../lib/format'
 import { Page } from '../../components/Page'
 import { Send } from '../../components/icons'
+import { txUrl } from '../../lib/explorer'
 
 const TABS = ['Overview', 'Users', 'Tasks', 'Proofs', 'Support', 'Appeals', 'Deposits', 'Withdrawals', 'Fraud', 'Settings'] as const
 type Tab = (typeof TABS)[number]
@@ -227,7 +228,7 @@ function Cell({ col, value }: { col: string; value: unknown }) {
     )
   }
   if (col === 'signature' && typeof value === 'string') {
-    return <a href={`https://solscan.io/tx/${value}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-[var(--accent-strong)] font-mono">{value.slice(0, 8)}…↗</a>
+    return <a href={txUrl(value)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-[var(--accent-strong)] font-mono">{value.slice(0, 8)}…↗</a>
   }
   if ((col === 'status' && value === 'pending_proof') || value === 'rejected') {
     return <span className="text-[#FFB05A] font-bold">{String(value)}</span>
@@ -536,7 +537,7 @@ function AdminWithdrawals() {
                         <button disabled={busy === id} onClick={() => reject(id)} className="px-3 py-1.5 rounded-[9px] bg-[var(--fill)] text-[var(--ink)] text-[12px] font-extrabold disabled:opacity-50">Reject</button>
                       </span>
                     ) : typeof r.signature === 'string' ? (
-                      <a href={`https://solscan.io/tx/${r.signature}`} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] font-mono text-[12px]">tx ↗</a>
+                      <a href={txUrl(r.signature)} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] font-mono text-[12px]">tx ↗</a>
                     ) : (
                       <span className="text-[var(--ink-5)]">—</span>
                     )}
