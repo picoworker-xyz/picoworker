@@ -17,9 +17,20 @@ export function PayoutAddress() {
 
   async function sendCode() {
     setErr('')
-    if (!address.trim()) return setErr('Enter your Solana USDC address.')
+    const to = address.trim()
+    if (!to) return setErr('Enter your Base USDC address.')
+    // Catch a wrong-chain paste before an email goes out. A Solana address is
+    // base58 with no 0x prefix, and it is the likely mistake here: every
+    // existing user had one saved before payouts moved to Base.
+    if (!/^0x[0-9a-fA-F]{40}$/.test(to)) {
+      return setErr(
+        to.startsWith('0x')
+          ? 'That does not look complete. A Base address is 42 characters starting with 0x.'
+          : 'That looks like a Solana address. Payouts are on Base now — paste an address starting with 0x.',
+      )
+    }
     setBusy(true)
-    const { error } = await supabase!.rpc('request_payout_address', { p_address: address.trim() })
+    const { error } = await supabase!.rpc('request_payout_address', { p_address: to })
     setBusy(false)
     if (error) return setErr(error.message)
     setStage('code')
@@ -64,16 +75,16 @@ export function PayoutAddress() {
 
       {stage === 'enter' ? (
         <>
-          <Label>{profile?.payout_wallet ? 'New Solana USDC address' : 'Your Solana USDC address'}</Label>
+          <Label>{profile?.payout_wallet ? 'New Base USDC address' : 'Your Base USDC address'}</Label>
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Paste your Solana address"
+            placeholder="0x…"
             className="w-full bg-[var(--card)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[14px] font-semibold placeholder:text-[var(--ink-5)] outline-none focus:border-[var(--accent)]/60 mb-2"
           />
           <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1 mb-1">
             <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />
-            We'll email a 6-digit code to confirm this address. USDC on Solana only.
+            We'll email a 6-digit code to confirm this address. USDC on the Base network only.
           </div>
           {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-2 px-1">{err}</div>}
           <button onClick={sendCode} disabled={busy} className="w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>

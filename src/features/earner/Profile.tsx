@@ -100,7 +100,7 @@ export function Profile() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Item icon={<WalletIcon width={18} height={18} className="text-[var(--accent-strong)]" />} label="Payout wallet" value={profile.payout_wallet ? `${shortAddr(profile.payout_wallet)} · Solana` : 'Add address'} onClick={() => nav('/payout-address')} />
+          <Item icon={<WalletIcon width={18} height={18} className="text-[var(--accent-strong)]" />} label="Payout wallet" value={profile.payout_wallet ? `${shortAddr(profile.payout_wallet)} · Base` : 'Add address'} onClick={() => nav('/payout-address')} />
           <Item icon={<Bell width={18} height={18} className="text-[var(--ink-2)]" />} label="Notifications" value="Payments, tasks and rewards" onClick={() => nav('/notifications')} />
           {profile.mode === 'business' ? (
             <Item icon={<Check width={18} height={18} className="text-[var(--accent-strong)]" />} label="Review queue" value="Approve manual proofs" onClick={() => nav('/business/review')} />

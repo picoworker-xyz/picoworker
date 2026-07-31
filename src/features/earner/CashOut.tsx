@@ -6,7 +6,12 @@ import { usd, shortAddr } from '../../lib/format'
 import { Page, CenteredPage } from '../../components/Page'
 import { ArrowUp, Shield } from '../../components/icons'
 
-const FEE = 0.2 // fixed fee, covers creating the USDC token account (PDA) on Solana
+// Base has no per-recipient account setup, unlike Solana where the treasury
+// paid ~0.00204 SOL of token-account rent on a worker's first withdrawal — the
+// reason the old fee was $0.20. A transfer costs ~$0.0004, so $0.005 covers it
+// ~12x over and absorbs gas spikes. Mirrors start_withdrawal in
+// supabase/base_payouts.sql; change both together.
+const FEE = 0.005
 // Format a balance for the input without ever rounding UP past the real amount.
 const fmtAmt = (v: number) => (Math.floor(v * 10000) / 10000).toString()
 
@@ -31,16 +36,16 @@ export function CashOut() {
 
   if (!wallet) return null
   const amt = parseFloat(amount) || 0
-  const netReceived = Math.max(0, +(amt - FEE).toFixed(2))
+  const netReceived = Math.max(0, +(amt - FEE).toFixed(6))
 
   async function confirm() {
     setErr('')
     if (amt <= 0) return setErr('Enter an amount.')
     if (amt > avail) return setErr('Amount exceeds your balance.')
-    if (amt <= FEE) return setErr('To receive USDC, the amount needs to be a little more than the $0.20 fee.')
+    if (amt <= FEE) return setErr('To receive USDC, the amount needs to be a little more than the $0.005 fee.')
     if (!address) return setErr('Add a confirmed payout address first.')
     setBusy(true)
-    const { data, error } = await supabase!.functions.invoke('solana-withdraw', { body: { amount: amt, address, source } })
+    const { data, error } = await supabase!.functions.invoke('base-withdraw', { body: { amount: amt, address, source } })
     setBusy(false)
     if (error || data?.error) return setErr(data?.error || 'Withdrawal failed. Please try again.')
     await refresh()
@@ -61,7 +66,7 @@ export function CashOut() {
               <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold.</div>
             ) : (
               <>
-                <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">Sent to your Solana address.</div>
+                <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">Sent to your Base address.</div>
                 <a href={`https://solscan.io/tx/${result.sig}`} target="_blank" rel="noreferrer" className="text-[var(--accent-strong)] text-[13px] font-bold mt-3 inline-block">View on Solscan</a>
               </>
             )}
@@ -89,12 +94,12 @@ export function CashOut() {
         {isBiz && <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-1">Funds committed to live campaigns are held and cannot be withdrawn.</div>}
       </div>
 
-      {/* USDC on Solana, fixed */}
+      {/* USDC on Base, fixed */}
       <div className="flex items-center gap-3 rounded-[14px] p-4 bg-[var(--fill)] border border-[var(--line)] mb-4">
         <span className="w-9 h-9 rounded-full bg-[var(--usdc)] flex items-center justify-center text-[#fff] text-[14px] font-extrabold flex-none">$</span>
         <div className="flex-1">
-          <div className="text-[var(--ink)] text-[14px] font-bold">USDC on Solana</div>
-          <div className="text-[var(--ink-4)] text-[12px] font-semibold">Only USDC on the Solana network is supported.</div>
+          <div className="text-[var(--ink)] text-[14px] font-bold">USDC on Base</div>
+          <div className="text-[var(--ink-4)] text-[12px] font-semibold">Only USDC on the Base network is supported.</div>
         </div>
       </div>
 
@@ -118,9 +123,9 @@ export function CashOut() {
       </div>
       <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1 mb-1">
         <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />
-        No minimum to withdraw. Take out any amount you like. A flat $0.20 network fee is deducted (it covers your USDC token account on Solana), so you receive your amount minus $0.20.
+        No minimum to withdraw. Take out any amount you like. A flat $0.005 network fee is deducted to cover the on-chain transfer, so you receive your amount minus half a cent.
       </div>
-      {address && <div className="text-[var(--ink-4)] text-[12px] font-semibold px-1">To {shortAddr(address)} on Solana</div>}
+      {address && <div className="text-[var(--ink-4)] text-[12px] font-semibold px-1">To {shortAddr(address)} on Base</div>}
       {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-3 px-1">{err}</div>}
 
       <button onClick={confirm} disabled={busy} className="w-full mt-6 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
