@@ -16,7 +16,7 @@ interface NavItem {
 
 const EARNER_NAV: NavItem[] = [
   { label: 'Earn', path: '/', icon: Bolt },
-  { label: 'Offers', path: '/offers/taskwall', icon: Globe },
+  { label: 'Offers', path: '/offers/lootably', icon: Globe },
   // Wallet is not here on purpose: the balance pill in the header already
   // links to it on both breakpoints, so a nav entry would be the same
   // destination twice. Check-in takes the slot since it needs a daily visit.

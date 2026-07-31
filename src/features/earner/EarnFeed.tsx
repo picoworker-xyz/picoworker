@@ -4,6 +4,14 @@ import { useStore } from '../../lib/store'
 import { REFERRAL_SHARE_PCT } from '../../lib/format'
 import { countryLabel } from '../../lib/taskwall'
 import {
+  detectLootablyDevice,
+  lootablyRewardCaption,
+  lootablyRewardLabel,
+  requestLootablyOffers,
+  type LootablyOffer,
+  type LootablyState,
+} from '../../lib/lootably'
+import {
   detectKiwiwallDevice,
   kiwiwallRewardLabel,
   openKiwiwallOffer,
@@ -61,13 +69,90 @@ export function EarnFeed() {
         </div>
       ) : (
         <div className="rounded-[16px] border border-[var(--line)] bg-[var(--card)] px-4 py-3 text-[13px] font-semibold text-[var(--ink-3)]">
-          New PicoWorker tasks are coming soon. You can start a featured offer below right now.
+          New PicoWorker tasks are coming soon. You can start an offer below right now.
         </div>
       )}
 
-      {cat === 'All' && <TaskwallEarnSection />}
+      {/* Ordered by how reliably a tap turns into a payment. Lootably is a
+          direct integration, so the user id we send is the one the network
+          tracks and targeting comes from the real device. The Featured wall
+          goes through a reseller whose redirector rotates the downstream id on
+          every click and pins every click to a single "web" device slot, which
+          produces both fraud blocks and "offer unavailable" for app installs.
+          It stays available, but it must not be what a worker sees first. */}
+      {cat === 'All' && <LootablyEarnSection />}
       {cat === 'All' && <KiwiwallEarnSection />}
+      {cat === 'All' && <TaskwallEarnSection />}
     </Page>
+  )
+}
+
+function LootablyEarnSection() {
+  const nav = useNavigate()
+  const [state, setState] = useState<LootablyState>({ status: 'loading' })
+  const device = useMemo(() => detectLootablyDevice(), [])
+
+  useEffect(() => {
+    let active = true
+    void requestLootablyOffers(device).then((r) => { if (active) setState(r) })
+    return () => { active = false }
+  }, [device])
+
+  // A failed wall is not worth a slot on the home feed: the worker still has
+  // tasks and two other walls below.
+  if (state.status !== 'ready' || state.offers.length === 0) return null
+
+  // Lootably embeds our userID server-side, so the link is ready to open and
+  // there is no mint round trip. Same-tab for the reasons in LootablyOffers.
+  const open = (offer: LootablyOffer) => window.location.assign(offer.link)
+
+  return (
+    <section className="mt-7">
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 font-head text-[18px] font-extrabold text-[var(--ink)]">
+            <Globe width={19} height={19} className="text-[var(--accent-strong)]" /> Offers
+          </div>
+          <div className="mt-1 text-[12px] font-semibold text-[var(--ink-4)]">
+            {state.country ? `${countryLabel(state.country)} · ` : ''}paid after the provider confirms
+          </div>
+        </div>
+        <button onClick={() => nav('/offers/lootably')} className="flex items-center gap-1 text-[12px] font-extrabold text-[var(--accent-strong)]">
+          View all <ArrowRight width={14} height={14} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {state.offers.slice(0, 6).map((offer) => (
+          <article key={offer.offerId} className="flex min-h-[172px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
+                {offer.image ? (
+                  <img src={offer.image} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+                ) : (
+                  <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h3>
+                <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{lootablyRewardLabel(offer)}</div>
+                <div className="text-[10px] font-semibold text-[var(--ink-5)]">{lootablyRewardCaption(offer)}</div>
+              </div>
+            </div>
+
+            {offer.description && (
+              <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+                {offer.description}
+              </p>
+            )}
+
+            <Button block className="mt-auto h-[38px] text-[12px]" onClick={() => open(offer)}>
+              Start offer
+            </Button>
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -133,7 +218,7 @@ function TaskwallEarnSection() {
       {state.status === 'ready' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {preview.slice(0, 6).map((offer) => (
-            <article key={offer.offerId} className="flex min-h-[155px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
+            <article key={offer.offerId} className="flex min-h-[172px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
               <div className="flex items-start gap-3">
                 <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
                   {offer.icon ? (
@@ -148,6 +233,13 @@ function TaskwallEarnSection() {
                   <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{taskwallRewardLabel(offer)}</div>
                 </div>
               </div>
+
+              {(offer.conversion || offer.description) && (
+                <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+                  {offer.conversion || offer.description}
+                </p>
+              )}
+
               <Button block className="mt-auto h-[38px] text-[12px]" onClick={() => setSelectedOffer(offer)}>
                 View details
               </Button>
@@ -240,7 +332,7 @@ function KiwiwallEarnSection() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {state.offers.slice(0, 6).map((offer) => (
-          <article key={offer.offerId} className="flex min-h-[155px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
+          <article key={offer.offerId} className="flex min-h-[172px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4" style={{ boxShadow: 'var(--shadow)' }}>
             <div className="flex items-start gap-3">
               <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
                 {offer.logo ? (
@@ -251,9 +343,22 @@ function KiwiwallEarnSection() {
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h3>
+                {offer.category && (
+                  <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-[.04em] text-[var(--ink-5)]">{offer.category}</div>
+                )}
                 <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">{kiwiwallRewardLabel(offer)}</div>
               </div>
             </div>
+
+            {/* What the worker actually has to do. Without it the card is a
+                title and a price, which is not enough to decide on — the full
+                page has shown this all along and the home strip did not. */}
+            {(offer.kpi || offer.description) && (
+              <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+                {offer.kpi || offer.description}
+              </p>
+            )}
+
             <Button block className="mt-auto h-[38px] text-[12px]" disabled={opening === offer.offerId} onClick={() => void open(offer)}>
               {opening === offer.offerId ? 'Taking you there…' : 'Start offer'}
             </Button>

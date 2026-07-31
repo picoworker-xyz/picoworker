@@ -2,9 +2,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 
 // Both offerwalls sit behind the single "Offers" nav entry. Adding a nav item
 // per provider does not scale — we already have a third (Paymentwall) waiting.
+// Offers leads. It is the only wall on a direct integration: the user id we
+// send is the one the network tracks, and device targeting comes from the real
+// user agent rather than being pinned to one slot by an intermediary. The other
+// two go through a reseller whose redirector rotates the downstream id on every
+// click, which its anti-fraud layer reads as multi-accounting and eventually
+// blocks the worker's device on.
 const TABS: { label: string; path: string }[] = [
-  { label: 'Featured', path: '/offers/taskwall' },
+  { label: 'Offers', path: '/offers/lootably' },
   { label: 'Worldwide', path: '/offers/worldwide' },
+  { label: 'Featured', path: '/offers/taskwall' },
 ]
 
 export function OfferTabs() {

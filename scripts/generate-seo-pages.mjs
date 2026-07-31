@@ -437,6 +437,33 @@ function structuredData(page) {
   return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`
 }
 
+/**
+ * The prerendered marketing article is what makes these pages crawlable, and it
+ * is the right thing for a logged-out visitor to see while the bundle loads.
+ * For a signed-in worker it is wrong: refreshing anywhere in the app showed
+ * them a wall of marketing prose until React mounted and replaced #root.
+ *
+ * This inline script runs before the module bundle is even fetched, so it swaps
+ * the article for the normal loading placeholder within the same paint. It only
+ * checks whether a Supabase session key exists in localStorage — it never reads
+ * the token, and it makes no authorisation decision. React still decides what
+ * actually renders; this only prevents the wrong first frame.
+ *
+ * Crawlers do not carry a session, so they always receive the full article.
+ */
+function signedInSwap() {
+  return `<script>(function(){try{
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i)
+      if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) {
+        var r = document.getElementById('root')
+        if (r) r.innerHTML = '<div role="status" aria-label="Loading PicoWorker" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:#0c0d11;color:#a9abb6;font:600 14px system-ui,sans-serif">Loading PicoWorker\\u2026</div>'
+        return
+      }
+    }
+  }catch(e){}})()</script>`
+}
+
 const base = await readFile(new URL('index.html', dist), 'utf8')
 
 for (const page of pages) {
@@ -444,6 +471,7 @@ for (const page of pages) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '')
   html = html.replace(/<div id="root">[\s\S]*?<\/div>\s*<noscript>/, `${pageMarkup(page)}\n    <noscript>`)
   html = html.replace('</head>', `    ${structuredData(page)}\n  </head>`)
+  html = html.replace('</body>', `  ${signedInSwap()}\n  </body>`)
   const file = page.path === '/' ? new URL('index.html', dist) : new URL(`.${page.path}/index.html`, dist)
   await mkdir(dirname(file.pathname), { recursive: true })
   await writeFile(file, html)

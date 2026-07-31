@@ -29,6 +29,7 @@ import { MySubmissions } from './features/earner/MySubmissions'
 import { ProofOfIncome } from './features/earner/ProofOfIncome'
 import { PaymentwallOffers } from './features/earner/PaymentwallOffers'
 import { KiwiwallOffers } from './features/earner/KiwiwallOffers'
+import { LootablyOffers } from './features/earner/LootablyOffers'
 import { TaskwallOffers } from './features/earner/TaskwallOffers'
 import { MorePage } from './features/MorePage'
 import { SubmissionDetail } from './features/earner/SubmissionDetail'
@@ -131,6 +132,7 @@ export default function App() {
       <Route path="/offers/paymentwall" element={<Shell><PaymentwallOffers /></Shell>} />
       <Route path="/offers/taskwall" element={<Shell><TaskwallOffers /></Shell>} />
       <Route path="/offers/worldwide" element={<Shell><KiwiwallOffers /></Shell>} />
+      <Route path="/offers/lootably" element={<Shell><LootablyOffers /></Shell>} />
       <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
       <Route path="/developers" element={<Shell><Developers /></Shell>} />
