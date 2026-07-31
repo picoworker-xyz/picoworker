@@ -457,7 +457,27 @@ function signedInSwap() {
       var k = localStorage.key(i)
       if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) {
         var r = document.getElementById('root')
-        if (r) r.innerHTML = '<div role="status" aria-label="Loading PicoWorker" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:#0c0d11;color:#a9abb6;font:600 14px system-ui,sans-serif">Loading PicoWorker\\u2026</div>'
+        if (r) r.innerHTML = '<div id="pw-boot" role="status" aria-label="Loading PicoWorker" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:#0c0d11;color:#a9abb6;font:600 14px system-ui,sans-serif">Loading PicoWorker\\u2026</div>'
+        // Watchdog. Swapping the article for a loader means a bundle that never
+        // runs leaves the worker staring at "Loading" forever, which reads as
+        // the site being down. React replaces #root on mount, so if the boot
+        // node is still there after 8s the app did not start: say so, and offer
+        // the one action that fixes a stale service worker cache.
+        setTimeout(function(){
+          var b = document.getElementById('pw-boot')
+          if (!b) return
+          b.innerHTML = '<div style="max-width:320px;padding:24px;text-align:center"><div style="font:700 16px system-ui,sans-serif;color:#e8e9ee">PicoWorker did not load</div><div style="margin-top:8px;font:600 13px system-ui,sans-serif;color:#a9abb6;line-height:1.5">This is usually an old cached version. Tap below to reload a fresh copy.</div><button id="pw-retry" style="margin-top:16px;padding:12px 20px;border:0;border-radius:12px;background:#2ee06e;color:#06210f;font:800 14px system-ui,sans-serif">Reload PicoWorker</button></div>'
+          var btn = document.getElementById('pw-retry')
+          if (btn) btn.onclick = function(){
+            try {
+              if (window.caches && caches.keys) caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k) }) })
+              if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+                navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(x){ x.unregister() }) })
+              }
+            } catch (e) { /* reload anyway */ }
+            setTimeout(function(){ location.reload(true) }, 300)
+          }
+        }, 8000)
         return
       }
     }
