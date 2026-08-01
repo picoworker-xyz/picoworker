@@ -37,6 +37,7 @@ export function Login() {
   const [resetCode, setResetCode] = useState('')
   const [resetNewPw, setResetNewPw] = useState('')
   const [pendingEmail, setPendingEmail] = useState('')
+  const [confirmCode, setConfirmCode] = useState('')
   const [existingHint, setExistingHint] = useState('')
   const [infoMsg, setInfoMsg] = useState('')
   const [cooldown, setCooldown] = useState(0)
@@ -99,6 +100,26 @@ export function Login() {
     await supabase.rpc('clear_login_lockout')
     setBusy(false)
     nav('/', { replace: true })
+  }
+
+  // Finish signup by entering the emailed code. Uses the same verifyOtp path as
+  // the password reset flow, with type 'signup'. On success Supabase returns a
+  // session, so the user lands straight in the app rather than being bounced
+  // back to sign in — which is the point of using a code instead of a link.
+  async function confirmSignup() {
+    if (!supabase) return
+    setErr('')
+    if (confirmCode.trim().length < 6) return setErr('Enter the 6-digit code from your email.')
+    setBusy(true)
+    const { error } = await supabase.auth.verifyOtp({
+      email: pendingEmail,
+      token: confirmCode.trim(),
+      type: 'signup',
+    })
+    setBusy(false)
+    if (error) return setErr(cleanAuthError(error.message))
+    setPendingEmail('')
+    nav(mode === 'business' ? '/business' : '/onboarding', { replace: true })
   }
 
   async function submit() {
@@ -220,10 +241,23 @@ export function Login() {
             <div className="w-14 h-14 rounded-full bg-[rgba(46,224,110,.12)] border border-[rgba(46,224,110,.3)] flex items-center justify-center mx-auto">
               <Check width={28} height={28} className="text-[var(--accent-strong)]" />
             </div>
-            <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Confirm your email</div>
+            <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Enter your code</div>
             <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">
-              We sent a confirmation link to<br /><span className="text-[var(--ink)] font-bold break-all">{pendingEmail}</span>.<br />Click it, then sign in.
+              We sent a 6-digit code to<br /><span className="text-[var(--ink)] font-bold break-all">{pendingEmail}</span><br />
+              <span className="text-[var(--ink-4)] text-[12.5px]">Check it is spelled correctly.</span>
             </div>
+            <input
+              value={confirmCode}
+              onChange={(e) => setConfirmCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="000000"
+              className="w-full mt-5 bg-[var(--fill)] border border-[var(--line-2)] rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[22px] font-head font-extrabold tracking-[.3em] text-center placeholder:text-[var(--ink-5)] outline-none focus:border-[var(--accent)]/60"
+            />
+            {err && <div className="text-[var(--coral)] text-[13px] font-semibold mt-2">{err}</div>}
+            <button onClick={confirmSignup} disabled={busy} className="w-full mt-3 font-head font-extrabold text-[15px] bg-[var(--accent)] text-[var(--accent-ink)] py-[14px] rounded-[14px] disabled:opacity-60" style={{ boxShadow: 'var(--glow)' }}>
+              {busy ? 'Checking…' : 'Confirm and continue'}
+            </button>
             <div className="mt-4 rounded-[14px] bg-[rgba(255,176,90,.1)] border border-[rgba(255,176,90,.3)] p-3 text-left">
               <div className="text-[#FFB05A] text-[12.5px] font-extrabold">Check your Spam or Junk folder</div>
               <div className="text-[var(--ink-2)] text-[12px] font-semibold mt-1 leading-[1.45]">
@@ -232,9 +266,18 @@ export function Login() {
             </div>
             {infoMsg && <div className="text-[var(--green)] text-[12.5px] font-semibold mt-3">{infoMsg}</div>}
             <button onClick={resend} disabled={cooldown > 0} className="w-full mt-4 font-head font-extrabold text-[15px] bg-[var(--fill)] text-[var(--ink)] border border-[var(--line-2)] py-[13px] rounded-[14px] disabled:opacity-50">
-              {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend confirmation email'}
+              {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
             </button>
-            <button onClick={() => { setPendingEmail(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent-strong)] text-[13px] font-extrabold py-2">Back to sign in</button>
+            {/* A mistyped address is a dead end without this: the code goes to a
+                mailbox that does not exist, and there is no session yet to change
+                the email from. Sending them back to the form with the address
+                cleared lets them sign up again correctly. The unconfirmed account
+                is simply abandoned, and device_account_hint now ignores
+                unconfirmed accounts so the retry is not blocked as a duplicate. */}
+            <button onClick={() => { setPendingEmail(''); setConfirmCode(''); setEmail(''); setErr(''); setIsSignup(true) }} className="w-full mt-3 text-[var(--ink)] text-[13.5px] font-extrabold py-2 border border-[var(--line-2)] rounded-[12px] bg-[var(--fill)]">
+              Wrong email? Use a different one
+            </button>
+            <button onClick={() => { setPendingEmail(''); setConfirmCode(''); setIsSignup(false); setErr('') }} className="w-full mt-2 text-[var(--accent-strong)] text-[13px] font-extrabold py-2">Back to sign in</button>
           </div>
         </div>
       </div>
