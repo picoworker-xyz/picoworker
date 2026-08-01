@@ -112,6 +112,56 @@ function saveCache(key: string, state: Ready) {
   try { sessionStorage.setItem(key, JSON.stringify(entry)) } catch { /* memory cache still helps */ }
 }
 
+/**
+ * Record that a worker opened an offer, then hand back control immediately.
+ *
+ * This is the denominator: without it, "nobody reached goal 2" and "goal 2 was
+ * never reported" are indistinguishable in our data, which is the argument we
+ * cannot win with a provider.
+ *
+ * Deliberately never throws and never blocks. A failed insert must not stop a
+ * worker opening an offer, and it is not part of the payment path. The 1200ms
+ * cap means a slow network delays the redirect by at most that long.
+ */
+export async function recordLootablyClick(
+  offer: LootablyOffer,
+  device: LootablyDevice,
+  country: string | null,
+): Promise<void> {
+  if (!supabase) return
+  const call = supabase.rpc('record_lootably_click', {
+    p_offer_id: offer.offerId,
+    p_offer_name: offer.title,
+    p_device: device,
+    p_country: country,
+    p_goals: offer.goals,
+    p_reward: offer.rewardUsd,
+  })
+  try {
+    await Promise.race([call, new Promise((r) => setTimeout(r, 1200))])
+  } catch { /* opening the offer matters more than the record */ }
+}
+
+export type OfferActivity = {
+  offer_name: string
+  goal_name: string | null
+  state: 'pending' | 'rejected'
+  amount: number
+  happened_at: string
+}
+
+/**
+ * Conversions the provider is still reviewing, or has rejected. These never
+ * reach the ledger, so without this a worker who completed a goal sees nothing
+ * at all and reasonably concludes it was lost.
+ */
+export async function fetchOfferActivity(): Promise<OfferActivity[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase.rpc('my_offer_activity')
+  if (error || !Array.isArray(data)) return []
+  return data as OfferActivity[]
+}
+
 export async function requestLootablyOffers(
   os: LootablyDevice,
   options: { force?: boolean } = {},
