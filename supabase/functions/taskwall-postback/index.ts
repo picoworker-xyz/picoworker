@@ -76,9 +76,20 @@ Deno.serve(async (req) => {
 
   // TaskWall has no transaction-id macro. This canonical fingerprint makes
   // exact provider retries harmless without merging distinct users/offers.
+  //
+  // offer_name is part of the key because milestones of one offer share a
+  // single offer_id — 19658911 carries both Dragon_Down_Collect_150_gems and
+  // Dragon_Down_Collect_1000_gems — and TaskWall pays a flat $0.01 on almost
+  // every conversion. Without the name, a worker clearing two milestones of one
+  // offer on one day produced an identical key and the second was dropped
+  // silently by `on conflict do nothing`, which is indistinguishable from the
+  // provider never sending it. The name is the only milestone discriminator
+  // they give us. A genuine retry resends the same name, so retries still
+  // dedup; two different milestones no longer collide.
   const eventKey = await sha256([
     playerId.toLowerCase(),
     offerId,
+    (params.offer_name ?? '').trim().toLowerCase(),
     providerDate,
     userAmount.toFixed(6),
     Number(payoutRaw).toFixed(6),
