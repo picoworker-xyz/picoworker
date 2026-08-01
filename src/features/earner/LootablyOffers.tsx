@@ -7,9 +7,7 @@ import { countryLabel } from '../../lib/taskwall'
 import { usd } from '../../lib/format'
 import {
   detectLootablyDevice,
-  fetchOfferActivity,
   recordLootablyClick,
-  type OfferActivity,
   lootablyCategoryLabel,
   lootablyNeedsPayment,
   lootablyRewardCaption,
@@ -59,8 +57,6 @@ export function LootablyOffers() {
         {state.status === 'ready' && state.country ? `${countryLabel(state.country)} · ` : ''}
         Rewards are credited once the provider confirms your completion.
       </div>
-
-      <InReview />
 
       {state.status === 'loading' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -180,45 +176,6 @@ export function LootablyOffers() {
         </p>
       </div>
     </Page>
-  )
-}
-
-/**
- * Work the provider has not settled yet. A pending conversion never reaches the
- * ledger, so without this the worker completes a goal, sees no balance change,
- * and assumes it failed — which is most of the support load these walls create.
- */
-function InReview() {
-  const [rows, setRows] = useState<OfferActivity[]>([])
-  useEffect(() => {
-    let active = true
-    void fetchOfferActivity().then((r) => { if (active) setRows(r) })
-    return () => { active = false }
-  }, [])
-  if (rows.length === 0) return null
-  return (
-    <div className="mb-4 rounded-[16px] border border-[var(--line)] bg-[var(--fill)] p-4">
-      <div className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">
-        Waiting on the provider
-      </div>
-      <div className="mt-2 flex flex-col gap-2">
-        {rows.map((r, i) => (
-          <div key={`${r.offer_name}-${r.happened_at}-${i}`} className="flex items-start justify-between gap-3">
-            <span className="text-[12px] font-semibold leading-[1.45] text-[var(--ink-2)]">
-              {r.offer_name}
-              {r.goal_name ? <span className="text-[var(--ink-4)]"> · {r.goal_name}</span> : null}
-            </span>
-            <span className={`flex-none text-[11.5px] font-extrabold ${r.state === 'rejected' ? 'text-[var(--coral)]' : 'text-[#D99832]'}`}>
-              {r.state === 'rejected' ? 'Not approved' : `In review · ${usd(r.amount)}`}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-2.5 text-[11px] font-semibold leading-[1.5] text-[var(--ink-4)]">
-        The provider confirms every completion before it is paid. Approved work is credited
-        automatically, so there is nothing for you to do here.
-      </p>
-    </div>
   )
 }
 

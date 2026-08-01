@@ -1,15 +1,27 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { usd, timeAgo, REFERRAL_JOIN_BONUS } from '../../lib/format'
 import type { LedgerEntry } from '../../lib/types'
 import { Page } from '../../components/Page'
-import { ArrowDown, ArrowUp, Bell, Flame, User } from '../../components/icons'
+import { ArrowDown, ArrowUp, Bell, Flame, Globe, User } from '../../components/icons'
+import { fetchOfferActivity, type OfferActivity } from '../../lib/lootably'
 
 export type Note = { id: string; icon: React.ReactNode; tint: string; title: string; sub: string; at: number }
 
 // Shared notification feed, used by both the full page and the dropdown bell.
 export function useNotifications(): Note[] {
   const { profile, ledgerFor, referralsFor } = useStore()
+  // Offer conversions the provider has not settled sit outside the ledger, so a
+  // worker who completed a goal saw nothing at all and assumed it was lost.
+  // They belong here rather than only on the offers page: this is where someone
+  // looks when they expect money and cannot find it.
+  const [activity, setActivity] = useState<OfferActivity[]>([])
+  useEffect(() => {
+    let alive = true
+    void fetchOfferActivity().then((r) => { if (alive) setActivity(r) })
+    return () => { alive = false }
+  }, [profile?.id])
+
   return useMemo(() => {
     if (!profile) return []
     const notes: Note[] = []
@@ -41,8 +53,23 @@ export function useNotifications(): Note[] {
         at: Date.now() - 86_400_000,
       })
     }
+    for (const a of activity) {
+      const rejected = a.state === 'rejected'
+      notes.push({
+        id: `offer-${a.state}-${a.offer_name}-${a.happened_at}`,
+        icon: <Globe width={17} height={17} className={rejected ? 'text-[var(--coral)]' : 'text-[#D99832]'} />,
+        tint: rejected ? 'rgba(255,107,90,.14)' : 'rgba(242,163,60,.16)',
+        title: rejected
+          ? `${a.offer_name} was not approved`
+          : `${a.offer_name} is being checked`,
+        sub: rejected
+          ? 'The provider did not confirm this completion'
+          : `${usd(a.amount)} pending · credited once the provider confirms`,
+        at: +new Date(a.happened_at),
+      })
+    }
     return notes.sort((a, b) => b.at - a.at)
-  }, [profile, ledgerFor, referralsFor])
+  }, [profile, ledgerFor, referralsFor, activity])
 }
 
 export function Notifications() {

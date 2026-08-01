@@ -155,11 +155,22 @@ export type OfferActivity = {
  * reach the ledger, so without this a worker who completed a goal sees nothing
  * at all and reasonably concludes it was lost.
  */
+// Cached module-side because both the notifications page and the bell dropdown
+// call the hook below, and they must not fire two identical requests.
+let activityCache: { at: number; rows: OfferActivity[] } | null = null
+let activityInFlight: Promise<OfferActivity[]> | null = null
+
 export async function fetchOfferActivity(): Promise<OfferActivity[]> {
   if (!supabase) return []
-  const { data, error } = await supabase.rpc('my_offer_activity')
-  if (error || !Array.isArray(data)) return []
-  return data as OfferActivity[]
+  if (activityCache && Date.now() - activityCache.at < 60_000) return activityCache.rows
+  if (activityInFlight) return activityInFlight
+  activityInFlight = (async () => {
+    const { data, error } = await supabase!.rpc('my_offer_activity')
+    const rows = error || !Array.isArray(data) ? [] : data as OfferActivity[]
+    activityCache = { at: Date.now(), rows }
+    return rows
+  })()
+  try { return await activityInFlight } finally { activityInFlight = null }
 }
 
 export async function requestLootablyOffers(
