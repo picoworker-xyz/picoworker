@@ -239,3 +239,32 @@ html[data-theme='light'] .hero-grid {
   background-image: linear-gradient(rgba(17, 19, 24, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(17, 19, 24, 0.04) 1px, transparent 1px);
 }
+
+/* ---------------------------------------------------------------------------
+   Tawk.to chat bubble, lifted clear of the mobile tab bar.
+
+   The bar is a fixed 68px strip at the bottom (AppShell.tsx), and Tawk's
+   default bottom-right bubble lands on top of the "More" item, making it
+   untappable. Tawk_API.customStyle in index.html sets the same offset but is
+   read once at init and is overridden by the position set in the Tawk
+   dashboard, so this rule is the one that actually holds.
+
+   Selectors come from reading Tawk's own bundle (twk-chunk-common.js), which
+   does document.body.appendChild(...) and mounts to #min-widget — so these are
+   real elements on our page, not inside the iframe. They carry inline styles,
+   hence !important. Earlier guesses at .tawk-min-container and
+   #tawkchat-minified-container were from an older widget version and matched
+   nothing; they are kept only as harmless fallbacks.
+
+   Only the minimised bubble moves. #max-widget is left alone so the open chat
+   can still use the full screen.
+   --------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  #min-widget,
+  #chat-bubble,
+  #message-preview,
+  .tawk-min-container,
+  #tawkchat-minified-container {
+    bottom: 84px !important;
+  }
+}

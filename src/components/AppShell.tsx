@@ -7,6 +7,8 @@ import { Avatar } from './ui'
 import { Bolt, Check, Flame, Globe, Grid, Home, ListIcon, LogOut, Plus, Shield, Share, Trophy, User, Wallet as WalletIcon } from './icons'
 import { ThemeToggle } from './ThemeToggle'
 import { NotificationBell } from './NotificationBell'
+import { supabase } from '../lib/supabase'
+import { identifyTawk } from '../lib/tawk'
 
 interface NavItem {
   label: string
@@ -60,6 +62,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [accountOpen, setAccountOpen] = useState(false)
   const moreRef = useRef<HTMLDivElement>(null)
   const accountRef = useRef<HTMLDivElement>(null)
+
+  // Name the visitor in the support widget. Without this every chat arrives as
+  // an anonymous visitor, which is useless for "where is my payment" questions.
+  useEffect(() => {
+    if (!profile) return
+    let alive = true
+    void supabase?.auth.getUser().then(({ data }) => {
+      if (!alive) return
+      identifyTawk({
+        id: profile.id,
+        name: profile.business_name ?? profile.display_name,
+        email: data.user?.email ?? '',
+        level: profile.level,
+        balance: usd(profile.mode === 'business' ? wallet?.business_escrow ?? 0 : wallet?.earner_balance ?? 0),
+      })
+    })
+    return () => { alive = false }
+  }, [profile, wallet])
 
   // Close the top bar dropdowns on outside click, Escape, or route change.
   useEffect(() => {
