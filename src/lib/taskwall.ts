@@ -1,3 +1,21 @@
+// Featured wall (TaskWall) is paused.
+//
+// Reasons, all verified against production data:
+//   - No postback since 2026-08-01 11:17. Silent for days.
+//   - Every payment it has ever sent: $0.01 x28, $0.03 x1, $0.05 x2. Offers
+//     advertise milestones up to $2.96 and totals like "Up to $5.04", none of
+//     which it has ever paid.
+//   - Our margin across all 31 conversions was exactly $0.00.
+//   - Its postback carries no transaction id, so two milestones of one offer on
+//     one day are indistinguishable from a retry.
+//
+// Workers were spending real time on offers that pay a cent if they pay at all.
+//
+// The postback receiver stays deployed on purpose: if a late conversion does
+// arrive for work already done, the worker still gets credited. This flag only
+// stops us advertising the wall.
+export const TASKWALL_PAUSED = true
+
 import { supabase } from './supabase'
 import { usd } from './format'
 

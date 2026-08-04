@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { REFERRAL_SHARE_PCT } from '../../lib/format'
-import { countryLabel } from '../../lib/taskwall'
+import { countryLabel, TASKWALL_PAUSED } from '../../lib/taskwall'
 import {
   detectLootablyDevice,
   lootablyRewardCaption,
@@ -82,7 +82,7 @@ export function EarnFeed() {
           It stays available, but it must not be what a worker sees first. */}
       {cat === 'All' && <LootablyEarnSection />}
       {cat === 'All' && <KiwiwallEarnSection />}
-      {cat === 'All' && <TaskwallEarnSection />}
+      {cat === 'All' && !TASKWALL_PAUSED && <TaskwallEarnSection />}
     </Page>
   )
 }

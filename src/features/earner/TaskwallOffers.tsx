@@ -16,9 +16,43 @@ import {
   type TaskwallOffer,
   type TaskwallOffersState,
   taskwallRewardLabel,
+  TASKWALL_PAUSED,
 } from '../../lib/taskwall'
 
 export function TaskwallOffers() {
+  // Route kept alive so existing links and bookmarks explain themselves rather
+  // than 404ing or silently showing an empty wall.
+  if (TASKWALL_PAUSED) return <TaskwallPaused />
+
+  return <TaskwallOffersLive />
+}
+
+function TaskwallPaused() {
+  return (
+    <Page>
+      <OfferTabs />
+      <div className="mx-auto max-w-[560px] rounded-[22px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(242,163,60,.14)] border border-[rgba(242,163,60,.3)]">
+          <Globe width={26} height={26} className="text-[#D99832]" />
+        </div>
+        <div className="mt-5 font-head text-[19px] font-extrabold text-[var(--ink)]">Featured offers are paused</div>
+        <p className="mt-2 text-[13.5px] font-semibold leading-[1.6] text-[var(--ink-3)]">
+          This provider stopped confirming completions, so workers were spending time on offers that
+          could not pay. We have paused it rather than leave it up.
+        </p>
+        <p className="mt-3 text-[13px] font-semibold leading-[1.6] text-[var(--ink-4)]">
+          If you completed something here recently and it is confirmed later, you will still be paid
+          for it automatically.
+        </p>
+        <a href="/offers/lootably" className="mt-6 inline-block rounded-[14px] bg-[var(--accent)] px-6 py-[13px] font-head text-[15px] font-extrabold text-[var(--accent-ink)]" style={{ boxShadow: 'var(--glow)' }}>
+          Browse working offers
+        </a>
+      </div>
+    </Page>
+  )
+}
+
+function TaskwallOffersLive() {
   const [state, setState] = useState<TaskwallOffersState>({ status: 'loading' })
   const [selectedOs, setSelectedOs] = useState<TaskwallDevice>(() => detectTaskwallDevice())
   const [selectedOffer, setSelectedOffer] = useState<TaskwallOffer | null>(null)

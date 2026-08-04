@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { Page } from '../components/Page'
 import { WhatsAppJoin } from '../components/WhatsAppJoin'
+import { TASKWALL_PAUSED } from '../lib/taskwall'
 import {
   Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight, Globe,
 } from '../components/icons'
@@ -128,7 +129,7 @@ export function MorePage() {
 
         {/* all shortcuts together in one grid — no section headers eating space */}
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1.5">
-          {sections.flatMap((s) => s.items).map((item) => {
+          {sections.flatMap((s) => s.items).filter((item) => !(TASKWALL_PAUSED && item.path === '/offers/taskwall')).map((item) => {
             const Icon = item.icon
             return (
               <button

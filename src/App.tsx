@@ -6,6 +6,7 @@ import { BrandMark } from './components/layout'
 
 import { Landing } from './features/marketing/Landing'
 import { Login } from './features/auth/Login'
+import { LoginDemo } from './features/auth/LoginDemo'
 import { ResetPassword } from './features/auth/ResetPassword'
 import { RefCapture } from './features/auth/RefCapture'
 import { Onboarding } from './features/auth/Onboarding'
@@ -89,6 +90,10 @@ export default function App() {
       {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/login-demo" element={<LoginDemo />} />
+      <Route path="/login-demo-signin" element={<LoginDemo flow="signin" />} />
+      <Route path="/earn-demo" element={<LoginDemo flow="earn" />} />
+      <Route path="/login-demo-ur" element={<LoginDemo lang="ur" />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/r/:code" element={<RefCapture />} />
       <Route path="/onboarding" element={<Onboarding />} />

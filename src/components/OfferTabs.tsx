@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { TASKWALL_PAUSED } from '../lib/taskwall'
 
 // Both offerwalls sit behind the single "Offers" nav entry. Adding a nav item
 // per provider does not scale — we already have a third (Paymentwall) waiting.
@@ -19,7 +20,7 @@ export function OfferTabs() {
   const loc = useLocation()
   return (
     <div className="mb-5 inline-flex rounded-full bg-[var(--fill-2)] p-1">
-      {TABS.map((t) => {
+      {TABS.filter((t) => !(TASKWALL_PAUSED && t.path === '/offers/taskwall')).map((t) => {
         const on = loc.pathname === t.path
         return (
           <button
