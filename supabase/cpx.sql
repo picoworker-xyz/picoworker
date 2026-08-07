@@ -151,9 +151,15 @@ begin
   values (p_player, net, 'offer_reward', label, btrim(p_trans_id), new_balance);
 
   -- Split only what we actually earned above the worker's promised reward.
+  --
+  -- Screenouts and ratings run at a bonus factor of 1.00, i.e. the whole bonus
+  -- is passed to the worker on purpose (CPX's own recommendation, to keep people
+  -- willing to sit through screening). There is nothing to split and nothing
+  -- wrong, so those must not warn — otherwise every screenout logs a false
+  -- misconfiguration alert and the real ones get lost in the noise.
   if gross > net then
     perform distribute_platform_cut(p_player, gross, net, label, btrim(p_trans_id));
-  else
+  elsif lower(coalesce(p_type, '')) not in ('out', 'bonus') then
     raise warning 'CPX trans %: paid worker % but earned % — check the Reward Settings conversion rate',
       p_trans_id, net, gross;
   end if;
