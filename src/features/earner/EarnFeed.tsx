@@ -20,6 +20,7 @@ import {
   type KiwiwallState,
 } from '../../lib/kiwiwall'
 import { Page } from '../../components/Page'
+import { CpxSurveySection } from '../../components/CpxSurveySection'
 import { TaskRow } from '../../components/blocks'
 import { Button, Chip } from '../../components/ui'
 import { WhatsAppJoin } from '../../components/WhatsAppJoin'
@@ -80,6 +81,9 @@ export function EarnFeed() {
           every click and pins every click to a single "web" device slot, which
           produces both fraud blocks and "offer unavailable" for app installs.
           It stays available, but it must not be what a worker sees first. */}
+      {/* Surveys are the one wall with a matching category filter, so it shows
+          under Surveys too rather than only on the unfiltered feed. */}
+      {(cat === 'All' || cat === 'Surveys') && <CpxSurveySection />}
       {cat === 'All' && <LootablyEarnSection />}
       {cat === 'All' && <KiwiwallEarnSection />}
       {cat === 'All' && !TASKWALL_PAUSED && <TaskwallEarnSection />}

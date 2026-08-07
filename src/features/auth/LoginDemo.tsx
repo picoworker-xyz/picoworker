@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { BrandMark } from '../../components/layout'
-import { Apple, ArrowRight, Check, Google, Phone, Eye, EyeOff, Shield } from '../../components/icons'
+import { Apple, ArrowRight, Check, Clock, Google, Phone, Eye, EyeOff, Shield, X } from '../../components/icons'
 import { Avatar } from '../../components/ui'
 
 /**
@@ -10,9 +10,9 @@ import { Avatar } from '../../components/ui'
  * Route: /login-demo
  */
 
-type Stage = 'landing' | 'form' | 'code' | 'done' | 'feed' | 'offers' | 'store' | 'game' | 'wallet'
+type Stage = 'landing' | 'form' | 'code' | 'done' | 'feed' | 'offers' | 'store' | 'game' | 'wallet' | 'reset' | 'payout' | 'withdraw' | 'sent' | 'rules' | 'subs' | 'rejected' | 'steps' | 'support' | 'waiting'
 /** Which tutorial this is: creating an account, or signing back into one. */
-export type Flow = 'signup' | 'signin' | 'earn'
+export type Flow = 'signup' | 'signin' | 'earn' | 'reset' | 'cashout' | 'rules' | 'notpaid'
 /** Narration language. The interface stays English either way. */
 export type Lang = 'en' | 'ur'
 /** The fake Gmail window: inbox list → opened email → code copied → dismissed. */
@@ -22,6 +22,10 @@ const NAME = 'Bilal Ahmed'
 const EMAIL = 'bilal.ahmed@gmail.com'
 const PASSWORD = 'Pico#2026'
 const CODE = '418206'
+const NEW_PASSWORD = 'Pico#2027'
+/** A real-shaped Base address: 0x plus 40 hex characters. */
+const PAYOUT_ADDR = '0x7f3a9c2b41d8ee05c6a7b9f1d2e4c8b3a51d9f27'
+const SHORT_ADDR = `${PAYOUT_ADDR.slice(0, 6)}…${PAYOUT_ADDR.slice(-4)}`
 const SITE = 'picoworker.xyz'
 
 /**
@@ -38,6 +42,25 @@ const OFFER = {
     { description: 'Reach level 20', rewardUsd: 0.68 },
     { description: 'Reach level 60', rewardUsd: 1.35 },
     { description: 'Reach level 120', rewardUsd: 1.85 },
+  ],
+}
+
+/**
+ * A gem-collecting game offer, used by the "reached a level but not paid"
+ * video. The amounts are deliberately small and honest: early steps really do
+ * pay under two cents, and implying otherwise makes people feel cheated even
+ * when they are paid correctly.
+ */
+const GEM_OFFER = {
+  title: 'Gemcrush Saga',
+  categories: 'Game · Android',
+  total: 0.55,
+  goals: [
+    { description: 'Install and open Gemcrush Saga', rewardUsd: 0.01 },
+    { description: 'Collect 150 gems', rewardUsd: 0.01 },
+    { description: 'Collect 450 gems', rewardUsd: 0.04 },
+    { description: 'Collect 1,200 gems', rewardUsd: 0.12 },
+    { description: 'Reach level 40', rewardUsd: 0.37 },
   ],
 }
 
@@ -75,13 +98,17 @@ type Setters = {
   setProgress: (v: number) => void
   setLevel: (v: number) => void
   setMilestone: (v: string | null) => void
+  setAddr: (v: string) => void
+  setPayoutStage: (v: 'enter' | 'code' | 'saved') => void
+  setAmount: (v: string) => void
+  setSupportMsg: (v: string) => void
   setUrl: (v: string) => void
   setLoaded: (v: boolean) => void
   setIntro: (v: boolean) => void
   setCaption: (v: Caption) => void
   setCursor: (v: string | null) => void
   setPressed: (v: string | null) => void
-  type: (target: 'name' | 'email' | 'password' | 'confirm' | 'code' | 'url', text: string, at: number) => void
+  type: (target: 'name' | 'email' | 'password' | 'confirm' | 'code' | 'url' | 'addr' | 'amount' | 'support', text: string, at: number) => void
 }
 
 const TYPE_SPEED = 62
@@ -142,6 +169,62 @@ const UR_SIGNUP: Narration[] = [
   { step: null, text: 'آپ اندر آ گئے', voice: 'بس ہو گیا، آپ اندر آ گئے۔ آپ کا ویلکم بونس پہلے ہی بیلنس میں موجود ہے، اور اب آپ کمانا شروع کر سکتے ہیں۔' },
 ]
 
+
+/** Rules and rejections, English. */
+const EN_RULES: Narration[] = [
+  { step: null, text: '', voice: "Hey. This video is not about making money. It's about not losing it. I'm going to show you the four things that get people banned on PicoWorker, and then what to actually do when a submission gets rejected, because those two are not the same thing and people panic about the wrong one." },
+  { step: null, text: 'Four ways people get banned', voice: "So first, the ways people lose their account. There are basically four, and every one of them is avoidable." },
+  { step: 1, text: 'Never use a VPN or a proxy', voice: "Number one, and this is the big one. Do not use a VPN or a proxy. Offer providers check your real location against your account, and when those two don't match, they read it as fraud. Your completion gets voided, and you don't get paid. Turn it off before you open PicoWorker, not after." },
+  { step: 2, text: 'One account per person', voice: "Number two. One account per person. Not one per email, one per person, and it's tied to your device. Making a second account to claim the welcome bonus twice does not work. We detect it, and you forfeit the balance on both accounts. It is genuinely not worth five cents." },
+  { step: 3, text: 'No bots, emulators or autoclickers', voice: "Number three. No bots, no emulators, no autoclickers. Providers fingerprint the device you're on. Automated traffic never gets paid, and unlike the others, that one is a permanent ban with no appeal." },
+  { step: 4, text: 'Never fake or reuse proof', voice: "And number four. Don't fake your proof. Screenshots taken from someone else, edited images, or the same screenshot submitted on two different tasks. All of it gets caught, because a human reviews it." },
+  { step: 5, text: 'A rejection is not a ban', voice: "Okay. Now the part everybody gets wrong. A rejected submission is not a ban. It is not a strike. It does not hurt your account at all. Open My Submissions and you'll see the status on everything you've sent in." },
+  { step: 6, text: 'Read why it was rejected', voice: "Tap the rejected one, and read the reason. It tells you exactly what was wrong. In this case, the screenshot didn't clearly show a published five star rating. That's fixable in about thirty seconds." },
+  { step: 7, text: 'Just resubmit', voice: "So fix it and press Resubmit proof. The task is still open, the reward is still there, and there's no penalty for trying again. Most rejections are just a blurry screenshot or the wrong screen." },
+  { step: 8, text: 'Appeal only if it is genuinely wrong', voice: "And if you honestly believe the rejection was wrong, then use Appeal this decision, and a human will look at it again. But please, only use that if you actually did the task properly. Appealing everything just slows it down for everyone." },
+  { step: null, text: 'Follow the rules and you get paid', voice: "That's it. No VPN, one account, no bots, real proof. Do those four things and you will get paid, every time. Good luck." },
+]
+
+/** The same beats in Urdu. */
+const UR_RULES: Narration[] = [
+  { step: null, text: '', voice: 'السلام علیکم! یہ ویڈیو پیسے کمانے کے بارے میں نہیں ہے۔ یہ اس بارے میں ہے کہ آپ اپنے پیسے ضائع نہ کریں۔ میں آپ کو وہ چار چیزیں بتاؤں گی جن کی وجہ سے لوگوں کا اکاؤنٹ بند ہو جاتا ہے، اور یہ بھی کہ اگر آپ کا کام مسترد ہو جائے تو کیا کرنا چاہیے۔' },
+  { step: null, text: 'اکاؤنٹ بند ہونے کی چار وجوہات', voice: 'تو سب سے پہلے، وہ وجوہات جن سے اکاؤنٹ بند ہوتا ہے۔ بنیادی طور پر چار ہیں، اور ان سب سے بچنا آسان ہے۔' },
+  { step: 1, text: 'وی پی این ہرگز استعمال نہ کریں', voice: 'نمبر ایک، اور یہ سب سے اہم ہے۔ وی پی این یا پراکسی ہرگز استعمال نہ کریں۔ آفر دینے والی کمپنیاں آپ کا اصل مقام چیک کرتی ہیں، اور جب وہ آپ کے اکاؤنٹ سے میل نہیں کھاتا تو وہ اسے فراڈ سمجھتی ہیں۔ آپ کا کام منسوخ ہو جاتا ہے اور ادائیگی نہیں ہوتی۔ پیکو ورکر کھولنے سے پہلے وی پی این بند کر دیں۔' },
+  { step: 2, text: 'ایک شخص، ایک اکاؤنٹ', voice: 'نمبر دو۔ ایک شخص کا صرف ایک اکاؤنٹ۔ ایک ای میل کا نہیں، ایک شخص کا، اور یہ آپ کے موبائل سے منسلک ہوتا ہے۔ دوسرا اکاؤنٹ بنا کر ویلکم بونس دوبارہ لینا کام نہیں کرتا۔ ہمیں پتہ چل جاتا ہے، اور دونوں اکاؤنٹس کے پیسے ضبط ہو جاتے ہیں۔ پانچ سینٹ کے لیے یہ خطرہ مت لیں۔' },
+  { step: 3, text: 'بوٹ یا آٹو کلکر نہیں', voice: 'نمبر تین۔ کوئی بوٹ، کوئی ایمولیٹر، کوئی آٹو کلکر نہیں۔ کمپنیاں آپ کے ڈیوائس کی پہچان رکھتی ہیں۔ خودکار ٹریفک کی ادائیگی کبھی نہیں ہوتی، اور یہ مستقل پابندی ہے، جس کی کوئی اپیل نہیں۔' },
+  { step: 4, text: 'جھوٹا ثبوت نہ بھیجیں', voice: 'اور نمبر چار۔ جھوٹا ثبوت مت بھیجیں۔ کسی اور کا اسکرین شاٹ، ایڈٹ کی ہوئی تصویر، یا ایک ہی اسکرین شاٹ دو مختلف کاموں پر۔ یہ سب پکڑا جاتا ہے، کیونکہ اسے ایک انسان چیک کرتا ہے۔' },
+  { step: 5, text: 'مسترد ہونا پابندی نہیں ہے', voice: 'اب وہ بات جو اکثر لوگ غلط سمجھتے ہیں۔ کام کا مسترد ہونا پابندی نہیں ہے۔ یہ کوئی وارننگ بھی نہیں ہے۔ اس سے آپ کے اکاؤنٹ کو کوئی نقصان نہیں ہوتا۔ My Submissions کھولیں اور آپ کو اپنے تمام کاموں کی حالت نظر آ جائے گی۔' },
+  { step: 6, text: 'مسترد ہونے کی وجہ پڑھیں', voice: 'مسترد شدہ کام پر ٹیپ کریں، اور وجہ پڑھیں۔ اس میں صاف لکھا ہوتا ہے کہ کیا غلط تھا۔ یہاں اسکرین شاٹ میں پانچ ستارے صاف نظر نہیں آ رہے تھے۔ یہ تیس سیکنڈ میں ٹھیک ہو سکتا ہے۔' },
+  { step: 7, text: 'دوبارہ جمع کرا دیں', voice: 'تو اسے ٹھیک کریں اور Resubmit proof دبا دیں۔ کام ابھی بھی کھلا ہے، انعام بھی موجود ہے، اور دوبارہ کوشش کرنے پر کوئی جرمانہ نہیں۔ زیادہ تر مسترد کام صرف دھندلے اسکرین شاٹ کی وجہ سے ہوتے ہیں۔' },
+  { step: 8, text: 'اپیل صرف اصل غلطی پر کریں', voice: 'اور اگر آپ کو واقعی لگتا ہے کہ فیصلہ غلط ہوا ہے، تو Appeal this decision استعمال کریں، ایک انسان اسے دوبارہ دیکھے گا۔ لیکن براہ کرم یہ صرف اسی صورت میں کریں جب آپ نے واقعی کام ٹھیک سے کیا ہو۔' },
+  { step: null, text: 'اصول مانیں، ادائیگی ملے گی', voice: 'بس یہی ہے۔ وی پی این نہیں، ایک اکاؤنٹ، بوٹ نہیں، اور اصلی ثبوت۔ یہ چار باتیں مان لیں تو آپ کو ہر بار ادائیگی ملے گی۔' },
+]
+
+
+/** Opening title card per tutorial. */
+/** [ text before the highlight, the highlighted words, text after ]. */
+type Title = [string, string] | [string, string, string]
+
+const TITLES: Record<Flow, { en: Title; ur: Title }> = {
+  signup:  { en: ['How to create a ', 'PicoWorker', ' account'], ur: ['', 'پیکو ورکر', ' پر اکاؤنٹ کیسے بنائیں'] },
+  signin:  { en: ['How to log into your ', 'PicoWorker', ' account'], ur: ['', 'پیکو ورکر', ' میں لاگ ان کیسے کریں'] },
+  earn:    { en: ['How to ', 'earn money', ' on PicoWorker'], ur: ['پیکو ورکر پر ', 'پیسے', ' کیسے کمائیں'] },
+  reset:   { en: ['How to reset your ', 'password'], ur: ['', 'پاس ورڈ', ' کیسے ری سیٹ کریں'] },
+  cashout: { en: ['How to ', 'cash out', ' your USDC'], ur: ['اپنے ', 'یو ایس ڈی سی', ' کیسے نکالیں'] },
+  rules:   { en: ['How ', 'not to get banned', ' on PicoWorker'], ur: ['اکاؤنٹ بند ہونے سے ', 'کیسے بچیں'] },
+  notpaid: { en: ['Reached a level but ', 'not paid', '?'], ur: ['لیول مکمل کیا لیکن ', 'ادائیگی نہیں ہوئی؟'] },
+}
+
+const SUBTITLES: Record<Flow, { en: string; ur: string }> = {
+  signup:  { en: 'Free, takes under a minute', ur: 'بالکل مفت، ایک منٹ سے بھی کم وقت میں' },
+  signin:  { en: 'Back into your account in 30 seconds', ur: 'تیس سیکنڈ میں اپنے اکاؤنٹ میں واپس' },
+  earn:    { en: 'From picking an offer to getting paid', ur: 'آفر چننے سے لے کر ادائیگی تک' },
+  reset:   { en: 'Forgotten it? Here is the fix', ur: 'بھول گئے؟ حل یہ ہے' },
+  cashout: { en: 'Straight to your own wallet, on Base', ur: 'سیدھا آپ کے اپنے والٹ میں، بیس نیٹ ورک پر' },
+  rules:   { en: 'And what to do when a submission is rejected', ur: 'اور کام مسترد ہو جائے تو کیا کریں' },
+  notpaid: { en: 'Do not panic. Here is what to do', ur: 'پریشان نہ ہوں۔ یہ کریں' },
+}
+
 /**
  * The script, as a running time cursor rather than absolute timestamps. `wait`
  * advances it, `beat` schedules at the current instant.
@@ -181,7 +264,7 @@ function buildScript(s: Setters, flow: Flow, lang: Lang = 'en'): Beat[] {
   }
   const type = (target: Parameters<Setters['type']>[0], text: string) => {
     s.type(target, text, t)
-    t += text.length * (target === 'code' ? 220 : TYPE_SPEED)
+    t += text.length * (target === 'code' ? 220 : target === 'addr' ? 26 : target === 'support' ? 22 : TYPE_SPEED)
   }
   /** Move the cursor somewhere, pause, click it. */
   const clickOn = (spot: string, travel = 700) => {
@@ -328,6 +411,291 @@ function buildScript(s: Setters, flow: Flow, lang: Lang = 'en'): Beat[] {
     return beats.sort((a, b) => a.at - b.at)
   }
 
+  /** Forgot password: request a code, read the email, set a new one. */
+  function resetScript() {
+    wait(600)
+    say(null, '', "Hey. So you've forgotten your PicoWorker password. Don't worry, it happens. I'll show you how to reset it and get back into your account in about a minute.")
+    hold()
+    wait(300)
+    beat((x) => x.setIntro(false))
+    wait(700)
+
+    say(1, 'Go to picoworker.xyz and click Log in', "Start the same way as always. Go to picoworker dot xyz, and click Log in up in the top right.")
+    clickOn('urlbar', 600)
+    beat((x) => x.setCursor(null))
+    wait(250)
+    type('url', SITE)
+    wait(500)
+    beat((x) => x.setLoaded(true))
+    wait(500)
+    clickOn('log-in', 800)
+    beat((x) => { x.setCursor(null); x.setStage('form'); x.setUrl(`${SITE}/login`) })
+    wait(700)
+
+    say(2, 'Type your email', "Now type in the email address on your account. You don't need your password for this part, obviously, so leave that box empty.")
+    beat((x) => x.setCursor('field-email'))
+    wait(500)
+    type('email', EMAIL)
+    wait(400)
+
+    say(3, 'Tap Forgot password', "And here's the bit people miss. Just under the Continue button, there's a link that says Forgot password. Tap that.")
+    clickOn('forgot', 900)
+    beat((x) => { x.setBusy(true); x.setCursor(null) })
+    wait(1500)
+    beat((x) => { x.setBusy(false); x.setStage('reset') })
+    wait(500)
+
+    say(4, 'Open your inbox', "PicoWorker emails you a six digit code straight away. So open your inbox in another tab.")
+    beat((x) => x.setMail('inbox'))
+    wait(700)
+
+    say(null, 'Subject: Reset your password', "It's from PicoWorker, hello at picoworker dot xyz, and the subject is Reset your password. If it isn't there, check your spam folder. Let's open it.")
+    clickOn('mail-row', 900)
+    beat((x) => { x.setMail('open'); x.setCursor(null) })
+    wait(700)
+
+    say(5, 'Copy the code', "There's your code. Copy it.")
+    clickOn('copy-btn', 800)
+    beat((x) => x.setMail('copied'))
+    wait(900)
+
+    say(6, 'Paste it back into PicoWorker', "Go back to PicoWorker, and paste it into the first box.")
+    beat((x) => { x.setMail(null); x.setCursor('code-input') })
+    wait(800)
+    beat((x) => x.setPressed('code-input'))
+    wait(180)
+    beat((x) => x.setPressed(null))
+    wait(400)
+    beat((x) => { x.setCode(CODE); x.setPasteFlash(true) })
+    wait(600)
+    beat((x) => x.setPasteFlash(false))
+    wait(300)
+
+    say(7, 'Choose a new password', "Then underneath, type your new password. Same rules as before. Eight characters or more, an uppercase letter, a number, and a symbol. And make it something you'll actually remember this time.")
+    beat((x) => x.setCursor('new-pw'))
+    wait(500)
+    type('password', NEW_PASSWORD)
+    wait(400)
+
+    say(8, 'Press Reset password and sign in', "Now press Reset password and sign in.")
+    clickOn('reset-btn', 800)
+    beat((x) => { x.setBusy(true); x.setCursor(null) })
+    wait(1600)
+    beat((x) => { x.setBusy(false); x.setStage('done') })
+    wait(300)
+
+    say(null, 'Back in, with a new password', "And that's it. New password set, and it signs you straight back in, so you don't have to log in again. One last thing. If you ever leave it too long and the code expires, just tap Resend code and PicoWorker will send you a fresh one. Good luck.")
+    hold()
+
+    return beats.sort((a, b) => a.at - b.at)
+  }
+
+  /** Getting paid: set a confirmed Base address, then withdraw the balance. */
+  function cashOutScript() {
+    wait(600)
+    say(null, '', "Right, this is the one everybody wants to see. How you actually get your money out of PicoWorker and into your own wallet. Let me show you.")
+    hold()
+    wait(300)
+    beat((x) => x.setIntro(false))
+    wait(700)
+
+    say(null, 'You need a USDC wallet on Base', "Before we start, one thing you need. A crypto wallet that can hold USDC. Whatever you already use is fine. Trust Wallet, MetaMask, Coinbase Wallet, Phantom, or an exchange like Binance or Bybit. It genuinely does not matter which one. But, and this is the important part, it has to support the Base network. Base. If your wallet or your exchange does not support Base, your USDC will not arrive, and nobody can get it back for you. So check that first.")
+    beat((x) => { x.setStage('wallet'); x.setUrl(`${SITE}/wallet`) })
+    hold()
+
+    say(1, 'Open your wallet in PicoWorker', "Okay. In PicoWorker, open your wallet. This is your available balance, the money that has already been confirmed and is ready to go.")
+    hold()
+
+    say(2, 'Add your payout address', "The first time only, you have to tell PicoWorker where to send it. Go to your payout address.")
+    beat((x) => { x.setStage('payout'); x.setPayoutStage('enter'); x.setUrl(`${SITE}/payout-address`) })
+    wait(900)
+
+    say(3, 'Paste your Base address', "Now open your wallet app, copy your USDC address on Base, and paste it in here. It starts with zero x, and it is forty two characters long. Take one second and check the first and last few characters match. If you paste the wrong address, that money is gone.")
+    beat((x) => x.setCursor('addr-input'))
+    wait(600)
+    type('addr', PAYOUT_ADDR)
+    wait(600)
+
+    say(4, 'Send the confirmation code', "Then press Send confirmation code. PicoWorker will not let you withdraw to an address you have not confirmed by email. That is deliberate. It means that even if somebody got into your account, they could not change where your money goes.")
+    clickOn('send-code', 800)
+    beat((x) => { x.setBusy(true); x.setCursor(null) })
+    wait(1400)
+    beat((x) => { x.setBusy(false); x.setPayoutStage('code') })
+    wait(600)
+
+    say(5, 'Get the code from your email', "So open your email again. Subject line, Confirm your payout address. Copy that code.")
+    beat((x) => x.setMail('inbox'))
+    wait(800)
+    clickOn('mail-row', 900)
+    beat((x) => { x.setMail('open'); x.setCursor(null) })
+    wait(900)
+    clickOn('copy-btn', 800)
+    beat((x) => x.setMail('copied'))
+    hold()
+
+    say(6, 'Paste it and confirm', "Paste it in, and confirm.")
+    beat((x) => { x.setMail(null); x.setCursor('code-input') })
+    wait(700)
+    beat((x) => { x.setCode(CODE); x.setPasteFlash(true) })
+    wait(500)
+    beat((x) => x.setPasteFlash(false))
+    wait(200)
+    clickOn('confirm-addr', 700)
+    beat((x) => { x.setBusy(true); x.setCursor(null) })
+    wait(1400)
+    beat((x) => { x.setBusy(false); x.setPayoutStage('saved') })
+    hold()
+
+    say(7, 'Now withdraw', "Address saved. You only ever do that once. Now go back to withdraw.")
+    beat((x) => { x.setStage('withdraw'); x.setUrl(`${SITE}/wallet/withdraw`) })
+    wait(900)
+
+    say(8, 'Choose your amount', "Type how much you want, or just hit MAX to take everything. And here is the good bit. There is no minimum on PicoWorker. You can withdraw three dollars, or thirty cents, whenever you like.")
+    clickOn('max-btn', 800)
+    beat((x) => { x.setAmount('3.42'); x.setCursor(null) })
+    hold()
+
+    say(null, 'The fee is half a cent', "The only cost is a flat half a cent network fee, which covers the actual on-chain transfer. So on three dollars forty two, you receive three point four one five USDC.")
+    hold()
+
+    say(9, 'Confirm the withdrawal', "Check the address one more time, then press Confirm withdrawal.")
+    clickOn('withdraw-btn', 900)
+    beat((x) => { x.setBusy(true); x.setCursor(null) })
+    wait(1800)
+    beat((x) => { x.setBusy(false); x.setStage('sent') })
+    wait(300)
+
+    say(null, 'Sent, on-chain, non custodial', "And it is sent. That USDC is now on Base, in your wallet, not ours. This is non custodial, so we never hold your keys. It usually lands within a minute or two, and if your wallet does not show it straight away, make sure you have got the Base network selected and USDC added as a token. That is how you get paid. Go and earn some.")
+    hold()
+
+    return beats.sort((a, b) => a.at - b.at)
+  }
+
+  /**
+   * Rules and rejections. Narration comes from a table so the same beats can be
+   * spoken in English or Urdu.
+   */
+  function rulesScript() {
+    const R = lang === 'ur' ? UR_RULES : EN_RULES
+    let k = 0
+    const line = () => { const n = R[k++]; say(n.step, n.text, n.voice) }
+
+    wait(600)
+    line()
+    hold()
+    wait(300)
+    beat((x) => x.setIntro(false))
+    wait(700)
+
+    beat((x) => { x.setStage('rules'); x.setUrl(`${SITE}/faq`) })
+    line() // the four rules
+    hold()
+
+    line() // vpn
+    hold()
+    line() // one account
+    hold()
+    line() // bots
+    hold()
+    line() // fake proof
+    hold()
+
+    beat((x) => { x.setStage('subs'); x.setUrl(`${SITE}/submissions`) })
+    line() // a rejection is not a ban
+    hold()
+
+    clickOn('sub-rejected', 900)
+    beat((x) => { x.setStage('rejected'); x.setCursor(null); x.setUrl(`${SITE}/task/rejected`) })
+    line() // read the reason
+    hold()
+
+    line() // resubmit
+    beat((x) => x.setCursor('resubmit'))
+    hold()
+
+    beat((x) => x.setCursor('appeal'))
+    line() // appeal
+    hold()
+
+    beat((x) => x.setCursor(null))
+    line() // closing
+    hold()
+
+    return beats.sort((a, b) => a.at - b.at)
+  }
+
+  /**
+   * "I reached a level and was not paid." Follows the approved script: explain
+   * how step payouts really work, what to send us, and be honest that the
+   * advertiser owns the decision and can take 30 business days.
+   */
+  function notPaidScript() {
+    wait(600)
+    say(null, '', "If you played a game from PicoWorker, reached a level, and did not get paid, do not panic. Your work is not lost. Here is what to do.")
+    hold()
+    wait(300)
+    beat((x) => x.setIntro(false))
+    wait(700)
+
+    beat((x) => { x.setStage('steps'); x.setUrl(`${SITE}/offers/lootably`) })
+    say(1, 'Game offers pay in steps', "So, game offers pay in steps. Each step pays on its own. For example, collect 150 gems and you get paid. Collect 450 gems and you get paid again. You do not have to finish the whole game to earn.")
+    beat((x) => x.setCursor('gem-step'))
+    hold()
+
+    say(null, 'Early steps are small', "And look at the amounts honestly. The first steps are small. One cent, four cents. It is the later steps that pay properly. That is normal, and it is how these offers work everywhere.")
+    hold()
+
+    say(null, 'The game reports your step', "The game itself tells our partner when you complete a step. Sometimes that message takes a few hours to arrive. Sometimes the game is just slow to report it.")
+    beat((x) => x.setCursor(null))
+    hold()
+
+    say(2, 'First, reopen the game', "So first, wait a few hours, and open the game again. A lot of rewards only arrive once you reopen the game with the internet on.")
+    beat((x) => { x.setStage('game'); x.setLevel(20); x.setUrl('Gemcrush Saga · Android app') })
+    hold()
+
+    say(3, 'Still nothing? Message us', "If it still has not arrived, message us. And send us three things. The name of the game. Which level or step you reached. And a screenshot of the game showing it.")
+    beat((x) => { x.setStage('support'); x.setUrl(`${SITE}/support`) })
+    wait(800)
+    type('support', 'Gemcrush Saga, I collected 1,200 gems and reached level 40 but the reward did not arrive. Screenshot attached.')
+    wait(500)
+    clickOn('send-msg', 700)
+    beat((x) => x.setCursor(null))
+    hold()
+
+    say(4, 'We check every single one', "We check every one. We look at our records and at our partner's records, and if the game did not report your step, we raise it with the advertiser.")
+    beat((x) => { x.setStage('waiting'); x.setUrl(`${SITE}/support`) })
+    hold()
+
+    say(5, 'Advertisers can take 30 days', "Now please be patient with this part. When we raise a case with an advertiser, they can take up to thirty business days to reply. That is their timeline, not ours, and we will tell you exactly what they say.")
+    hold()
+
+    say(null, 'We cannot promise every case', "And I want to be straight with you. We cannot promise that every case gets paid, because that decision belongs to the advertiser, not to us. But we do check every single one, and we never ignore a report.")
+    hold()
+
+    say(6, 'Always start from PicoWorker', "Now, three things that stop this happening in the first place. Number one, and this is the most important thing in the whole video. Always start the offer from inside PicoWorker. Do not go and search for the game in the Play Store yourself. If you install it any other way, the game has no idea you came from us, and it cannot pay you.")
+    beat((x) => { x.setStage('offers'); x.setUrl(`${SITE}/offers/lootably`) })
+    wait(1000)
+    clickOn('offer-steps', 900)
+    beat((x) => { x.setSheet(true); x.setCursor(null) })
+    wait(700)
+    clickOn('sheet-start', 900)
+    beat((x) => { x.setSheet(false); x.setCursor(null) })
+    hold()
+
+    say(7, 'No VPN, and keep the game installed', "Number two, do not use a VPN. And number three, keep the game installed, and open it regularly until you have finished the steps you want. Uninstalling it early can lose the steps you have not been paid for yet.")
+    hold()
+
+    say(null, 'Your earnings are safe', "Your earnings are safe with us. If something looks missing, tell us, and we will find out what happened. Thank you for working with PicoWorker.")
+    beat((x) => { x.setStage('wallet'); x.setUrl(`${SITE}/wallet`) })
+    hold()
+
+    return beats.sort((a, b) => a.at - b.at)
+  }
+
+  if (flow === 'notpaid') return notPaidScript()
+  if (flow === 'rules') return rulesScript()
+  if (flow === 'cashout') return cashOutScript()
+  if (flow === 'reset') return resetScript()
   if (flow === 'earn') return earnScript()
   if (flow === 'signin') return signInScript()
 
@@ -470,6 +838,8 @@ function collectCues(flow: Flow, lang: Lang): { cues: Cue[]; lines: Line[]; ends
     setPasteFlash: (v) => { if (v) cues.push({ at: now, kind: 'pop' }) },
     setSheet: (v) => { if (v) cues.push({ at: now, kind: 'whoosh' }) },
     setInstall: noop, setProgress: noop, setLevel: noop,
+    setAddr: noop, setAmount: noop, setSupportMsg: noop,
+    setPayoutStage: (v) => { if (v === 'saved') cues.push({ at: now, kind: 'pop' }) },
     setMilestone: (v) => { if (v) cues.push({ at: now, kind: 'chime' }) },
     setUrl: noop,
     setLoaded: (v) => { if (v && now > 0) cues.push({ at: now, kind: 'whoosh' }) },
@@ -477,7 +847,7 @@ function collectCues(flow: Flow, lang: Lang): { cues: Cue[]; lines: Line[]; ends
     setCaption: (v) => { if (v) lines.push({ at: now, text: v.voice ?? v.text }) },
     setPressed: (v) => { if (v) cues.push({ at: now, kind: 'click' }) },
     type: (target, text, at) => {
-      const speed = target === 'code' ? 220 : TYPE_SPEED
+      const speed = target === 'code' ? 220 : target === 'addr' ? 26 : target === 'support' ? 22 : TYPE_SPEED
       for (let i = 1; i <= text.length; i++) cues.push({ at: at + i * speed, kind: 'key' })
     },
   }
@@ -508,6 +878,10 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
   const [progress, setProgress] = useState(0)
   const [level, setLevel] = useState(1)
   const [milestone, setMilestone] = useState<string | null>(null)
+  const [addr, setAddr] = useState('')
+  const [payoutStage, setPayoutStage] = useState<'enter' | 'code' | 'saved'>('enter')
+  const [amount, setAmount] = useState('')
+  const [supportMsg, setSupportMsg] = useState('')
   const [url, setUrl] = useState('')
   const [loaded, setLoaded] = useState(false)
   const [intro, setIntro] = useState(true)
@@ -528,9 +902,10 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
       setConfirm, setShowPassword, setBusy, setCode, setMail, setPasteFlash,
       setUrl, setLoaded, setIntro, setCaption, setCursor, setPressed,
       setSheet, setInstall, setProgress, setLevel, setMilestone,
+      setAddr, setPayoutStage, setAmount, setSupportMsg,
       type: (target, text, at) => {
-        const set = { name: setName, email: setEmail, password: setPassword, confirm: setConfirm, code: setCode, url: setUrl }[target]
-        const speed = target === 'code' ? 220 : TYPE_SPEED
+        const set = { name: setName, email: setEmail, password: setPassword, confirm: setConfirm, code: setCode, url: setUrl, addr: setAddr, amount: setAmount, support: setSupportMsg }[target]
+        const speed = target === 'code' ? 220 : target === 'addr' ? 26 : target === 'support' ? 22 : TYPE_SPEED
         for (let i = 1; i <= text.length; i++) {
           timers.push(window.setTimeout(() => set(text.slice(0, i)), at + i * speed))
         }
@@ -556,7 +931,7 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
     if (!el || !root) return
     const r = el.getBoundingClientRect()
     setCursorPos({ x: r.left - root.left + r.width / 2, y: r.top - root.top + r.height / 2 })
-  }, [cursor, stage, isSignup, password, mail, loaded, sheet, install])
+  }, [cursor, stage, isSignup, password, mail, loaded, sheet, install, payoutStage])
 
   const strong = password.length >= 8
 
@@ -763,22 +1138,441 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
               <Check width={40} height={40} className="text-[var(--accent-strong)]" />
             </div>
             <div className="font-head font-bold text-[30px] text-[var(--ink)] mt-6 tracking-[-.02em]">
-              {flow === 'signin' ? 'Welcome back.' : "You're in."}
+              {flow === 'reset' ? 'Password changed.' : flow === 'signin' ? 'Welcome back.' : "You're in."}
             </div>
             <div className="text-[var(--ink-3)] text-[15px] font-semibold mt-2">
-              {flow === 'signin'
-                ? `Good to see you again, ${NAME.split(' ')[0]}.`
-                : `Welcome to PicoWorker, ${NAME.split(' ')[0]}.`}
+              {flow === 'reset'
+                ? `You're signed back in, ${NAME.split(' ')[0]}.`
+                : flow === 'signin'
+                  ? `Good to see you again, ${NAME.split(' ')[0]}.`
+                  : `Welcome to PicoWorker, ${NAME.split(' ')[0]}.`}
             </div>
             <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-full bg-[rgba(68,209,122,.1)] border border-[rgba(68,209,122,.25)]">
               <span className="text-[var(--ink-2)] text-[13px] font-semibold">
-                {flow === 'signin'
+                {flow === 'signin' || flow === 'reset'
                   ? <>Your balance <span className="text-[var(--green)] font-extrabold">$3.42 USDC</span></>
                   : <>Welcome bonus <span className="text-[var(--green)] font-extrabold">$0.05 USDC</span> added</>}
               </span>
             </div>
           </div>
         </div>
+      )}
+
+      {stage === 'reset' && (
+        <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-[400px] reveal">
+            <div className="flex justify-center mb-8"><BrandMark size={44} /></div>
+            <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7">
+              <div className="font-head font-bold text-[22px] text-[var(--ink)]">Reset your password</div>
+              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-1 mb-5 leading-[1.5]">
+                We emailed a 6-digit code to <span className="text-[var(--ink)] font-bold break-all">{EMAIL}</span>. Enter it and choose a new password.
+              </div>
+              <div
+                data-spot="code-input"
+                className={`w-full border rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[20px] font-head font-extrabold tracking-[.3em] text-center mb-3 transition-all duration-300 ${cursor === 'code-input' ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'} ${pasteFlash ? 'bg-[rgba(46,224,110,.14)] scale-[1.02]' : 'bg-[var(--fill)]'}`}
+              >
+                {code || <span className="text-[#3A3B44]">000000</span>}
+              </div>
+              <div
+                data-spot="new-pw"
+                className={`w-full bg-[var(--fill)] border rounded-[14px] px-4 py-[14px] text-[15px] font-semibold min-h-[52px] transition-colors ${cursor === 'new-pw' ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'}`}
+              >
+                {password
+                  ? <span className="text-[var(--ink)]">{'•'.repeat(password.length)}</span>
+                  : <span className="text-[var(--ink-5)]">New password</span>}
+                {cursor === 'new-pw' && <span className="inline-block w-[2px] h-[16px] align-middle ml-[2px] bg-[var(--accent-strong)] animate-pulse" />}
+              </div>
+              <div className="text-[var(--ink-4)] text-[11px] font-semibold mt-1.5">8+ chars with upper and lower case, a number and a symbol.</div>
+              <div
+                data-spot="reset-btn"
+                className={`w-full mt-4 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[15px] rounded-[14px] text-center transition-transform ${pressed === 'reset-btn' ? 'scale-[.97]' : ''}`}
+                style={{ boxShadow: 'var(--glow)' }}
+              >
+                {busy ? 'Verifying…' : 'Reset password and sign in'}
+              </div>
+              <div className="w-full mt-2 text-[var(--accent-strong)] text-[13px] font-bold py-1 text-center">Resend code</div>
+              <div className="w-full text-[var(--ink-3)] text-[13px] font-bold py-1 text-center">Back to sign in</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'payout' && (
+        <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-[440px] reveal">
+            <div className="font-head font-bold text-[22px] text-[var(--ink)]">Payout address</div>
+            <div className="text-[var(--ink-3)] text-[13px] font-semibold mt-1 mb-5">
+              For your security, the withdrawal address is confirmed by email.
+            </div>
+
+            {payoutStage === 'enter' && (
+              <>
+                <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-1.5">Your Base USDC address</div>
+                <div
+                  data-spot="addr-input"
+                  className={`w-full bg-[var(--card)] border rounded-[14px] px-4 py-[14px] text-[14px] font-semibold min-h-[52px] break-all transition-colors ${cursor === 'addr-input' ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'}`}
+                >
+                  {addr
+                    ? <span className="text-[var(--ink)] font-mono">{addr}</span>
+                    : <span className="text-[var(--ink-5)]">0x…</span>}
+                  {cursor === 'addr-input' && <span className="inline-block w-[2px] h-[15px] align-middle ml-[2px] bg-[var(--accent-strong)] animate-pulse" />}
+                </div>
+                <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1 mt-2">
+                  <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />
+                  We'll email a 6-digit code to confirm this address. USDC on the Base network only.
+                </div>
+                <div
+                  data-spot="send-code"
+                  className={`w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] text-center transition-transform ${pressed === 'send-code' ? 'scale-[.97]' : ''}`}
+                  style={{ boxShadow: 'var(--glow)' }}
+                >
+                  {busy ? 'Sending…' : 'Send confirmation code'}
+                </div>
+              </>
+            )}
+
+            {payoutStage === 'code' && (
+              <>
+                <div className="text-[var(--ink-3)] text-[14px] font-semibold mb-4 leading-[1.5]">
+                  We emailed a 6-digit code to <span className="text-[var(--ink)] font-bold">{EMAIL}</span>. Enter it to confirm this address.
+                </div>
+                <div
+                  data-spot="code-input"
+                  className={`w-full border rounded-[14px] px-4 py-[14px] text-[var(--ink)] text-[20px] font-head font-extrabold tracking-[.3em] text-center transition-all duration-300 ${cursor === 'code-input' ? 'border-[var(--accent)]' : 'border-[var(--line-2)]'} ${pasteFlash ? 'bg-[rgba(46,224,110,.14)] scale-[1.02]' : 'bg-[var(--fill)]'}`}
+                >
+                  {code || <span className="text-[#3A3B44]">000000</span>}
+                </div>
+                <div
+                  data-spot="confirm-addr"
+                  className={`w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] text-center transition-transform ${pressed === 'confirm-addr' ? 'scale-[.97]' : ''}`}
+                  style={{ boxShadow: 'var(--glow)' }}
+                >
+                  {busy ? 'Confirming…' : 'Confirm address'}
+                </div>
+              </>
+            )}
+
+            {payoutStage === 'saved' && (
+              <div className="rounded-[24px] bg-[var(--card)] border border-[var(--line)] p-7 text-center reveal">
+                <div className="w-14 h-14 rounded-full bg-[rgba(46,224,110,.12)] border border-[rgba(46,224,110,.3)] flex items-center justify-center mx-auto">
+                  <Check width={30} height={30} className="text-[var(--green)]" />
+                </div>
+                <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Payout address saved</div>
+                <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">
+                  Your withdrawals will go to this confirmed address.
+                </div>
+                <div className="font-mono text-[12.5px] text-[var(--ink-2)] mt-3 break-all">{PAYOUT_ADDR}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {stage === 'withdraw' && (
+        <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-[440px] reveal">
+            <div className="font-head font-bold text-[22px] text-[var(--ink)] mb-4">Withdraw USDC</div>
+
+            <div className="rounded-[20px] p-5 bg-[var(--card)] border border-[var(--line)] mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[var(--ink-4)] text-[12px] font-bold uppercase tracking-[.07em]">Amount to withdraw</div>
+                <div
+                  data-spot="max-btn"
+                  className={`text-[var(--accent-strong)] text-[12px] font-extrabold transition-transform ${pressed === 'max-btn' ? 'scale-90' : ''}`}
+                >
+                  MAX
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="font-head text-[34px] font-bold text-[var(--ink)]">$</span>
+                <span className="font-head text-[34px] font-bold text-[var(--ink)]">{amount || '0'}</span>
+              </div>
+              <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-1">Available $3.42</div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-[14px] p-4 bg-[var(--fill)] border border-[var(--line)] mb-4">
+              <span className="w-9 h-9 rounded-full bg-[#2775CA] flex items-center justify-center text-[#fff] text-[14px] font-extrabold flex-none">$</span>
+              <div className="flex-1">
+                <div className="text-[var(--ink)] text-[14px] font-bold">USDC on Base</div>
+                <div className="text-[var(--ink-4)] text-[12px] font-semibold">Only USDC on the Base network is supported.</div>
+              </div>
+            </div>
+
+            <div className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.07em] mb-1.5">Payout address</div>
+            <div className="flex items-center justify-between gap-2 mb-4 rounded-[14px] bg-[var(--card)] border border-[var(--line-2)] px-4 py-[14px]">
+              <span className="font-mono text-[13px] text-[var(--ink)]">{SHORT_ADDR}</span>
+              <span className="text-[var(--accent-strong)] text-[13px] font-bold flex-none">Change</span>
+            </div>
+
+            <div className="rounded-[16px] p-4 bg-[var(--fill)] border border-[var(--line)] flex flex-col gap-2 mb-2">
+              <div className="flex justify-between text-[13px] font-semibold"><span className="text-[var(--ink-3)]">You send</span><span className="text-[var(--ink)]">$3.42 USDC</span></div>
+              <div className="flex justify-between text-[13px] font-semibold"><span className="text-[var(--ink-3)]">Fee</span><span className="text-[var(--ink)]">$0.005</span></div>
+              <div className="h-px bg-[var(--line)] my-1" />
+              <div className="flex justify-between text-[14px] font-extrabold"><span className="text-[var(--ink-2)]">You receive</span><span className="text-[var(--green)]">3.415 USDC</span></div>
+            </div>
+            <div className="flex items-start gap-2 text-[var(--ink-4)] text-[12px] font-semibold px-1">
+              <Shield width={14} height={14} className="text-[var(--accent-strong)] flex-none mt-[1px]" />
+              No minimum to withdraw. Take out any amount you like. A flat $0.005 network fee is deducted to cover the on-chain transfer.
+            </div>
+
+            <div
+              data-spot="withdraw-btn"
+              className={`w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] text-center transition-transform ${pressed === 'withdraw-btn' ? 'scale-[.97]' : ''}`}
+              style={{ boxShadow: 'var(--glow)' }}
+            >
+              {busy ? 'Sending…' : 'Confirm withdrawal'}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'sent' && (
+        <div className="h-full flex items-center justify-center p-6">
+          <div className="text-center reveal">
+            <div className="w-20 h-20 rounded-full bg-[rgba(46,224,110,.14)] border border-[rgba(46,224,110,.35)] flex items-center justify-center mx-auto" style={{ boxShadow: 'var(--glow)' }}>
+              <Check width={40} height={40} className="text-[var(--accent-strong)]" />
+            </div>
+            <div className="font-head font-bold text-[24px] text-[var(--ink)] mt-6">Withdrawal sent</div>
+            <div className="font-head font-bold text-[32px] text-[var(--accent-strong)] mt-2">3.415 USDC</div>
+            <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-3">Sent to your Base address.</div>
+            <div className="font-mono text-[12.5px] text-[var(--ink-4)] mt-1">{SHORT_ADDR}</div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'rules' && (
+        <div className="h-full overflow-hidden px-6 py-6">
+          <div className="mx-auto max-w-[900px]">
+            <div className="font-head text-[24px] font-extrabold text-[var(--ink)]">Four ways people get banned</div>
+            <div className="mt-1 text-[13px] font-semibold text-[var(--ink-4)]">
+              Every completion is checked by the provider. These are the ones that cost people their balance.
+            </div>
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {[
+                { t: 'A VPN or proxy', d: 'Offer providers read your real location. A VPN makes your traffic look fraudulent, and the completion is voided.' },
+                { t: 'More than one account', d: 'One account per person, and it is tied to your device. A second account forfeits the earnings on both.' },
+                { t: 'Bots, emulators, autoclickers', d: 'Providers fingerprint the device. Automated traffic is never paid, and it is a permanent ban.' },
+                { t: 'Fake or reused proof', d: 'Screenshots from someone else, edited images, or the same proof submitted twice are all rejected.' },
+              ].map((r, i) => (
+                <div key={r.t} className="rounded-[18px] border border-[rgba(255,107,90,.22)] bg-[rgba(255,107,90,.05)] p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[rgba(255,107,90,.14)] text-[12px] font-extrabold text-[var(--coral)]">{i + 1}</div>
+                    <div>
+                      <div className="font-head text-[14.5px] font-extrabold text-[var(--ink)]">{r.t}</div>
+                      <div className="mt-1 text-[12.5px] font-semibold leading-[1.5] text-[var(--ink-3)]">{r.d}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(255,107,90,.18)] bg-[rgba(255,107,90,.06)] p-3.5">
+              <Shield width={17} height={17} className="mt-0.5 flex-none text-[var(--coral)]" />
+              <p className="text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+                One account per person. Creating duplicate accounts or using a VPN/proxy to do so is detected. It means
+                forfeited earnings and a permanent ban.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'subs' && (
+        <AppChrome active="Earn" pressed={pressed}>
+          <div className="font-head text-[22px] font-extrabold text-[var(--ink)]">My Submissions</div>
+          <div className="mt-4 flex gap-2">
+            {['All', 'Pending', 'Approved', 'Rejected'].map((t) => (
+              <div key={t} className={`rounded-full px-4 py-[7px] text-[13px] font-head ${t === 'All' ? 'bg-[var(--accent)] font-extrabold text-[var(--accent-ink)]' : 'bg-[var(--fill-2)] font-bold text-[var(--ink-3)]'}`}>
+                {t}
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-col gap-2">
+            {[
+              { t: '5★ Play Store review', s: 'Rejected', a: '$0.20', spot: 'sub-rejected' },
+              { t: 'Answer a 5 question survey', s: 'Approved', a: '$0.24' },
+              { t: 'Try a new app for 2 minutes', s: 'Pending', a: '$0.18' },
+              { t: 'Follow an account on X', s: 'Approved', a: '$0.05' },
+            ].map((r) => (
+              <div
+                key={r.t}
+                data-spot={r.spot}
+                className={`flex items-center justify-between gap-3 rounded-[14px] border bg-[var(--card)] px-4 py-3 transition-transform ${
+                  r.s === 'Rejected' ? 'border-[rgba(255,107,90,.3)]' : 'border-[var(--line)]'
+                } ${pressed === r.spot ? 'scale-[.99]' : ''}`}
+              >
+                <span className="text-[13.5px] font-bold text-[var(--ink-2)]">{r.t}</span>
+                <span className="flex items-center gap-3">
+                  <span className={`rounded-full px-2.5 py-[3px] text-[10.5px] font-extrabold ${
+                    r.s === 'Rejected' ? 'bg-[rgba(255,107,90,.14)] text-[var(--coral)]'
+                      : r.s === 'Pending' ? 'bg-[rgba(255,176,90,.14)] text-[#FFB05A]'
+                      : 'bg-[rgba(68,209,122,.14)] text-[var(--green)]'
+                  }`}>{r.s}</span>
+                  <span className="text-[13px] font-extrabold text-[var(--ink-3)]">{r.a}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </AppChrome>
+      )}
+
+      {stage === 'rejected' && (
+        <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-[440px] reveal">
+            <div className="rounded-[20px] bg-[var(--card)] border border-[var(--line)] p-6 text-center">
+              <div className="w-[72px] h-[72px] rounded-full bg-[rgba(255,107,90,.14)] border border-[rgba(255,107,90,.35)] flex items-center justify-center mx-auto">
+                <X width={34} height={34} className="text-[var(--coral)]" />
+              </div>
+              <div className="font-head font-bold text-[22px] text-[var(--ink)] mt-5">Proof not approved</div>
+              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">
+                Don't worry, no strike, and the task is still open to retry.
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between rounded-[16px] p-4 bg-[var(--card)] border border-[var(--line)] mt-4">
+              <div>
+                <div className="text-[var(--ink)] text-[15px] font-bold">5★ Play Store review</div>
+                <div className="text-[var(--ink-4)] text-[12px] font-semibold mt-1">Submitted 18 min ago</div>
+              </div>
+              <div className="font-head text-[16px] font-extrabold text-[var(--ink-3)]">$0.20</div>
+            </div>
+
+            <div className="rounded-[16px] p-4 bg-[rgba(255,107,90,.06)] border border-[rgba(255,107,90,.2)] mt-4">
+              <div className="text-[var(--coral)] text-[12px] font-extrabold uppercase tracking-[.06em] mb-1">Why it was rejected</div>
+              <div className="text-[var(--ink-2)] text-[14px] font-semibold leading-[1.5]">
+                The screenshot didn't clearly show a published 5-star rating. Make sure your review is live and all 5 stars are visible.
+              </div>
+            </div>
+
+            <div
+              data-spot="resubmit"
+              className={`w-full mt-5 font-head font-extrabold text-[16px] bg-[var(--accent)] text-[var(--accent-ink)] py-[16px] rounded-[16px] text-center transition-transform ${pressed === 'resubmit' ? 'scale-[.97]' : ''}`}
+              style={{ boxShadow: 'var(--glow)' }}
+            >
+              Resubmit proof
+            </div>
+            <div
+              data-spot="appeal"
+              className={`w-full mt-2 text-[13.5px] font-bold py-2 text-center transition-colors ${cursor === 'appeal' ? 'text-[var(--accent-strong)]' : 'text-[var(--ink-3)]'}`}
+            >
+              Appeal this decision
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'steps' && (
+        <div className="h-full flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-[560px] rounded-[24px] border border-[var(--line)] bg-[var(--card)] p-6 reveal">
+            <h2 className="font-head text-[18px] font-extrabold text-[var(--ink)]">{GEM_OFFER.title}</h2>
+            <div className="mt-1 font-head text-[16px] font-extrabold text-[var(--green)]">
+              ${GEM_OFFER.total.toFixed(2)} <span className="text-[12px] font-bold text-[var(--ink-4)]">total</span>
+            </div>
+            <div className="mt-4 text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">
+              Steps · each one pays separately
+            </div>
+            <div className="mt-2 flex flex-col gap-2">
+              {GEM_OFFER.goals.map((g, i) => (
+                <div
+                  key={g.description}
+                  data-spot={i === 2 ? 'gem-step' : undefined}
+                  className={`flex items-start justify-between gap-3 rounded-[12px] border px-3 py-2.5 transition-colors ${
+                    cursor === 'gem-step' && i === 2
+                      ? 'border-[rgba(46,224,110,.45)] bg-[rgba(46,224,110,.07)]'
+                      : 'border-[var(--line)] bg-[var(--fill)]'
+                  }`}
+                >
+                  <span className="text-[12.5px] font-semibold leading-[1.45] text-[var(--ink-2)]">
+                    <span className="text-[var(--ink-4)]">{i + 1}.</span> {g.description}
+                  </span>
+                  <span className="flex-none text-[12.5px] font-extrabold text-[var(--green)]">${g.rewardUsd.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-4)]">
+              You are paid for every step you finish, so stopping part way still earns what you completed.
+              Early steps are small and later steps pay more.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {stage === 'waiting' && (
+        <div className="h-full flex items-center justify-center p-6">
+          <div className="w-full max-w-[520px] text-center reveal">
+            <div className="mx-auto flex h-[76px] w-[76px] items-center justify-center rounded-full border border-[rgba(255,176,90,.35)] bg-[rgba(255,176,90,.12)]">
+              <Clock width={34} height={34} className="text-[#FFB05A]" />
+            </div>
+            <div className="mt-6 font-head text-[24px] font-extrabold text-[var(--ink)]">We have raised your case</div>
+            <div className="mt-3 text-[14px] font-semibold leading-[1.6] text-[var(--ink-3)]">
+              We check our records and our partner's records. If the game did not report your step,
+              we raise it with the advertiser.
+            </div>
+            <div className="mt-5 rounded-[16px] border border-[rgba(255,176,90,.3)] bg-[rgba(255,176,90,.07)] p-4">
+              <div className="text-[11px] font-extrabold uppercase tracking-[.06em] text-[#D99832]">Advertiser response time</div>
+              <div className="mt-1 font-head text-[26px] font-extrabold text-[#F2A33C]">Up to 30 business days</div>
+              <div className="mt-1 text-[12.5px] font-semibold text-[var(--ink-4)]">
+                That is their timeline, not ours. We will tell you what they say.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {stage === 'support' && (
+        <AppChrome active="Earn" pressed={pressed}>
+          <div className="mx-auto max-w-[620px]">
+            <div className="font-head text-[20px] font-extrabold text-[var(--ink)]">Support</div>
+            <div className="mt-4 flex flex-col gap-3 rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4">
+              <div className="flex items-end gap-2 max-w-[85%]">
+                <Avatar name="P" size={28} gradient="linear-gradient(135deg,#3ee87e,#12924a)" />
+                <div>
+                  <div className="rounded-[16px] rounded-bl-[4px] bg-[var(--fill)] px-4 py-3 text-[14px] font-medium leading-[1.45] text-[var(--ink)]">
+                    Hi Bilal, how can we help?
+                  </div>
+                  <div className="mt-1 ml-1 text-[10px] font-semibold text-[var(--ink-5)]">PicoWorker team · just now</div>
+                </div>
+              </div>
+
+              <div className="self-end max-w-[85%]">
+                <div className="rounded-[16px] rounded-br-[4px] bg-[var(--accent)] px-4 py-3 text-[14px] font-semibold leading-[1.5] text-[var(--accent-ink)]">
+                  {supportMsg || <span className="opacity-40">…</span>}
+                </div>
+                {supportMsg.length > 80 && (
+                  <div className="mt-2 flex items-center justify-end gap-2">
+                    <div className="flex items-center gap-2 rounded-[12px] border border-[var(--line-2)] bg-[var(--fill)] px-3 py-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-[8px]" style={{ background: 'linear-gradient(135deg,#8B6CFF,#2EE06E)' }}>
+                        <span className="text-[11px] font-extrabold text-white">IMG</span>
+                      </div>
+                      <span className="text-[11.5px] font-bold text-[var(--ink-2)]">gemcrush-level-40.png</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 rounded-[14px] border border-[var(--line)] bg-[var(--fill)] px-4 py-3">
+              <span className="flex-1 text-[13.5px] font-medium text-[var(--ink-5)]">Type a message…</span>
+              <div
+                data-spot="send-msg"
+                className={`flex h-10 w-10 items-center justify-center rounded-[12px] bg-[var(--accent)] text-[var(--accent-ink)] transition-transform ${pressed === 'send-msg' ? 'scale-90' : ''}`}
+              >
+                <ArrowRight width={18} height={18} />
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[16px] border border-[var(--line)] bg-[var(--card)] p-4">
+              <div className="text-[11px] font-extrabold uppercase tracking-[.06em] text-[var(--ink-5)]">Send us these three things</div>
+              <div className="mt-2 flex flex-col gap-1.5">
+                {['The name of the game', 'Which level or step you reached', 'A screenshot of the game showing it'].map((t, i) => (
+                  <div key={t} className="flex items-center gap-2.5 text-[13px] font-semibold text-[var(--ink-2)]">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[rgba(46,224,110,.14)] text-[10.5px] font-extrabold text-[var(--accent-strong)]">{i + 1}</span>
+                    {t}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </AppChrome>
       )}
 
       {stage === 'feed' && <DemoFeed pressed={pressed} />}
@@ -807,7 +1601,7 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
       )}
 
       {/* ===== Fake Gmail window ===== */}
-      {mail && <GmailWindow mail={mail} pressed={pressed} />}
+      {mail && <GmailWindow mail={mail} pressed={pressed} flow={flow} />}
 
       </div>
 
@@ -852,19 +1646,23 @@ export function LoginDemo({ flow = 'signup', lang = 'en' }: { flow?: Flow; lang?
             {lang === 'ur' ? (
               <div dir="rtl">
                 <h1 className="font-bold text-[34px] sm:text-[42px] leading-[2] text-[var(--ink)] pb-2">
-                  <span className="text-[var(--accent-strong)]">پیکو ورکر</span> پر اکاؤنٹ کیسے بنائیں
+                  {TITLES[flow].ur[0]}
+                  <span className="text-[var(--accent-strong)]">{TITLES[flow].ur[1]}</span>
+                  {TITLES[flow].ur[2] ?? ''}
                 </h1>
                 <p className="text-[var(--ink-3)] text-[17px] font-semibold mt-6 leading-[2.2]">
-                  بالکل مفت، ایک منٹ سے بھی کم وقت میں
+                  {SUBTITLES[flow].ur}
                 </p>
               </div>
             ) : (
               <>
-                <h1 className="font-head font-bold text-[40px] sm:text-[52px] leading-[1.06] tracking-[-.03em] text-[var(--ink)]">
-                  How to create<br />a <span className="text-[var(--accent-strong)]">PicoWorker</span> account
+                <h1 className="font-head font-bold text-[40px] sm:text-[52px] leading-[1.12] tracking-[-.03em] text-[var(--ink)] max-w-[16ch] mx-auto">
+                  {TITLES[flow].en[0]}
+                  <span className="text-[var(--accent-strong)]">{TITLES[flow].en[1]}</span>
+                  {TITLES[flow].en[2] ?? ''}
                 </h1>
                 <p className="text-[var(--ink-3)] text-[16px] font-semibold mt-5">
-                  Free, takes under a minute
+                  {SUBTITLES[flow].en}
                 </p>
               </>
             )}
@@ -956,7 +1754,23 @@ function DemoLanding({ loaded, pressed }: { loaded: boolean; pressed: string | n
  * dark app. The contrast is deliberate: it reads as "the user switched to their
  * inbox in another tab" rather than as part of PicoWorker.
  */
-function GmailWindow({ mail, pressed }: { mail: Exclude<Mail, null>; pressed: string | null }) {
+function GmailWindow({ mail, pressed, flow }: { mail: Exclude<Mail, null>; pressed: string | null; flow: Flow }) {
+  const subject = flow === 'reset'
+    ? 'Reset your password'
+    : flow === 'cashout' ? 'Confirm your payout address' : 'Your confirmation code'
+  const preview = flow === 'reset'
+    ? 'Use this code to set a new password…'
+    : flow === 'cashout'
+      ? 'Confirm the address your USDC will be sent to…'
+      : 'Enter this code to finish creating your PicoWorker account…'
+  const heading = flow === 'reset'
+    ? 'Reset your password'
+    : flow === 'cashout' ? 'Confirm your payout address' : 'Confirm your email'
+  const blurb = flow === 'reset'
+    ? 'Enter this code in PicoWorker to set a new password. It expires in 10 minutes.'
+    : flow === 'cashout'
+      ? 'Enter this code in PicoWorker to confirm your withdrawal address. It expires in 15 minutes.'
+      : 'Enter this code in PicoWorker to finish signing up. It expires in 10 minutes.'
   const open = mail === 'open' || mail === 'copied'
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,.6)', backdropFilter: 'blur(4px)' }}>
@@ -1012,8 +1826,8 @@ function GmailWindow({ mail, pressed }: { mail: Exclude<Mail, null>; pressed: st
                   <span className="text-[#F4B400] text-[15px]">☆</span>
                   <span className="w-[110px] shrink-0 text-[13.5px] font-bold text-[#202124]">PicoWorker</span>
                   <span className="text-[13.5px] text-[#202124] truncate">
-                    <b>Your confirmation code</b>
-                    <span className="text-[#5F6368]"> — Enter this code to finish creating your PicoWorker account…</span>
+                    <b>{subject}</b>
+                    <span className="text-[#5F6368]"> — {preview}</span>
                   </span>
                   <span className="ml-auto text-[12px] font-bold text-[#202124] shrink-0">12:04 PM</span>
                 </div>
@@ -1028,7 +1842,7 @@ function GmailWindow({ mail, pressed }: { mail: Exclude<Mail, null>; pressed: st
               </div>
             ) : (
               <div className="p-6 overflow-y-auto h-full">
-                <div className="text-[20px] text-[#202124]">Your confirmation code</div>
+                <div className="text-[20px] text-[#202124]">{subject}</div>
                 <div className="flex items-center gap-3 mt-4">
                   <div className="w-9 h-9 rounded-full text-white text-[14px] font-bold flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#2EE06E,#8B6CFF)' }}>P</div>
                   <div className="min-w-0">
@@ -1040,8 +1854,8 @@ function GmailWindow({ mail, pressed }: { mail: Exclude<Mail, null>; pressed: st
                 </div>
 
                 <div className="mt-5 border border-[#E8EAED] rounded-[10px] p-6 text-center">
-                  <div className="text-[15px] text-[#202124] font-bold">Confirm your email</div>
-                  <div className="text-[13px] text-[#5F6368] mt-2">Enter this code in PicoWorker to finish signing up. It expires in 10 minutes.</div>
+                  <div className="text-[15px] text-[#202124] font-bold">{heading}</div>
+                  <div className="text-[13px] text-[#5F6368] mt-2">{blurb}</div>
                   <div className="mt-4 text-[32px] font-bold tracking-[.34em] text-[#202124]">{CODE}</div>
                   <div
                     data-spot="copy-btn"

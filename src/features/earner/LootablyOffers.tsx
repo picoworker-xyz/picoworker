@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Page } from '../../components/Page'
+import { CpxSurveySection } from '../../components/CpxSurveySection'
 import { Button } from '../../components/ui'
 import { ExternalLink, Globe, Shield } from '../../components/icons'
 import { OfferTabs } from '../../components/OfferTabs'
@@ -166,6 +167,12 @@ export function LootablyOffers() {
       )}
 
       {detail && <GoalSheet offer={detail} onClose={() => setDetail(null)} onStart={() => open(detail)} />}
+
+      {/* Surveys sit below the offers rather than above them: this page is what
+          a worker opened for offers, and the strip renders nothing when CPX has
+          matched them to none. */}
+      <CpxSurveySection />
+
 
       <div className="mt-5 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">
         <Shield width={17} height={17} className="mt-0.5 flex-none text-[#D99832]" />

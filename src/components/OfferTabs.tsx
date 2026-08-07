@@ -11,6 +11,7 @@ import { TASKWALL_PAUSED } from '../lib/taskwall'
 // blocks the worker's device on.
 const TABS: { label: string; path: string }[] = [
   { label: 'Offers', path: '/offers/lootably' },
+  { label: 'Surveys', path: '/offers/surveys' },
   { label: 'Worldwide', path: '/offers/worldwide' },
   { label: 'Featured', path: '/offers/taskwall' },
 ]

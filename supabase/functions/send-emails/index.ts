@@ -35,6 +35,20 @@ function render(template: string, d: Record<string, unknown>): { subject: string
       return { subject: `Deposit received: ${amount}`, text: `Deposit ${amount} received.`, html: wrap('Deposit received', `We received <b>${amount}</b> USDC. Your campaign balance is now $${Number(d.balance ?? 0).toFixed(2)}.`) }
     case 'task_rejected':
       return { subject: 'Your submission was not approved', text: 'Your submission was not approved.', html: wrap('Submission not approved', `Your proof for "${d.title ?? 'a task'}" wasn't approved. You can appeal it from your submissions.`) }
+    case 'announcement': {
+      // Broadcast blast queued by broadcast_announcement() in announce.sql.
+      // Title/body come from the caller, so they are escaped, not trusted HTML.
+      const esc = (s: unknown) => String(s ?? '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]!))
+      const title = esc(d.title ?? 'PicoWorker')
+      const body = `Hi ${esc(name)},<br><br>${esc(d.body ?? '').replace(/\n/g, '<br>')}`
+      const url = String(d.url ?? 'https://picoworker.xyz')
+      const cta = esc(d.cta ?? 'Open PicoWorker')
+      return {
+        subject: String(d.title ?? 'PicoWorker'),
+        text: `Hi ${name},\n\n${d.body ?? ''}\n\n${url}`,
+        html: wrap(title, `${body}<div style="margin-top:20px"><a href="${url}" style="background:#0B0C10;color:#fff;text-decoration:none;padding:11px 18px;border-radius:10px;font-weight:700;display:inline-block">${cta}</a></div>`),
+      }
+    }
     case 'address_code':
       return { subject: `Your PicoWorker code: ${d.code}`, text: `Your confirmation code is ${d.code}`, html: wrap('Confirm your payout address', `Your confirmation code is:<div style="font-size:28px;font-weight:800;letter-spacing:4px;margin:14px 0">${d.code}</div>It expires in 15 minutes. If you didn't request this, ignore this email.`) }
     default:

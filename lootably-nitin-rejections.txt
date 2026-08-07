@@ -1,0 +1,76 @@
+To: Nitin@lootably.com
+Subject: Rejected conversions and unreported goals - placement cms97kc4i01dj01wyho2g4uto
+
+Hi Nitin,
+
+We are PicoWorker, running placement cms97kc4i01dj01wyho2g4uto on the Offers
+API with Conversion Webhooks. The integration is working well and delivery has
+been reliable. Two things we would like your help understanding.
+
+
+1. REJECTED CONVERSIONS
+
+We have received three rejected events. All three are the first gameplay goal
+of a multistep offer, after the install goal was approved:
+
+  Aug 3 06:24 UTC  Clumsy Arrow   gems_60    userID 8c0a6381-3cb0-4ce6-8502-e82431bbfbc5
+  Aug 3 04:17 UTC  Risky Roller   coins_50   userID 698f2bc5-c5a5-406b-911d-aa5b486d2421
+  Aug 1 07:06 UTC  Risky Roller   coins_50   userID 8c0a6381-3cb0-4ce6-8502-e82431bbfbc5
+
+The webhook payload contains no reason, only "event": "rejected". Could you
+tell us:
+
+  - What triggers a rejected event? Is it your fraud checks or the advertiser's?
+  - Is there a per-user or per-device velocity limit we should know about?
+  - Is there any way to see a reason, so we can act on it rather than guess?
+
+We are not disputing the decisions. We want to understand them so we can stop
+showing offers to users who will be declined, rather than letting them spend an
+hour on something that cannot pay.
+
+
+2. GOALS THAT NEVER ARRIVE
+
+Separately, some goals appear never to be reported at all. We checked your
+Reporting API before writing, so these are missing on your side too, not lost
+between us.
+
+The clearest example, same offer, same day:
+
+  Bubble Pop Legends, "Collect 450 Gems."
+    userID 4ab61f8f (Baloch)       reported and paid, Aug 3
+    userID d6c1dcc3 (M Farhan)     never reported
+
+Farhan was paid for "Collect 150 Gems." on the same offer at 12:44 UTC on Aug 3
+(transactionID cmsd80o4g02d301wj5fend0rm), so attribution was working for him.
+He then passed 450 gems and nothing arrived. Your conversions report for Aug 1
+to Aug 6 shows only three conversions for his userID, the same three we received.
+
+We saw the same pattern on OneShot Pool Elite, where "Collect 55 Coins." paid
+and "Collect 250 Coins." never arrived despite the user's in-game balance
+being 265.
+
+Questions:
+
+  - Is there a normal delay for goal reporting, and after how long should we
+    treat a goal as genuinely lost?
+  - Do you see goal-level reporting reliability vary by advertiser? If certain
+    advertisers under-report later goals, we would rather hide those offers than
+    have workers grind for rewards that will not arrive.
+
+
+WHY THIS MATTERS TO US
+
+Most of our inventory is multistep, and nearly all the value sits in the later
+goals. On Bubble Pop Legends the first goal pays $0.02 and the last pays $42.
+If workers cannot trust that later goals report, they stop after the first one,
+which costs both of us the offer's real revenue.
+
+Happy to run any test you want, or to give you specific transaction IDs and
+timestamps in whatever format is easiest.
+
+Thanks,
+Shehbaz
+PicoWorker
+placementID cms97kc4i01dj01wyho2g4uto
+hello@picoworker.xyz

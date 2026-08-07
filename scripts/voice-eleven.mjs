@@ -16,8 +16,10 @@ import ffmpeg from 'ffmpeg-static'
 const RATE = 44100
 const API = 'https://api.elevenlabs.io/v1/text-to-speech'
 
-// Sarah: mature, reassuring, clear. Good fit for a how-to.
-export const DEFAULT_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'
+// Narrator for the tutorials. Override per run with DEMO_VOICE_ID.
+export const DEFAULT_VOICE_ID = process.env.DEMO_VOICE_ID ?? 'ByhETIclHirOlWnWKhHc'
+/** Sarah, the previous stock voice. Kept as a known-good fallback. */
+export const SARAH_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'
 const DEFAULT_MODEL = 'eleven_v3'
 
 function run(cmd, args) {
