@@ -18,19 +18,18 @@ const PUB_ID = Deno.env.get('NOTIK_PUB_ID') ?? ''
 // Netlify proxies picoworker.xyz to Supabase, so req.url carries the Supabase
 // host. The hash was computed over the public URL, so it has to be rebuilt.
 const PUBLIC_URL = (Deno.env.get('NOTIK_PUBLIC_URL') ?? '').replace(/[?&]+$/, '')
-// Notik's published postback source. Their docs name 158.69.116.45 as the only
-// address they send from, but their dashboard simultaneously announces that the
-// callback IP list has changed without the docs page reflecting it. Rejecting
-// on that basis would mean a silent total payout outage the moment they move a
-// server, so the list is advisory by default: a mismatch is logged loudly and
-// the request still proceeds. The HMAC below is the actual authentication, and
-// it does not weaken when an IP changes.
+// Notik's published postback source, confirmed with their support on
+// 2026-08-29: 158.69.116.45 is the only address, the docs page is current, and
+// the dashboard banner about a changed IP list is a stale nag aimed at
+// publishers who never updated. They send an email before any such change.
 //
-// Set NOTIK_POSTBACK_ENFORCE_IP=true to make a mismatch a hard 403 once the
-// current list is confirmed with their support.
+// Enforced, because it is confirmed. If they ever move without warning this
+// becomes a total payout outage, so NOTIK_POSTBACK_ENFORCE_IP=false downgrades
+// it to a logged warning while the list is sorted out — the HMAC below is the
+// real authentication either way.
 const ALLOWED_IPS = (Deno.env.get('NOTIK_POSTBACK_IPS') ?? '158.69.116.45')
   .split(',').map((v) => v.trim()).filter(Boolean)
-const ENFORCE_IP = (Deno.env.get('NOTIK_POSTBACK_ENFORCE_IP') ?? '').toLowerCase() === 'true'
+const ENFORCE_IP = (Deno.env.get('NOTIK_POSTBACK_ENFORCE_IP') ?? 'true').toLowerCase() !== 'false'
 
 const USD_PER_COIN = Number(Deno.env.get('NOTIK_USD_PER_COIN') ?? '0.008')
 const configuredMax = Number(Deno.env.get('NOTIK_MAX_REWARD') ?? '500')
