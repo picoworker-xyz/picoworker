@@ -27,6 +27,15 @@
   status = 200
   force = true
 
+# Notik signs this public GET callback with a SHA1 HMAC over the full URL, so
+# the function must see the exact path it was signed against and return its own
+# status (they retry twice on anything but 200, then give up and email us).
+[[redirects]]
+  from = "/api/notik/postback"
+  to = "https://cgkccigqhecuxgklnqel.supabase.co/functions/v1/notik-postback"
+  status = 200
+  force = true
+
 # Junk left in search indexes by the domain's previous owner. Must return
 # 410 Gone (not the SPA's 200) or Google keeps the URLs indexed.
 # Order matters: these must sit above the /* catch-all, first match wins.

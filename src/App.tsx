@@ -54,6 +54,7 @@ const PaymentwallOffers = lazy(() => import('./features/earner/PaymentwallOffers
 const KiwiwallOffers = lazy(() => import('./features/earner/KiwiwallOffers').then((m) => ({ default: m.KiwiwallOffers })))
 const LootablyOffers = lazy(() => import('./features/earner/LootablyOffers').then((m) => ({ default: m.LootablyOffers })))
 const TaskwallOffers = lazy(() => import('./features/earner/TaskwallOffers').then((m) => ({ default: m.TaskwallOffers })))
+const NotikOffers = lazy(() => import('./features/earner/NotikOffers').then((m) => ({ default: m.NotikOffers })))
 const CpxOffers = lazy(() => import('./features/earner/CpxOffers').then((m) => ({ default: m.CpxOffers })))
 const MorePage = lazy(() => import('./features/MorePage').then((m) => ({ default: m.MorePage })))
 const SubmissionDetail = lazy(() => import('./features/earner/SubmissionDetail').then((m) => ({ default: m.SubmissionDetail })))
@@ -152,6 +153,7 @@ export default function App() {
       <Route path="/offers/worldwide" element={<Shell><KiwiwallOffers /></Shell>} />
       <Route path="/offers/lootably" element={<Shell><LootablyOffers /></Shell>} />
       <Route path="/offers/surveys" element={<Shell><CpxOffers /></Shell>} />
+      <Route path="/offers/bonus" element={<Shell><NotikOffers /></Shell>} />
       <Route path="/submissions/:id" element={<Shell><SubmissionDetail /></Shell>} />
       <Route path="/switch" element={<Shell><SwitchAccount /></Shell>} />
       <Route path="/developers" element={<Shell><Developers /></Shell>} />

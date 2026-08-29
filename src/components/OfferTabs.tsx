@@ -13,6 +13,7 @@ const TABS: { label: string; path: string }[] = [
   { label: 'Offers', path: '/offers/lootably' },
   { label: 'Surveys', path: '/offers/surveys' },
   { label: 'Worldwide', path: '/offers/worldwide' },
+  { label: 'Bonus', path: '/offers/bonus' },
   { label: 'Featured', path: '/offers/taskwall' },
 ]
 
