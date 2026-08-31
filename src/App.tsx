@@ -46,6 +46,7 @@ const Notifications = lazy(() => import('./features/earner/Notifications').then(
 const Leaderboard = lazy(() => import('./features/earner/Leaderboard').then((m) => ({ default: m.Leaderboard })))
 const VerifyIdentity = lazy(() => import('./features/earner/VerifyIdentity').then((m) => ({ default: m.VerifyIdentity })))
 const Support = lazy(() => import('./features/earner/Support').then((m) => ({ default: m.Support })))
+const Guides = lazy(() => import('./features/marketing/Guides').then((m) => ({ default: m.Guides })))
 const SurveyTask = lazy(() => import('./features/earner/SurveyTask').then((m) => ({ default: m.SurveyTask })))
 const TaskRejected = lazy(() => import('./features/earner/TaskRejected').then((m) => ({ default: m.TaskRejected })))
 const MySubmissions = lazy(() => import('./features/earner/MySubmissions').then((m) => ({ default: m.MySubmissions })))
@@ -144,6 +145,7 @@ export default function App() {
       <Route path="/leaderboard" element={<Shell><Leaderboard /></Shell>} />
       <Route path="/verify" element={<Shell><VerifyIdentity /></Shell>} />
       <Route path="/support" element={<Shell><Support /></Shell>} />
+      <Route path="/guides" element={<Shell><Guides /></Shell>} />
       <Route path="/profile" element={<Shell><Profile /></Shell>} />
       <Route path="/more" element={<Shell><MorePage /></Shell>} />
       <Route path="/submissions" element={<Shell><MySubmissions /></Shell>} />

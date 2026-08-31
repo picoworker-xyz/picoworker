@@ -4,7 +4,7 @@ import { Page } from '../components/Page'
 import { WhatsAppJoin } from '../components/WhatsAppJoin'
 import { TASKWALL_PAUSED } from '../lib/taskwall'
 import {
-  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight, Globe,
+  Bell, Trophy, IdCard, Chat, Flame, Share, Wallet, ListIcon, User, Shield, Plus, Check, Home, Bolt, LogOut, ArrowRight, Globe, Play,
 } from '../components/icons'
 
 type Item = { label: string; path: string; icon: typeof Bell; disabled?: boolean }
@@ -41,6 +41,7 @@ const EARNER_SECTIONS: Section[] = [
       { label: 'Notifications', path: '/notifications', icon: Bell },
       { label: 'Install app', path: '/app', icon: Plus },
       { label: 'Post a task', path: '/switch', icon: Home },
+      { label: 'Tutorials', path: '/guides', icon: Play },
       { label: 'Support', path: '/support', icon: Chat },
       { label: 'Terms', path: '/terms', icon: Shield },
       { label: 'Privacy', path: '/privacy', icon: Shield },
@@ -70,6 +71,7 @@ const BUSINESS_SECTIONS: Section[] = [
       { label: 'Profile', path: '/profile', icon: User },
       { label: 'Notifications', path: '/notifications', icon: Bell },
       { label: 'Earn instead', path: '/switch', icon: Bolt },
+      { label: 'Tutorials', path: '/guides', icon: Play },
       { label: 'Support', path: '/support', icon: Chat },
       { label: 'Terms', path: '/terms', icon: Shield },
       { label: 'Privacy', path: '/privacy', icon: Shield },
