@@ -336,7 +336,7 @@ function pageMarkup(page) {
     .join(' · ')
   return `<div id="root">
     <header style="padding:20px;border-bottom:1px solid #292c36"><a href="/" style="font-weight:800">PicoWorker.xyz</a></header>
-    <main style="max-width:820px;margin:0 auto;padding:48px 22px 64px">
+    <main id="pw-seo" style="max-width:820px;margin:0 auto;padding:48px 22px 64px">
       <article>
         <h1 style="font-size:clamp(32px,7vw,54px);line-height:1.08">${escapeHtml(page.h1)}</h1>
         <p style="font-size:18px;line-height:1.7;color:#c7c9d4">${escapeHtml(page.intro)}</p>
@@ -438,50 +438,53 @@ function structuredData(page) {
 }
 
 /**
- * The prerendered marketing article is what makes these pages crawlable, and it
- * is the right thing for a logged-out visitor to see while the bundle loads.
- * For a signed-in worker it is wrong: refreshing anywhere in the app showed
- * them a wall of marketing prose until React mounted and replaced #root.
+ * The prerendered marketing article is what makes these pages crawlable, but it
+ * is never what a visitor asked for: it is unstyled prose with no navigation,
+ * and a slow or failed bundle used to strand people on it.
  *
- * This inline script runs before the module bundle is even fetched, so it swaps
- * the article for the normal loading placeholder within the same paint. It only
- * checks whether a Supabase session key exists in localStorage — it never reads
- * the token, and it makes no authorisation decision. React still decides what
- * actually renders; this only prevents the wrong first frame.
- *
- * Crawlers do not carry a session, so they always receive the full article.
+ * So this inline script, which runs before the module bundle is even fetched,
+ * replaces the article with the loading placeholder for every real browser in
+ * the same paint. Crawlers are the one exception and keep the full article, and
+ * the markup stays in the HTML either way, so a crawler that does not run JS
+ * still indexes it. React replaces #root on mount and decides what renders;
+ * this only controls the first frame.
  */
-function signedInSwap() {
-  return `<script>(function(){try{
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i)
-      if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) {
-        var r = document.getElementById('root')
-        if (r) r.innerHTML = '<div id="pw-boot" role="status" aria-label="Loading PicoWorker" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:#0c0d11;color:#a9abb6;font:600 14px system-ui,sans-serif">Loading PicoWorker\\u2026</div>'
-        // Watchdog. Swapping the article for a loader means a bundle that never
-        // runs leaves the worker staring at "Loading" forever, which reads as
-        // the site being down. React replaces #root on mount, so if the boot
-        // node is still there after 8s the app did not start: say so, and offer
-        // the one action that fixes a stale service worker cache.
-        setTimeout(function(){
-          var b = document.getElementById('pw-boot')
-          if (!b) return
-          b.innerHTML = '<div style="max-width:320px;padding:24px;text-align:center"><div style="font:700 16px system-ui,sans-serif;color:#e8e9ee">PicoWorker did not load</div><div style="margin-top:8px;font:600 13px system-ui,sans-serif;color:#a9abb6;line-height:1.5">This is usually an old cached version. Tap below to reload a fresh copy.</div><button id="pw-retry" style="margin-top:16px;padding:12px 20px;border:0;border-radius:12px;background:#2ee06e;color:#06210f;font:800 14px system-ui,sans-serif">Reload PicoWorker</button></div>'
-          var btn = document.getElementById('pw-retry')
-          if (btn) btn.onclick = function(){
-            try {
-              if (window.caches && caches.keys) caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k) }) })
-              if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-                navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(x){ x.unregister() }) })
-              }
-            } catch (e) { /* reload anyway */ }
-            setTimeout(function(){ location.reload(true) }, 300)
-          }
-        }, 8000)
-        return
-      }
+function bootGuard() {
+  const retryMarkup = "'<div style=\"max-width:320px;padding:24px;text-align:center\"><div style=\"font:700 16px system-ui,sans-serif;color:#e8e9ee\">PicoWorker did not load</div><div style=\"margin-top:8px;font:600 13px system-ui,sans-serif;color:#a9abb6;line-height:1.5\">This is usually an old cached version. Tap below to reload a fresh copy.</div><button id=\"pw-retry\" style=\"margin-top:16px;padding:12px 20px;border:0;border-radius:12px;background:#2ee06e;color:#06210f;font:800 14px system-ui,sans-serif\">Reload PicoWorker</button></div>'"
+  return `<script>(function(){
+  // Keep the article for crawlers and link unfurlers only. Anything else is a
+  // person, and a person must never be left on the prerendered page.
+  try {
+    var ua = navigator.userAgent || ''
+    if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|whatsapp|telegrambot|twitterbot|linkedinbot|discordbot|pinterest|applebot|petalbot|yandex|duckduckbot|baiduspider|ia_archiver|lighthouse|headlesschrome/i.test(ua)) return
+  } catch (e) { /* no navigator: treat as a browser and swap */ }
+
+  var r = document.getElementById('root')
+  if (!r) return
+  r.innerHTML = '<div id="pw-boot" role="status" aria-label="Loading PicoWorker" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:#0c0d11;color:#a9abb6;font:600 14px system-ui,sans-serif">Loading PicoWorker\\u2026</div>'
+
+  // Swapping the article for a loader means a bundle that never runs leaves the
+  // visitor staring at "Loading" forever, which reads as the site being down.
+  // React replaces #root on mount, so if the boot node is still there after 8s
+  // the app did not start: say so, and offer the one action that fixes a stale
+  // service worker cache.
+  setTimeout(function(){
+    var b = document.getElementById('pw-boot')
+    if (!b) return
+    b.innerHTML = ${retryMarkup}
+    var btn = document.getElementById('pw-retry')
+    if (!btn) return
+    btn.onclick = function(){
+      try {
+        if (window.caches && caches.keys) caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k) }) })
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(x){ x.unregister() }) })
+        }
+      } catch (e) { /* reload anyway */ }
+      setTimeout(function(){ location.reload(true) }, 300)
     }
-  }catch(e){}})()</script>`
+  }, 8000)
+})()</script>`
 }
 
 const base = await readFile(new URL('index.html', dist), 'utf8')
@@ -491,7 +494,7 @@ for (const page of pages) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '')
   html = html.replace(/<div id="root">[\s\S]*?<\/div>\s*<noscript>/, `${pageMarkup(page)}\n    <noscript>`)
   html = html.replace('</head>', `    ${structuredData(page)}\n  </head>`)
-  html = html.replace('</body>', `  ${signedInSwap()}\n  </body>`)
+  html = html.replace('</body>', `  ${bootGuard()}\n  </body>`)
   const file = page.path === '/' ? new URL('index.html', dist) : new URL(`.${page.path}/index.html`, dist)
   await mkdir(dirname(file.pathname), { recursive: true })
   await writeFile(file, html)
