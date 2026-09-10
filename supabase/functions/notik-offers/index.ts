@@ -174,6 +174,48 @@ function normalise(raw: Row): Row | null {
   }
 }
 
+/**
+ * Notik's per-offer `events` array is its multistep model: an offer can pay
+ * several times, once per event, and the postback names them with `event_id`
+ * and `event_name`. The catalogue is expected to use the same vocabulary, but
+ * their docs are behind a login, so every plausible spelling is read and a step
+ * with no usable label is dropped. If the shape ever differs, the offer simply
+ * renders without steps, exactly as it did before this existed, rather than
+ * showing an empty or wrong list.
+ *
+ * Money: an event carrying `payout` states USD, so it takes the same worker
+ * share as the offer headline. One carrying only `amount` states coins, which
+ * convert at USD_PER_COIN. Mixing those up would misprice a step by 100x, so
+ * the USD field is always preferred and coins are only a fallback.
+ */
+function steps(raw: unknown): { stepId: string; description: string; rewardUsd: number }[] {
+  if (!Array.isArray(raw)) return []
+
+  const out: { stepId: string; description: string; rewardUsd: number }[] = []
+  for (const item of raw.slice(0, 40)) {
+    if (!item || typeof item !== 'object') continue
+    const ev = item as Row
+
+    const description = clean(ev.event_name ?? ev.name ?? ev.title ?? ev.description, 300)
+    if (!description) continue
+
+    const usdPayout = num(ev.payout ?? ev.event_payout ?? ev.payout_usd)
+    const coins = num(ev.amount ?? ev.event_amount ?? ev.virtual_currency)
+    const rewardUsd = usdPayout > 0
+      ? usdPayout * WORKER_SHARE
+      : coins > 0
+      ? coins * USD_PER_COIN
+      : 0
+
+    out.push({
+      stepId: clean(ev.event_id ?? ev.id ?? String(out.length + 1), 120),
+      description,
+      rewardUsd: Number(rewardUsd.toFixed(6)),
+    })
+  }
+  return out
+}
+
 type Admin = ReturnType<typeof createClient>
 
 async function syncIfStale(admin: Admin, force: boolean): Promise<void> {
@@ -270,6 +312,7 @@ Deno.serve(async (req) => {
     // click id is added at tap time by the notik-click function, so we do not
     // mint 300 of them for cards nobody opens.
     const clickUrl = clean(row.click_url, 4000).replaceAll('[user_id]', encodeURIComponent(userId))
+    const offerSteps = steps(row.events)
 
     return {
       offerId: clean(row.offer_id, 120),
@@ -282,6 +325,11 @@ Deno.serve(async (req) => {
       rewardCoins: Number((payout * PAYOUT_RATIO).toFixed(2)),
       rewardUsd: Number((payout * WORKER_SHARE).toFixed(6)),
       clickUrl,
+      steps: offerSteps,
+      // The headline stays the offer payout. A multistep offer pays it out
+      // across the steps rather than in addition to them, so presenting the
+      // sum of steps as a separate total would promise the money twice.
+      multistep: offerSteps.length > 1,
     }
   })
 

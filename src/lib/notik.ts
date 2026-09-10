@@ -1,6 +1,13 @@
 import { supabase } from './supabase'
 import { usd } from './format'
 
+export type NotikStep = {
+  stepId: string
+  description: string
+  /** Worker payout for this step, already at the 80% share. */
+  rewardUsd: number
+}
+
 export type NotikOffer = {
   offerId: string
   title: string
@@ -15,6 +22,9 @@ export type NotikOffer = {
   /** What the worker is actually credited, so the card matches the wallet. */
   rewardUsd: number
   clickUrl: string
+  /** Notik's per-offer events: what the worker has to do, and what each pays. */
+  steps: NotikStep[]
+  multistep: boolean
 }
 
 export type NotikState =
@@ -35,11 +45,21 @@ export function notikRewardLabel(offer: NotikOffer): string {
   return usd(offer.rewardUsd)
 }
 
+/**
+ * Multistep offers pay the headline out across their events rather than on one
+ * completion, so the caption says which of the two a worker is looking at.
+ */
+export function notikRewardCaption(offer: NotikOffer): string {
+  return offer.multistep && offer.steps.length > 0
+    ? `Across ${offer.steps.length} steps`
+    : 'Paid on completion'
+}
+
 // The catalogue itself only moves every 15 minutes on Notik's side, but the
 // per-user filtering (which offers they have already completed) does not, so
 // this stays short enough that a completed offer disappears on the next visit.
 const CACHE_TTL_MS = 10 * 60 * 1000
-const CACHE_PREFIX = 'picoworker:notik:v1'
+const CACHE_PREFIX = 'picoworker:notik:v2'
 type Ready = Extract<NotikState, { status: 'ready' }>
 const memory = new Map<string, { savedAt: number; state: Ready }>()
 const inFlight = new Map<string, Promise<NotikState>>()
@@ -94,7 +114,11 @@ export async function requestNotikOffers(
     }
     const ready: Ready = {
       status: 'ready',
-      offers: data.offers as NotikOffer[],
+      offers: (data.offers as NotikOffer[]).map((o) => ({
+        ...o,
+        steps: Array.isArray(o.steps) ? o.steps : [],
+        multistep: o.multistep === true,
+      })),
       country: typeof data.country === 'string' ? data.country : null,
     }
     saveCache(key, ready)

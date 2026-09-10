@@ -4,8 +4,10 @@ import { Button } from '../../components/ui'
 import { ExternalLink, Globe, Shield } from '../../components/icons'
 import { OfferTabs } from '../../components/OfferTabs'
 import { countryLabel } from '../../lib/taskwall'
+import { usd } from '../../lib/format'
 import {
   detectNotikDevice,
+  notikRewardCaption,
   notikRewardLabel,
   openNotikOffer,
   requestNotikOffers,
@@ -16,6 +18,7 @@ import {
 export function NotikOffers() {
   const [state, setState] = useState<NotikState>({ status: 'loading' })
   const [opening, setOpening] = useState<string | null>(null)
+  const [detail, setDetail] = useState<NotikOffer | null>(null)
   const [err, setErr] = useState('')
   const device = useMemo(() => detectNotikDevice(), [])
 
@@ -131,6 +134,9 @@ export function NotikOffers() {
                     <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">
                       {notikRewardLabel(offer)}
                     </div>
+                    <div className="text-[10px] font-bold text-[var(--ink-5)]">
+                      {notikRewardCaption(offer)}
+                    </div>
                   </div>
                 </div>
 
@@ -140,18 +146,40 @@ export function NotikOffers() {
                   </p>
                 )}
 
-                <Button
-                  block
-                  className="mt-auto h-[38px] text-[12px]"
-                  disabled={opening === offer.offerId}
-                  onClick={() => void open(offer)}
-                >
-                  {opening === offer.offerId ? 'Taking you there…' : <>Start offer <ExternalLink width={14} height={14} /></>}
-                </Button>
+                <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-3">
+                  <Button
+                    block
+                    className="h-[38px] text-[12px]"
+                    disabled={opening === offer.offerId}
+                    onClick={() => void open(offer)}
+                  >
+                    {opening === offer.offerId ? 'Taking you there…' : <>Start offer <ExternalLink width={14} height={14} /></>}
+                  </Button>
+                  {/* Multistep offers pay per event, and a worker who cannot see
+                      the steps first has no way to judge whether the headline
+                      total is reachable. */}
+                  {offer.steps.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setDetail(offer)}
+                      className="h-[38px] rounded-[12px] border border-[var(--line-2)] bg-[var(--fill)] px-3 text-[11.5px] font-extrabold text-[var(--ink-2)]"
+                    >
+                      Steps
+                    </button>
+                  )}
+                </div>
               </article>
             ))}
           </div>
         </>
+      )}
+
+      {detail && (
+        <StepSheet
+          offer={detail}
+          onClose={() => setDetail(null)}
+          onStart={() => void open(detail)}
+        />
       )}
 
       <div className="mt-5 flex items-start gap-2.5 rounded-[14px] border border-[rgba(242,163,60,.25)] bg-[rgba(242,163,60,.08)] p-3.5">
@@ -163,5 +191,54 @@ export function NotikOffers() {
         </p>
       </div>
     </Page>
+  )
+}
+
+function StepSheet({ offer, onClose, onStart }: { offer: NotikOffer; onClose: () => void; onStart: () => void }) {
+  // Notik states a step's payout only on some events. Summing a partial list
+  // and calling it a total would understate the offer, so the per-step figure
+  // is simply omitted where it is missing and the headline stays the total.
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-label={`${offer.title} steps`}>
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default" />
+      <div className="relative max-h-[92svh] w-full max-w-[520px] overflow-y-auto rounded-t-[24px] border border-[var(--line)] bg-[var(--card)] p-5 sm:rounded-[24px] sm:p-6" style={{ boxShadow: '0 24px 80px rgba(0,0,0,.45)' }}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-head text-[18px] font-extrabold leading-[1.3] text-[var(--ink)]">{offer.title}</h2>
+            <div className="mt-1 font-head text-[16px] font-extrabold text-[var(--green)]">
+              {notikRewardLabel(offer)} <span className="text-[12px] font-bold text-[var(--ink-4)]">total</span>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--fill)] text-[20px] font-bold text-[var(--ink-3)]" aria-label="Close">×</button>
+        </div>
+
+        <div className="mt-4 text-[11px] font-extrabold uppercase tracking-[.08em] text-[var(--ink-5)]">
+          Steps · each one pays separately
+        </div>
+        <div className="mt-2 flex flex-col gap-2">
+          {offer.steps.map((step, i) => (
+            <div key={step.stepId || i} className="flex items-start justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--fill)] px-3 py-2.5">
+              <span className="text-[12px] font-semibold leading-[1.45] text-[var(--ink-2)]">
+                <span className="text-[var(--ink-4)]">{i + 1}.</span> {step.description}
+              </span>
+              {step.rewardUsd > 0 && (
+                <span className="flex-none text-[12px] font-extrabold text-[var(--green)]">{usd(step.rewardUsd)}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-3 text-[11.5px] font-semibold leading-[1.5] text-[var(--ink-4)]">
+          You are paid for every step you finish, so stopping part way still earns what you completed.
+        </p>
+
+        <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <Button variant="ghost" block className="h-[46px]" onClick={onClose}>Cancel</Button>
+          <Button block className="h-[46px]" onClick={onStart}>
+            Start offer <ExternalLink width={16} height={16} />
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
