@@ -140,6 +140,14 @@ function deviceTokens(os: string): string[] {
   return ['desktop', 'windows', 'mac', 'web']
 }
 
+// CPAlead spells "no restriction" differently per field and per campaign: the
+// live API returns device "all_devices" where the docs say "all", and country
+// lists occasionally carry "all_countries". The SQL filter matches a single
+// wildcard token, so every spelling is folded into it here rather than being
+// enumerated in the query.
+const DEVICE_WILDCARDS = new Set(['all', 'all_devices', 'alldevices', 'any', 'any_device'])
+const COUNTRY_WILDCARDS = new Set(['ALL', 'ALL_COUNTRIES', 'ALLCOUNTRIES', 'ANY', 'WW', 'WORLDWIDE'])
+
 /** Trim a raw offer to the columns replace_cpalead_offers reads. */
 function normalise(raw: Row): Row | null {
   const offerId = clean(raw.id ?? raw.offer_id ?? raw.campaign_id, 120)
@@ -156,8 +164,12 @@ function normalise(raw: Row): Row | null {
     link,
     preview_link: clean(raw.preview_link, 4000),
     image_url: creativeImage(raw),
-    countries: tokens(raw.countries ?? raw.country, 8).map((c) => c.toUpperCase()),
-    devices: tokens(raw.device ?? raw.devices, 20).map((d) => d.toLowerCase()),
+    countries: tokens(raw.countries ?? raw.country, 16)
+      .map((c) => c.toUpperCase())
+      .map((c) => (COUNTRY_WILDCARDS.has(c) ? 'ALL' : c)),
+    devices: tokens(raw.device ?? raw.devices, 20)
+      .map((d) => d.toLowerCase())
+      .map((d) => (DEVICE_WILDCARDS.has(d) ? 'all' : d)),
     amount: num(raw.amount ?? raw.payout) ?? 0,
     payout_currency: clean(raw.payout_currency, 8) || 'USD',
     payout_type: clean(raw.payout_type, 16),
