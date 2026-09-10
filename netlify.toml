@@ -36,6 +36,15 @@
   status = 200
   force = true
 
+# CPAlead authenticates this public GET callback with its postback password and
+# sends it from a single relay IP, so the function must return its own status
+# (they retry 408, 425, 429 and 5xx) rather than the SPA fallback's 200.
+[[redirects]]
+  from = "/api/cpalead/postback"
+  to = "https://cgkccigqhecuxgklnqel.supabase.co/functions/v1/cpalead-postback"
+  status = 200
+  force = true
+
 # Junk left in search indexes by the domain's previous owner. Must return
 # 410 Gone (not the SPA's 200) or Google keeps the URLs indexed.
 # Order matters: these must sit above the /* catch-all, first match wins.
