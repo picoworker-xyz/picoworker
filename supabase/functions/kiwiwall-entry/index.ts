@@ -83,7 +83,11 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error('KiwiWall mint request failed', error)
-    return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
+    return json({
+      status: 'error',
+      error: 'Worldwide offers are temporarily unavailable because the provider is unreachable. The other tabs are working.',
+      code: 'kw_network',
+    })
   }
 
   if (!res.ok) {
@@ -97,12 +101,36 @@ Deno.serve(async (req) => {
     if (res.status === 429) {
       return json({ status: 'error', error: 'Too many offers opened at once. Wait a moment and try again.' })
     }
-    return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
+    // 403 and 5xx are the provider being unreachable rather than anything the
+    // worker did. It matters because kiwiwall-offers serves a stale cache when
+    // their API is down, so the wall keeps showing cards that cannot possibly
+    // open, and "please try again" sends the worker round that loop forever.
+    // Observed on 2026-09-10: api.kiwiwall.com answered every request, ours or
+    // anonymous, with Cloudflare error 1014 (CNAME Cross-User Banned), which is
+    // a misconfiguration on their edge that no retry of ours can clear.
+    if (res.status === 403 || res.status >= 500) {
+      return json({
+        status: 'error',
+        error: 'Worldwide offers are temporarily unavailable because the provider is down. The other tabs are working.',
+        code: `kw_${res.status}`,
+      })
+    }
+    // The provider status is carried back as an opaque code. Three different
+    // faults used to share one message, which made a mint failure impossible to
+    // triage from a support ticket without dashboard log access.
+    return json({
+      status: 'error',
+      error: 'Could not open this offer right now. Please try again.',
+      code: `kw_${res.status}`,
+    })
   }
 
   const payload = await res.json() as { data?: { entry_url?: string } }
   const entryUrl = clean(payload.data?.entry_url, 3000)
-  if (!entryUrl) return json({ status: 'error', error: 'Could not open this offer right now. Please try again.' })
+  if (!entryUrl) {
+    console.error('KiwiWall mint returned no entry_url', { offerId, payload: JSON.stringify(payload).slice(0, 300) })
+    return json({ status: 'error', error: 'Could not open this offer right now. Please try again.', code: 'kw_no_url' })
+  }
 
   // Recorded so a later conversion postback can be traced to this user + offer.
   await admin.from('kiwiwall_clicks').insert({
