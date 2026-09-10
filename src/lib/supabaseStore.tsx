@@ -285,8 +285,16 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
         const { data, error } = await sb.rpc('claim_daily_bonus')
         if (error) throw new Error(error.message)
         await refresh()
-        const r = (data ?? {}) as { claimed?: boolean; amount?: number; balance?: number; day?: number }
-        return { claimed: !!r.claimed, amount: num(r.amount), balance: num(r.balance), day: num(r.day) }
+        const r = (data ?? {}) as { claimed?: boolean; amount?: number; balance?: number; day?: number; reason?: string }
+        return {
+          claimed: !!r.claimed,
+          amount: num(r.amount),
+          balance: num(r.balance),
+          day: num(r.day),
+          // 'needs_earning' when nothing has been credited since the last
+          // claim, 'already_claimed' when today is already done.
+          reason: typeof r.reason === 'string' ? r.reason : null,
+        }
       },
       verifyIdentity() {
         setCache((c) => (c.profile ? { ...c, profile: { ...c.profile, identity_verified: true } } : c))

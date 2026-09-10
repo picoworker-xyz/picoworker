@@ -45,7 +45,13 @@ export function Rewards() {
     setBusy(true)
     try {
       const res = await claimDailyBonus()
-      setFlash(res.claimed ? `Day ${res.day} claimed · +${fmt(res.amount)}` : 'Already claimed today')
+      setFlash(
+        res.claimed
+          ? `Day ${res.day} claimed · +${fmt(res.amount)}`
+          : res.reason === 'needs_earning'
+            ? 'Earn from a task or offer first'
+            : 'Already claimed today',
+      )
     } catch {
       setFlash('Could not claim, try again')
     }
@@ -69,6 +75,11 @@ export function Rewards() {
           >
             {flash || (busy ? 'Claiming…' : claimableDay ? `Claim Day ${claimableDay} · +${fmt(dayReward(claimableDay))}` : 'Claimed today')}
           </button>
+        </div>
+
+        <div className="mb-6 -mt-2 text-[12px] font-semibold text-[var(--ink-4)]">
+          Complete any task or offer to unlock each day's check-in. Anything credited from
+          Offers, Surveys, Bonus, Featured or a PicoWorker task counts, at any amount.
         </div>
 
         <div className="flex flex-col gap-5">

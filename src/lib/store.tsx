@@ -40,7 +40,8 @@ export interface StoreApi {
   releaseHold(taskId: string): Promise<void>
   extendHold(taskId: string): Promise<{ expires_at: string; added_minutes: number }>
   withdraw(input: WithdrawalInput): Promise<{ netReceived: number; balance: number }>
-  claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number; day: number }>
+  /** `reason` is 'needs_earning' or 'already_claimed' when claimed is false. */
+  claimDailyBonus(): Promise<{ claimed: boolean; amount: number; balance: number; day: number; reason?: string | null }>
 
   verifyIdentity(): void
 
