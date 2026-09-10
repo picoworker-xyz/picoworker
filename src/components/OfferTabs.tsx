@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { kiwiwallLooksDown } from '../lib/kiwiwall'
 
 // Every wall sits behind the single "Offers" nav entry. Adding a nav item
 // per provider does not scale — we already have a third (Paymentwall) waiting.
@@ -21,7 +22,10 @@ export function OfferTabs() {
   const loc = useLocation()
   return (
     <div className="mb-5 inline-flex rounded-full bg-[var(--fill-2)] p-1">
-      {TABS.map((t) => {
+      {/* KiwiWall offers cannot be opened without a server-minted entry link,
+          so when their API is unreachable every card on that wall is dead. The
+          tab comes back on its own once the health hint expires. */}
+      {TABS.filter((t) => !(t.path === '/offers/worldwide' && kiwiwallLooksDown())).map((t) => {
         const on = loc.pathname === t.path
         return (
           <button

@@ -81,7 +81,23 @@ export function KiwiwallOffers() {
         </div>
       )}
 
-      {state.status === 'ready' && state.offers.length === 0 && (
+      {state.status === 'ready' && state.degraded && (
+        <div className="rounded-[22px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
+          <Globe width={30} height={30} className="mx-auto text-[var(--ink-5)]" />
+          <div className="mt-3 font-head text-[16px] font-extrabold text-[var(--ink)]">
+            Worldwide offers are paused
+          </div>
+          <div className="mt-1 text-[13px] font-semibold text-[var(--ink-3)]">
+            The provider is having an outage, so these offers cannot be opened right now.
+            Your other tabs are working normally, and this one comes back on its own.
+          </div>
+          <Button variant="ghost" onClick={() => void load(true)} className="mx-auto mt-4 px-5 py-2.5">
+            Check again
+          </Button>
+        </div>
+      )}
+
+      {state.status === 'ready' && !state.degraded && state.offers.length === 0 && (
         <div className="rounded-[22px] border border-[var(--line)] bg-[var(--card)] p-8 text-center">
           <Globe width={30} height={30} className="mx-auto text-[var(--ink-5)]" />
           <div className="mt-3 font-head text-[16px] font-extrabold text-[var(--ink)]">No offers right now</div>
@@ -94,7 +110,7 @@ export function KiwiwallOffers() {
         </div>
       )}
 
-      {state.status === 'ready' && state.offers.length > 0 && (
+      {state.status === 'ready' && !state.degraded && state.offers.length > 0 && (
         <>
           <div className="mb-3 flex items-center justify-between">
             <div className="font-head text-[14px] font-extrabold text-[var(--ink)]">

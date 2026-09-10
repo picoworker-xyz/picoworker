@@ -92,7 +92,14 @@ async function pullOffers(country: string, device: string, ip: string, sub: stri
     },
     signal: AbortSignal.timeout(20_000),
   })
-  if (!res.ok) throw new Error(`KiwiWall HTTP ${res.status}`)
+  if (!res.ok) {
+    // The status is carried on the error so the caller can tell "they are down"
+    // (403, 5xx) from "we are asking too often" (429). Only the first should
+    // take the wall off the tab bar.
+    const failure = new Error(`KiwiWall HTTP ${res.status}`) as Error & { status?: number }
+    failure.status = res.status
+    throw failure
+  }
 
   const payload = await res.json() as { error?: boolean; data?: unknown; message?: string }
   if (payload.error === true || !Array.isArray(payload.data)) {
@@ -168,14 +175,14 @@ Deno.serve(async (req) => {
     ? Date.now() - Date.parse(cached.data.fetched_at)
     : Number.POSITIVE_INFINITY
   if (!body.force && Array.isArray(cached.data?.offers) && age < CACHE_TTL_MS) {
-    return json({ status: 'success', offers: cached.data.offers, country, os, cached: true })
+    return json({ status: 'success', offers: cached.data.offers, country, os, cached: true, degraded: false })
   }
 
   // KiwiWall requires `ip` on every pull, so without one we cannot refresh —
   // serve whatever is cached rather than failing outright.
   if (!ip) {
     if (Array.isArray(cached.data?.offers)) {
-      return json({ status: 'success', offers: cached.data.offers, country, os, cached: true })
+      return json({ status: 'success', offers: cached.data.offers, country, os, cached: true, degraded: false })
     }
     return json({ status: 'error', error: 'Could not load offers. Please try again.' })
   }
@@ -202,13 +209,28 @@ Deno.serve(async (req) => {
       }
     }
 
-    return json({ status: 'success', offers, country, os, cached: false })
+    return json({ status: 'success', offers, country, os, cached: false, degraded: false })
   } catch (error) {
     console.error('KiwiWall offers pull failed', error)
-    // Rate limited or provider down: serve stale rather than an empty page.
+
+    // `degraded` means their API is unreachable, so a click cannot be minted
+    // either and every card we could serve is unopenable. A stale cache is
+    // still worth returning for context, but the flag is what lets the app
+    // take the tab down instead of showing a wall of dead offers. A 429 is
+    // deliberately excluded: we are being throttled, they are working, and the
+    // cached cards will open fine.
+    const status = (error as { status?: number }).status
+    const degraded = status === undefined || status === 403 || status >= 500
+
     if (Array.isArray(cached.data?.offers)) {
-      return json({ status: 'success', offers: cached.data.offers, country, os, cached: true })
+      return json({ status: 'success', offers: cached.data.offers, country, os, cached: true, degraded })
     }
-    return json({ status: 'error', error: 'Could not load offers. Please try again.' })
+    return json({
+      status: 'error',
+      error: degraded
+        ? 'Worldwide offers are temporarily unavailable because the provider is down.'
+        : 'Could not load offers. Please try again.',
+      degraded,
+    })
   }
 })
