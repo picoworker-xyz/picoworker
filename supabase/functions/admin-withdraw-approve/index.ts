@@ -1,9 +1,8 @@
-// Admin approves a held (pending_review) withdrawal: pays it out from the
+// Admin approves a held (pending_review) withdrawal: pays it out from the Base
 // treasury and marks it sent. Reject/refund is done by the admin_reject_withdrawal RPC.
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { PublicKey } from 'npm:@solana/web3.js@1.95.8'
 import { cors, json } from '../_shared/cors.ts'
-import { conn, transferUsdc, treasury } from '../_shared/solana.ts'
+import { transferUsdc, validAddress } from '../_shared/base.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -25,14 +24,12 @@ Deno.serve(async (req) => {
     if (!wd.data) return json({ error: 'Withdrawal not found' }, 404)
     if (wd.data.status !== 'pending_review') return json({ error: 'Not awaiting approval' }, 400)
 
-    let toOwner: PublicKey
-    try { toOwner = new PublicKey(String(wd.data.address)) } catch { return json({ error: 'Invalid address' }, 400) }
-    const netAmt = Number(wd.data.amount) - Number(wd.data.fee)
+    const to = String(wd.data.address ?? '').trim()
+    if (!validAddress(to)) return json({ error: 'Invalid address' }, 400)
+    const netAmt = +(Number(wd.data.amount) - Number(wd.data.fee)).toFixed(6)
 
     try {
-      const c = conn()
-      const t = treasury()
-      const sig = await transferUsdc(c, t, toOwner, netAmt, t)
+      const sig = await transferUsdc(to, netAmt)
       await admin.rpc('finish_withdrawal', { p_id: id, p_sig: sig, p_ok: true })
       return json({ ok: true, signature: sig })
     } catch (e) {

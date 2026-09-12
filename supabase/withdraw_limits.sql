@@ -6,6 +6,12 @@
 -- $5 is held as 'pending_review' for an admin to approve (or reject = refund).
 -- ============================================================================
 
+-- The status check on withdrawals predates the review state; without this the
+-- insert below fails for any withdrawal that crosses the daily limit.
+alter table withdrawals drop constraint if exists withdrawals_status_check;
+alter table withdrawals add constraint withdrawals_status_check
+  check (status in ('pending', 'pending_review', 'sent', 'failed'));
+
 create or replace function start_withdrawal(p_profile uuid, p_amount numeric, p_address text, p_source text default 'earner')
 returns json language plpgsql security definer set search_path = public as $$
 declare src text := case when p_source = 'business' then 'business' else 'earner' end;
