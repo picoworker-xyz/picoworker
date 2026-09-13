@@ -25,6 +25,8 @@ export type NotikOffer = {
   /** Notik's per-offer events: what the worker has to do, and what each pays. */
   steps: NotikStep[]
   multistep: boolean
+  /** From the Live Offers feed: the click URL is a per-user token, not in the catalogue. */
+  live?: boolean
 }
 
 export type NotikState =
@@ -131,6 +133,32 @@ export async function requestNotikOffers(
   }
 }
 
+export type NotikLiveDuration = '24h' | '7d' | '30d' | '60d'
+
+/**
+ * Notik's live feed: what is converting best for this worker's country and
+ * device right now. Not cached here — Notik already caches it 5 minutes per
+ * user, and the list is meant to move.
+ */
+export async function requestNotikLiveOffers(
+  duration: NotikLiveDuration = '7d',
+): Promise<{ status: 'ready'; offers: NotikOffer[] } | { status: 'error'; message: string }> {
+  if (!supabase) return { status: 'error', message: 'Offers require the production account service.' }
+  const { data, error } = await supabase.functions.invoke('notik-live-offers', { body: { duration } })
+  if (error || data?.status !== 'success' || !Array.isArray(data?.offers)) {
+    return { status: 'error', message: data?.error ?? error?.message ?? 'Could not load trending offers.' }
+  }
+  return {
+    status: 'ready',
+    offers: (data.offers as NotikOffer[]).map((o) => ({
+      ...o,
+      steps: Array.isArray(o.steps) ? o.steps : [],
+      multistep: o.multistep === true,
+      live: true,
+    })),
+  }
+}
+
 /**
  * Records the tap and returns the URL to send the worker to. The click id it
  * mints rides on `&s1=` and comes back on Notik's postback, which is what ties
@@ -143,7 +171,14 @@ export async function openNotikOffer(
 ): Promise<string> {
   if (!supabase) throw new Error('Offers require the production account service.')
   const { data, error } = await supabase.functions.invoke('notik-click', {
-    body: { offerId: offer.offerId, country, os },
+    body: {
+      offerId: offer.offerId,
+      country,
+      os,
+      // Live offers are not in the catalogue, so the click function needs the
+      // per-user URL from the feed to mint the click against.
+      ...(offer.live ? { live: { clickUrl: offer.clickUrl, name: offer.title, payout: offer.payout } } : {}),
+    },
   })
   if (error || data?.status !== 'success' || !data?.entryUrl) {
     throw new Error(data?.error ?? error?.message ?? 'Could not open this offer.')

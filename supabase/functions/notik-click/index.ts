@@ -7,7 +7,9 @@
 //
 // The URL is rebuilt from the stored catalogue rather than trusted from the
 // request body: a client could otherwise post any URL and have us record it as
-// a legitimate click.
+// a legitimate click. Live offers (notik-live-offers) are the exception: their
+// click_url is a per-user token Notik mints on the fly, so it cannot be looked
+// up. Those are accepted from the body only when they point at Notik's host.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { cors, json } from '../_shared/cors.ts'
 
@@ -29,16 +31,32 @@ Deno.serve(async (req) => {
   const userId = userData?.user?.id
   if (!userId) return json({ error: 'Please sign in to open offers.' }, 401)
 
-  let body: { offerId?: unknown; country?: unknown; os?: unknown } = {}
+  let body: { offerId?: unknown; country?: unknown; os?: unknown; live?: unknown } = {}
   try { body = await req.json() } catch { /* validated below */ }
   const offerId = typeof body.offerId === 'string' ? body.offerId.trim().slice(0, 120) : ''
   if (!offerId) return json({ status: 'error', error: 'Could not open this offer.' }, 422)
 
-  const { data: offer } = await admin
+  const { data: catalogued } = await admin
     .from('notik_offers')
     .select('offer_id,name,click_url,payout')
     .eq('offer_id', offerId)
     .maybeSingle()
+
+  let offer = catalogued
+  if (!offer?.click_url && body.live && typeof body.live === 'object') {
+    const live = body.live as { clickUrl?: unknown; name?: unknown; payout?: unknown }
+    const clickUrl = typeof live.clickUrl === 'string' ? live.clickUrl.trim().slice(0, 4000) : ''
+    let host = ''
+    try { host = new URL(clickUrl).hostname } catch { /* rejected below */ }
+    if (host === 'notik.me' || host.endsWith('.notik.me')) {
+      offer = {
+        offer_id: offerId,
+        name: typeof live.name === 'string' ? live.name.slice(0, 240) : '',
+        click_url: clickUrl,
+        payout: Number(live.payout) || 0,
+      }
+    }
+  }
 
   if (!offer?.click_url) {
     return json({ status: 'error', error: 'This offer is no longer available. Please refresh.' })
@@ -46,9 +64,8 @@ Deno.serve(async (req) => {
 
   const clickId = crypto.randomUUID()
   const payout = Number(offer.payout) || 0
-  const entryUrl = String(offer.click_url)
-    .replaceAll('[user_id]', encodeURIComponent(userId))
-    + `&s1=${encodeURIComponent(clickId)}`
+  const base = String(offer.click_url).replaceAll('[user_id]', encodeURIComponent(userId))
+  const entryUrl = base + (base.includes('?') ? '&' : '?') + `s1=${encodeURIComponent(clickId)}`
 
   const { error } = await admin.from('notik_clicks').insert({
     click_id: clickId,

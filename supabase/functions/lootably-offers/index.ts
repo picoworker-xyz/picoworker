@@ -199,15 +199,17 @@ Deno.serve(async (req) => {
   const userAgent = req.headers.get('user-agent') ?? ''
   const country = detectCountry(req)
   const device = cacheDevice(requestedOs)
-  // Country is only a cache key here, never a filter — Lootably targets from the
-  // ip we forward. An unknown country therefore degrades to a shared bucket
-  // rather than blocking the request, which is what taskwall-offers does.
-  const cacheCountry = country || 'ZZ'
+  // The cache is per user, not per country. Lootably targets on the ip and
+  // user agent we forward AND bakes this user's id into every click link, so a
+  // list fetched for one worker can neither be shown to nor credited to another.
+  // The `country` column carries the user id; a shared bucket here once paid
+  // other workers' completions to whoever refreshed it.
+  const cacheKey = `u:${userId}`
 
   const { data: cached } = await admin
     .from('lootably_offer_cache')
     .select('offers, fetched_at')
-    .eq('country', cacheCountry)
+    .eq('country', cacheKey)
     .eq('device', device)
     .maybeSingle()
 
@@ -235,7 +237,7 @@ Deno.serve(async (req) => {
   }
 
   await admin.from('lootably_offer_cache').upsert({
-    country: cacheCountry,
+    country: cacheKey,
     device,
     offers,
     fetched_at: new Date().toISOString(),

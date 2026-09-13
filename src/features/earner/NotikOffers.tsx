@@ -10,16 +10,20 @@ import {
   notikRewardCaption,
   notikRewardLabel,
   openNotikOffer,
+  requestNotikLiveOffers,
   requestNotikOffers,
   type NotikOffer,
   type NotikState,
 } from '../../lib/notik'
+
+type LiveState = { status: 'loading' } | { status: 'ready'; offers: NotikOffer[] } | { status: 'error' }
 
 export function NotikOffers() {
   const [state, setState] = useState<NotikState>({ status: 'loading' })
   const [opening, setOpening] = useState<string | null>(null)
   const [detail, setDetail] = useState<NotikOffer | null>(null)
   const [err, setErr] = useState('')
+  const [live, setLive] = useState<LiveState>({ status: 'loading' })
   const device = useMemo(() => detectNotikDevice(), [])
 
   const load = useCallback(async (force = false) => {
@@ -30,6 +34,11 @@ export function NotikOffers() {
   useEffect(() => {
     let active = true
     void requestNotikOffers(device).then((r) => { if (active) setState(r) })
+    // The trending strip is independent of the catalogue: a failure there just
+    // hides the strip, the main list still renders.
+    void requestNotikLiveOffers('7d').then((r) => {
+      if (active) setLive(r.status === 'ready' ? r : { status: 'error' })
+    })
     return () => { active = false }
   }, [device])
 
@@ -64,6 +73,20 @@ export function NotikOffers() {
         <div className="mb-4 rounded-[14px] border border-[rgba(255,107,90,.25)] bg-[rgba(255,107,90,.07)] p-3.5 text-[12.5px] font-semibold text-[var(--ink-2)]">
           {err}
         </div>
+      )}
+
+      {live.status === 'ready' && live.offers.length > 0 && (
+        <section className="mb-5">
+          <div className="mb-1 font-head text-[14px] font-extrabold text-[var(--ink)]">Trending now</div>
+          <div className="mb-3 text-[12px] font-semibold text-[var(--ink-4)]">
+            The offers paying out most often for people in your country this week.
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {live.offers.slice(0, 6).map((offer) => (
+              <OfferCard key={`live-${offer.offerId}`} offer={offer} opening={opening} onOpen={open} onSteps={setDetail} />
+            ))}
+          </div>
+        </section>
       )}
 
       {state.status === 'loading' && (
@@ -109,66 +132,7 @@ export function NotikOffers() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {state.offers.map((offer) => (
-              <article
-                key={offer.offerId}
-                className="flex min-h-[168px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4"
-                style={{ boxShadow: 'var(--shadow)' }}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
-                    {offer.logo ? (
-                      <img src={offer.logo} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
-                    ) : (
-                      <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">
-                      {offer.title}
-                    </h3>
-                    {offer.category && (
-                      <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-[.04em] text-[var(--ink-5)]">
-                        {offer.category}
-                      </div>
-                    )}
-                    <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">
-                      {notikRewardLabel(offer)}
-                    </div>
-                    <div className="text-[10px] font-bold text-[var(--ink-5)]">
-                      {notikRewardCaption(offer)}
-                    </div>
-                  </div>
-                </div>
-
-                {(offer.description || offer.details) && (
-                  <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
-                    {offer.description || offer.details}
-                  </p>
-                )}
-
-                <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-3">
-                  <Button
-                    block
-                    className="h-[38px] text-[12px]"
-                    disabled={opening === offer.offerId}
-                    onClick={() => void open(offer)}
-                  >
-                    {opening === offer.offerId ? 'Taking you there…' : <>Start offer <ExternalLink width={14} height={14} /></>}
-                  </Button>
-                  {/* Multistep offers pay per event, and a worker who cannot see
-                      the steps first has no way to judge whether the headline
-                      total is reachable. */}
-                  {offer.steps.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setDetail(offer)}
-                      className="h-[38px] rounded-[12px] border border-[var(--line-2)] bg-[var(--fill)] px-3 text-[11.5px] font-extrabold text-[var(--ink-2)]"
-                    >
-                      Steps
-                    </button>
-                  )}
-                </div>
-              </article>
+              <OfferCard key={offer.offerId} offer={offer} opening={opening} onOpen={open} onSteps={setDetail} />
             ))}
           </div>
         </>
@@ -192,6 +156,75 @@ export function NotikOffers() {
       </div>
     </Page>
   )
+}
+
+function OfferCard({ offer, opening, onOpen, onSteps }: {
+  offer: NotikOffer
+  opening: string | null
+  onOpen: (offer: NotikOffer) => void
+  onSteps: (offer: NotikOffer) => void
+}) {
+  return (
+    <article
+      key={offer.offerId}
+      className="flex min-h-[168px] flex-col rounded-[18px] border border-[var(--line)] bg-[var(--card)] p-4"
+      style={{ boxShadow: 'var(--shadow)' }}
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-[12px] bg-[var(--fill)]">
+          {offer.logo ? (
+            <img src={offer.logo} alt="" className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+          ) : (
+            <Globe width={20} height={20} className="text-[var(--accent-strong)]" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="line-clamp-2 font-head text-[13.5px] font-extrabold leading-[1.3] text-[var(--ink)]">
+            {offer.title}
+          </h3>
+          {offer.category && (
+            <div className="mt-1 text-[9.5px] font-extrabold uppercase tracking-[.04em] text-[var(--ink-5)]">
+              {offer.category}
+            </div>
+          )}
+          <div className="mt-1 text-[13px] font-extrabold text-[var(--green)]">
+            {notikRewardLabel(offer)}
+          </div>
+          <div className="text-[10px] font-bold text-[var(--ink-5)]">
+            {notikRewardCaption(offer)}
+          </div>
+        </div>
+      </div>
+
+      {(offer.description || offer.details) && (
+        <p className="mt-3 line-clamp-3 text-[12px] font-semibold leading-[1.5] text-[var(--ink-3)]">
+          {offer.description || offer.details}
+        </p>
+      )}
+
+      <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-3">
+        <Button
+          block
+          className="h-[38px] text-[12px]"
+          disabled={opening === offer.offerId}
+          onClick={() => void onOpen(offer)}
+        >
+          {opening === offer.offerId ? 'Taking you there…' : <>Start offer <ExternalLink width={14} height={14} /></>}
+        </Button>
+        {/* Multistep offers pay per event, and a worker who cannot see
+            the steps first has no way to judge whether the headline
+            total is reachable. */}
+        {offer.steps.length > 1 && (
+          <button
+            type="button"
+            onClick={() => onSteps(offer)}
+            className="h-[38px] rounded-[12px] border border-[var(--line-2)] bg-[var(--fill)] px-3 text-[11.5px] font-extrabold text-[var(--ink-2)]"
+          >
+            Steps
+          </button>
+        )}
+      </div>
+    </article>  )
 }
 
 function StepSheet({ offer, onClose, onStart }: { offer: NotikOffer; onClose: () => void; onStart: () => void }) {
