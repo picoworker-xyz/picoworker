@@ -35,6 +35,9 @@ create table if not exists cpx_postbacks (
   raw_payload     jsonb not null default '{}'::jsonb,
   created_at      timestamptz not null default now()
 );
+-- When CPX later cancelled this completion (status 2 postback). Null = still paid.
+alter table cpx_postbacks add column if not exists reversed_at timestamptz;
+
 
 -- `create table if not exists` is a no-op once the table exists, so new columns
 -- must be added explicitly for this file to stay re-runnable.
@@ -92,6 +95,37 @@ begin
     net := 0;
   end if;
 
+  -- Status 2 is a screenout reversal or fraud cancellation: CPX takes the money
+  -- back from us. It arrives with the SAME trans_id as the original credit, so
+  -- it must be handled before the insert below, whose trans_id conflict would
+  -- otherwise swallow it as a retry. The original row is stamped instead of a
+  -- new one being added, so one row tells the whole story. Nothing is clawed
+  -- back from the worker yet; this exists so the reversal rate can be measured
+  -- before deciding whether to build that.
+  if p_status = 2 then
+    update cpx_postbacks
+       set status = 2,
+           reversed_at = now(),
+           raw_payload = raw_payload || jsonb_build_object('reversal', coalesce(p_raw, '{}'::jsonb))
+     where trans_id = btrim(p_trans_id)
+    returning id into row_id;
+    if row_id is null then
+      -- Reversal for a completion we never saw (or one that arrived first).
+      insert into cpx_postbacks (
+        trans_id, status, player_id, offer_id, survey_id, event_type,
+        earned_amount, rewarded_amount, reward_units, credited_amount,
+        ip_click, raw_payload, reversed_at
+      ) values (
+        btrim(p_trans_id), 2, p_player, nullif(btrim(p_offer_id), ''),
+        nullif(btrim(p_survey_id), ''), nullif(btrim(p_type), ''),
+        gross, round(coalesce(p_rewarded, 0), 6), round(coalesce(p_reward_units, 0), 6), 0,
+        nullif(btrim(p_ip), ''), coalesce(p_raw, '{}'::jsonb), now()
+      ) on conflict (trans_id) do nothing;
+    end if;
+    raise warning 'CPX reversal on trans % (earned %)', p_trans_id, gross;
+    return json_build_object('credited', false, 'reversed', true);
+  end if;
+
   insert into cpx_postbacks (
     trans_id, status, player_id, offer_id, survey_id, event_type,
     earned_amount, rewarded_amount, reward_units, credited_amount,
@@ -108,14 +142,6 @@ begin
   -- Same trans_id twice is a CPX retry, not a second conversion.
   if row_id is null then
     return json_build_object('credited', false, 'duplicate', true);
-  end if;
-
-  -- Status 2 is a screenout reversal or fraud cancellation: CPX takes the money
-  -- back from us. We do not claw it back from the worker yet; it is recorded so
-  -- the reversal rate can be measured before deciding whether to build that.
-  if p_status = 2 then
-    raise warning 'CPX reversal on trans % (earned %)', p_trans_id, gross;
-    return json_build_object('credited', false, 'reversed', true);
   end if;
 
   if net <= 0 then
