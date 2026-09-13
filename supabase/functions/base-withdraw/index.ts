@@ -3,7 +3,7 @@
 // failure). Mirrors solana-withdraw so the DB side is unchanged.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { cors, json } from '../_shared/cors.ts'
-import { transferUsdc, validAddress } from '../_shared/base.ts'
+import { isTreasuryShort, transferUsdc, validAddress } from '../_shared/base.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -42,6 +42,13 @@ Deno.serve(async (req) => {
       await admin.rpc('finish_withdrawal', { p_id: id, p_sig: hash, p_ok: true })
       return json({ ok: true, signature: hash, net })
     } catch (e) {
+      // Treasury empty: hold it for an admin to pay once topped up, instead of
+      // bouncing the user. Anything else is refunded.
+      if (isTreasuryShort(e)) {
+        console.warn('Base treasury short, holding withdrawal', id)
+        await admin.from('withdrawals').update({ status: 'pending_review' }).eq('id', id)
+        return json({ ok: true, review: true, reason: 'treasury', net })
+      }
       await admin.rpc('finish_withdrawal', { p_id: id, p_sig: null, p_ok: false })
       console.error('Base payout failed', e)
       return json({ error: 'Payout failed, your balance was refunded.' }, 500)

@@ -2,7 +2,7 @@
 // treasury and marks it sent. Reject/refund is done by the admin_reject_withdrawal RPC.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { cors, json } from '../_shared/cors.ts'
-import { transferUsdc, validAddress } from '../_shared/base.ts'
+import { isTreasuryShort, transferUsdc, validAddress } from '../_shared/base.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -33,6 +33,8 @@ Deno.serve(async (req) => {
       await admin.rpc('finish_withdrawal', { p_id: id, p_sig: sig, p_ok: true })
       return json({ ok: true, signature: sig })
     } catch (e) {
+      // Treasury short: keep it held so it can be approved after a top-up.
+      if (isTreasuryShort(e)) return json({ error: 'Treasury is short, top up the Base wallet and approve again. ' + String(e) }, 503)
       // payout failed — refund and mark failed
       await admin.rpc('finish_withdrawal', { p_id: id, p_sig: null, p_ok: false })
       return json({ error: 'Payout failed, the user was refunded. ' + String(e) }, 500)

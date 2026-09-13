@@ -31,7 +31,7 @@ export function CashOut() {
   const [amount, setAmount] = useState(() => (avail > 0 ? fmtAmt(avail) : ''))
   const address = profile?.payout_wallet ?? '' // email-confirmed payout address only
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState<{ net: number; sig?: string; review?: boolean } | null>(null)
+  const [result, setResult] = useState<{ net: number; sig?: string; review?: boolean; reason?: string } | null>(null)
   const [err, setErr] = useState('')
 
   // If the wallet loads after mount, fill the field with the balance (once).
@@ -54,7 +54,7 @@ export function CashOut() {
     setBusy(false)
     if (error || data?.error) return setErr(data?.error || 'Withdrawal failed. Please try again.')
     await refresh()
-    setResult({ net: data.net, sig: data.signature, review: data.review })
+    setResult({ net: data.net, sig: data.signature, review: data.review, reason: data.reason })
   }
 
   if (result) {
@@ -68,7 +68,9 @@ export function CashOut() {
             <div className="font-head font-bold text-[24px] text-[var(--ink)] mt-6">{result.review ? 'Pending approval' : 'Withdrawal sent'}</div>
             <div className="font-head font-bold text-[32px] text-[var(--accent-strong)] mt-2">{fmtUsdc(result.net)} USDC</div>
             {result.review ? (
-              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold.</div>
+              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">{result.reason === 'treasury'
+                ? 'Payouts are queued right now. Our team will send this shortly. Your balance is already on hold.'
+                : "This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold."}</div>
             ) : (
               <>
                 <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">Sent to your Base address.</div>

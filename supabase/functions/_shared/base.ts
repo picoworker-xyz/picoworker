@@ -43,10 +43,25 @@ export async function usdcBalance(p: JsonRpcProvider, owner: string): Promise<nu
   return Number(raw) / 10 ** USDC_DECIMALS
 }
 
+/** Thrown when the treasury cannot cover a payout (USDC or ETH for gas). */
+export class TreasuryShortError extends Error {}
+
+/**
+ * True when a payout failed only because the treasury is short, so the caller
+ * can hold the withdrawal for later rather than refunding it.
+ */
+export function isTreasuryShort(e: unknown): boolean {
+  if (e instanceof TreasuryShortError) return true
+  const code = (e as { code?: string })?.code
+  const msg = String((e as { message?: string })?.message ?? e).toLowerCase()
+  return code === 'INSUFFICIENT_FUNDS' || msg.includes('insufficient funds') || msg.includes('transfer amount exceeds balance')
+}
+
 /**
  * Sends USDC from the treasury and waits for one confirmation. Returns the
- * transaction hash. Throws if the treasury is short, so the caller can refund
- * the user rather than marking a payout sent that never happened.
+ * transaction hash. Throws TreasuryShortError if the treasury is short, so the
+ * caller can hold the withdrawal rather than marking a payout sent that never
+ * happened.
  */
 export async function transferUsdc(to: string, uiAmount: number): Promise<string> {
   const p = provider()
@@ -55,7 +70,11 @@ export async function transferUsdc(to: string, uiAmount: number): Promise<string
 
   const amount = parseUnits(uiAmount.toFixed(USDC_DECIMALS), USDC_DECIMALS)
   const held = await usdc.balanceOf(wallet.address) as bigint
-  if (held < amount) throw new Error('Treasury is short of USDC')
+  if (held < amount) throw new TreasuryShortError('Treasury is short of USDC')
+  // An ERC-20 transfer on Base costs well under 0.00001 ETH; this margin
+  // catches an empty gas wallet before the node rejects the transaction.
+  const gas = await p.getBalance(wallet.address)
+  if (gas < parseUnits('0.00002', 18)) throw new TreasuryShortError('Treasury is short of ETH for gas')
 
   const tx = await usdc.transfer(to, amount)
   const receipt = await tx.wait(1)
