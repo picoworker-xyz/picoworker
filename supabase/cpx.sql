@@ -99,9 +99,8 @@ begin
   -- back from us. It arrives with the SAME trans_id as the original credit, so
   -- it must be handled before the insert below, whose trans_id conflict would
   -- otherwise swallow it as a retry. The original row is stamped instead of a
-  -- new one being added, so one row tells the whole story. Nothing is clawed
-  -- back from the worker yet; this exists so the reversal rate can be measured
-  -- before deciding whether to build that.
+  -- new one being added, so one row tells the whole story, and every credit
+  -- paid on it is clawed back.
   if p_status = 2 then
     update cpx_postbacks
        set status = 2,
@@ -122,8 +121,10 @@ begin
         nullif(btrim(p_ip), ''), coalesce(p_raw, '{}'::jsonb), now()
       ) on conflict (trans_id) do nothing;
     end if;
-    raise warning 'CPX reversal on trans % (earned %)', p_trans_id, gross;
-    return json_build_object('credited', false, 'reversed', true);
+    -- Claw back the worker's credit and every share paid on it (reversals.sql).
+    net := reverse_conversion(btrim(p_trans_id), 'CPX status 2');
+    raise warning 'CPX reversal on trans % (earned %, clawed back %)', p_trans_id, gross, net;
+    return json_build_object('credited', false, 'reversed', true, 'clawed_back', net);
   end if;
 
   insert into cpx_postbacks (

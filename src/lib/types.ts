@@ -32,6 +32,7 @@ export type LedgerType =
   | 'hold_deposit'
   | 'hold_refund'
   | 'hold_forfeit'
+  | 'reversal'
 
 export type WithdrawalStatus = 'pending' | 'sent' | 'failed'
 

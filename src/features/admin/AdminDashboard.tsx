@@ -513,7 +513,7 @@ function AdminWithdrawals() {
         <table className="w-full text-[12.5px]">
           <thead>
             <tr className="text-[var(--ink-4)] text-[11px] font-bold uppercase tracking-[.05em]">
-              {['email', 'amount', 'source', 'address', 'status', 'date', 'action'].map((h) => (
+              {['email', 'amount', 'source', 'address', 'status', 'date', 'auto pays', 'action'].map((h) => (
                 <th key={h} className="text-left font-bold px-3 py-3 whitespace-nowrap border-b border-[var(--line)]">{h}</th>
               ))}
             </tr>
@@ -530,6 +530,9 @@ function AdminWithdrawals() {
                   <td className="px-3 py-2.5 font-mono text-[var(--ink-3)]">{String(r.address ?? '').slice(0, 10)}…</td>
                   <td className="px-3 py-2.5"><span className={pending ? 'text-[#FFB05A] font-bold' : r.status === 'sent' ? 'text-[var(--green)] font-bold' : 'text-[var(--ink-3)]'}>{String(r.status)}</span></td>
                   <td className="px-3 py-2.5 text-[var(--ink-3)] whitespace-nowrap">{r.created_at ? timeAgo(String(r.created_at)) : ''}</td>
+                  <td className="px-3 py-2.5 text-[var(--ink-3)] whitespace-nowrap">
+                    {pending && r.auto_pay_at ? new Date(String(r.auto_pay_at)).toLocaleDateString() : ''}
+                  </td>
                   <td className="px-3 py-2.5 whitespace-nowrap">
                     {pending ? (
                       <span className="flex gap-1.5">

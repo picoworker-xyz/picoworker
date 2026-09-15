@@ -65,12 +65,10 @@ export function CashOut() {
             <div className="w-[80px] h-[80px] rounded-full bg-[var(--accent)] flex items-center justify-center" style={{ boxShadow: 'var(--glow)' }}>
               <ArrowUp width={34} height={34} className="text-[var(--accent-ink)]" />
             </div>
-            <div className="font-head font-bold text-[24px] text-[var(--ink)] mt-6">{result.review ? 'Pending approval' : 'Withdrawal sent'}</div>
+            <div className="font-head font-bold text-[24px] text-[var(--ink)] mt-6">{result.review ? 'Withdrawal queued' : 'Withdrawal sent'}</div>
             <div className="font-head font-bold text-[32px] text-[var(--accent-strong)] mt-2">{fmtUsdc(result.net)} USDC</div>
             {result.review ? (
-              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">{result.reason === 'treasury'
-                ? 'Payouts are queued right now. Our team will send this shortly. Your balance is already on hold.'
-                : "This is above the $5 daily limit, so our team will review and approve it. You'll be paid once approved. Your balance is already on hold."}</div>
+              <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2 leading-[1.5]">Your withdrawal is queued. Every payout is reviewed and sent within 15 days, most much sooner. Your balance is already on hold and you'll get a transaction link when it's sent.</div>
             ) : (
               <>
                 <div className="text-[var(--ink-3)] text-[14px] font-semibold mt-2">Sent to your Base address.</div>

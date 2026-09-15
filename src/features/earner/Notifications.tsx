@@ -132,6 +132,7 @@ function ledgerToNote(l: LedgerEntry): Note {
     referral_bonus: { title: `Referral bonus · ${usd(l.amount, { sign: true })}` },
     team_share: { title: `Team share · ${usd(l.amount, { sign: true })}` },
     development_share: { title: `Development share · ${usd(l.amount, { sign: true })}` },
+    reversal: { title: `Provider reversed a completion · ${usd(l.amount, { sign: true })}` },
     escrow_hold: { title: l.title },
     escrow_release: { title: l.title },
   }
